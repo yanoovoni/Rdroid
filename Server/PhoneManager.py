@@ -30,7 +30,8 @@ class PhoneManager(object):
 
     def addPhone(self, phone_socket):
         phone = Phone(phone_socket)
-        add_phone_thread = Thread(target=self.__addPhoneToDict, args=phone)
+        add_phone_thread = Thread(name='add_phone_thread', target=self.__addPhoneToDict, args=[phone])
+        add_phone_thread.setDaemon(True)
         add_phone_thread.start()
 
     def getPhone(self, username):
@@ -49,7 +50,8 @@ class PhoneManager(object):
         phone.establishConnection()
         username = phone.getUsername()
         self.__phone_dict[username] = phone
-        phone_thread = Thread(target=phone.runThread)
+        phone_thread = Thread(name='phone_thread-%s' % username, target=phone.runThread)
+        phone_thread.setDaemon(True)
         phone_thread.start()
 
     def closeThread(self):

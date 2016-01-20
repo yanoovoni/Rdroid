@@ -34,9 +34,11 @@ class Manager(object):
         return
 
     def run(self):
-        phone_listener_thread = Thread(target=self.phone_listener.runThread)
-        phone_manager_thread = Thread(target=self.phone_manager.runThread)
+        phone_listener_thread = Thread(name='phone_listener_thread', target=self.phone_listener.runThread)
+        phone_listener_thread.setDaemon(True)
         phone_listener_thread.start()
+        phone_manager_thread = Thread(name='phone_manager_thread', target=self.phone_manager.runThread)
+        phone_manager_thread.setDaemon(True)
         phone_manager_thread.start()
         while not self.__close:
             user_input = raw_input()

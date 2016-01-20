@@ -43,9 +43,11 @@ class Server(object):
 
 
     def runThreads(self):
-        server_listener_thread = Thread(target=self.__serverListenerThread)
-        output_sender_thread = Thread(target=self.__outputSenderThread)
+        server_listener_thread = Thread(name='server_listener_thread', target=self.__serverListenerThread)
+        server_listener_thread.setDaemon(True)
         server_listener_thread.start()
+        output_sender_thread = Thread(name='output_sender_thread', target=self.__outputSenderThread)
+        output_sender_thread.setDaemon(True)
         output_sender_thread.start()
 
     def send(self, message):

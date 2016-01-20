@@ -23,6 +23,7 @@ from socket import *
 
 class Phone(object):
     server = Server()
+    settings = Settings()
     filter = Filter()
     __ready = False
     __socket = None
@@ -37,7 +38,7 @@ class Phone(object):
 
     def runThread(self):
         while not self.__close:
-            message = self.__socket.recv()
+            message = self.__socket.recv(int(self.settings.getSetting('buffer_size')))
             if self.filter.filter(message):
                 self.server.send(message)
 
@@ -45,7 +46,8 @@ class Phone(object):
         self.__socket.send(message)
 
     def establishConnection(self):
-        pass
+        self.__setEncryption()
+        self.__login()
 
     def setReady(self):
         self.__ready = True
@@ -66,6 +68,9 @@ class Phone(object):
         self.__close = True
 
     def __setEncryption(self):
+        pass
+
+    def __login(self):
         pass
 
 
