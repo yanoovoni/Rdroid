@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0549b684-fce2-4a0a-a4cc-518cc2245873" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/EncryptionKeyMaker.py" afterPath="$PROJECT_DIR$/EncryptionKeyMaker.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Encryptor.py" afterPath="$PROJECT_DIR$/Encryptor.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Files/default server settings.cfg" afterPath="$PROJECT_DIR$/Files/default server settings.cfg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Files/server settings.cfg" afterPath="$PROJECT_DIR$/Files/server settings.cfg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Manager.py" afterPath="$PROJECT_DIR$/Manager.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Phone.py" afterPath="$PROJECT_DIR$/Phone.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Printer.py" afterPath="$PROJECT_DIR$/Printer.py" />
-    </list>
+    <list default="true" id="0549b684-fce2-4a0a-a4cc-518cc2245873" name="Default" comment="" />
     <ignored path="Final Project.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -479,7 +471,7 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329653" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.27178153" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.27178153" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
