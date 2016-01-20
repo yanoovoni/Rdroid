@@ -5,8 +5,8 @@
 #endregion -----------------Info-----------------
 
 #region -----------------Imports-----------------
-import time
 from Singleton import *
+import time
 #endregion -----------------Imports-----------------
 
 #region -----------------Constants-----------------

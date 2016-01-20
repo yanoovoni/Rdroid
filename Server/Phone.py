@@ -25,6 +25,7 @@ class Phone(object):
     server = Server()
     settings = Settings()
     filter = Filter()
+    encryption_key_maker = EncryptionKeyMaker()
     __ready = False
     __socket = None
     __username = ''
@@ -68,7 +69,7 @@ class Phone(object):
         self.__close = True
 
     def __setEncryption(self):
-        pass
+        self.__encryptor = self.encryption_key_maker.createEncryptor(self.getSocket())
 
     def __login(self):
         pass

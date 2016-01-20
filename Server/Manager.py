@@ -25,8 +25,9 @@ class Manager(object):
     __metaclass__ = Singleton
     settings = Settings()
     printer = Printer()
-    phone_listener = PhoneListener()
+    encryption_key_maker = EncryptionKeyMaker()
     server = Server()
+    phone_listener = PhoneListener()
     phone_manager = PhoneManager()
     __close = False
 
