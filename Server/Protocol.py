@@ -5,9 +5,9 @@
 #endregion -----------------Info-----------------
 
 #region -----------------Imports-----------------
-from Settings import *
-from Printer import *
 from Singleton import *
+from Printer import *
+from Settings import *
 #endregion -----------------Imports-----------------
 
 #region -----------------Constants-----------------
@@ -17,17 +17,12 @@ from Singleton import *
 #region -----------------Class-----------------
 
 
-class Filter(object):
+class Protocol(object):
     __metaclass__ = Singleton
+    printer = Printer()
+    settings = Settings()
 
-    def __init__(self):
-        pass
-
-    def filter(self, message):
-        return True
-
-    def isLoginMessage(self, message):
-        return True
+    def encodeLogin(self):
 
 
 #endregion -----------------Class-----------------

@@ -26,6 +26,7 @@ class PhoneManager(object):
     printer = Printer()
     server = Server()
     __phone_dict = {}
+    __login_phone_dict = {}
     __close = False
 
     def addPhone(self, phone_socket):

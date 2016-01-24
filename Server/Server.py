@@ -31,7 +31,7 @@ class Server(object):
 
     def __init__(self):
         ip = self.settings.getSetting('main_server_ip')
-        port = int(self.settings.getSetting('main_server_port'))
+        port = int(self.settings.getSetting('main_server_normal_port'))
         connected = False
         while not connected:
             connected = True
@@ -40,7 +40,6 @@ class Server(object):
             except Exception:
                 connected = False
         self.printer.printMessage(self.__class__.__name__, 'Connected to server')
-
 
     def runThreads(self):
         server_listener_thread = Thread(name='server_listener_thread', target=self.__serverListenerThread)
