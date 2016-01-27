@@ -26,32 +26,31 @@ class PhoneManager(object):
     printer = Printer()
     server = Server()
     __phone_dict = {}
-    __login_phone_dict = {}
     __close = False
 
-    def addPhone(self, phone_socket):
-        phone = Phone(phone_socket)
+    def addPhone(self, phone_socket, phone_ip_address):
+        phone = Phone(phone_socket, phone_ip_address)
         add_phone_thread = Thread(name='add_phone_thread', target=self.__addPhoneToDict, args=[phone])
         add_phone_thread.setDaemon(True)
         add_phone_thread.start()
 
-    def getPhone(self, username):
-        return self.__phone_dict[username]
+    def getPhone(self, ip_address):
+        return self.__phone_dict[ip_address]
 
     def runThread(self):
         while not self.__close:
             server_message = self.server.recv()
             if server_message is not None:
                 if ':' in server_message:
-                    phone_username, message = server_message.split(':', 1)
-                    phone = self.getPhone(phone_username)
+                    phone_ip_address, message = server_message.split(':', 1)
+                    phone = self.getPhone(phone_ip_address)
                     phone.send(message)
 
     def __addPhoneToDict(self, phone):
         phone.establishConnection()
-        username = phone.getUsername()
-        self.__phone_dict[username] = phone
-        phone_thread = Thread(name='phone_thread-%s' % username, target=phone.runThread)
+        phone_ip_address = phone.getIp()
+        self.__phone_dict[phone_ip_address] = phone
+        phone_thread = Thread(name='phone_thread-%s' % phone_ip_address, target=phone.runThread)
         phone_thread.setDaemon(True)
         phone_thread.start()
 

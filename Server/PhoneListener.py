@@ -36,7 +36,7 @@ class PhoneListener(object):
         self.listen_socket.listen(10)
         while not self.close:
             client_socket, client_address = self.listen_socket.accept()
-            self.phone_manager.addPhone(client_socket)
+            self.phone_manager.addPhone(client_socket, client_address)
         self.listen_socket.close()
 
     def closeThread(self):

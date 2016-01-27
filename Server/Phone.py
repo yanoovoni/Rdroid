@@ -30,14 +30,15 @@ class Phone(object):
     protocol = Protocol()
     __ready = False
     __socket = None
-    __username = ''
+    __ip_address = ''
     __number = ''
     __encryptor = None
     __close = False
 
 
-    def __init__(self, phone_socket):
+    def __init__(self, phone_socket, phone_ip_address):
         self.__socket = phone_socket
+        self.__ip_address = phone_ip_address
 
     def runThread(self):
         while not self.__close:
@@ -63,25 +64,10 @@ class Phone(object):
 
     def establishConnection(self):
         self.__setEncryptor()
-        self.__login()
         self.setReady()
-
-    def checkLogin(self, login_message):
-        login_message_line_list = login_message.split('\r\n')[2:]
-        login_info_dict = {}
-        for line in login_message_line_list:
-            line = line.split(': ')
-            login_info_dict[line[0]] = line[1]
-
 
     def setReady(self):
         self.__ready = True
-
-    def getUsername(self):
-        return self.__username
-
-    def __setUsername(self, username):
-        self.__username = username
 
     def isReady(self):
         return self.__ready
@@ -92,6 +78,9 @@ class Phone(object):
     def getSocket(self):
         return self.__socket
 
+    def getIp(self):
+        return self.__ip_address
+
     def closeThread(self):
         self.__close = True
 
@@ -100,16 +89,6 @@ class Phone(object):
 
     def __setEncryptor(self):
         self.__encryptor = self.encryption_key_maker.createEncryptor(self.getSocket())
-
-    def __login(self):
-        logged_in = False
-        while not logged_in:
-            login_message = self.recv()
-            if self.filter.isLoginMessage(login_message):
-                succesful, username = self.checkLogin(login_message)
-                if succesful:
-                    self.__setUsername(username)
-                    self.setReady()
 
 
 #endregion -----------------Class-----------------
