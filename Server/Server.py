@@ -31,7 +31,7 @@ class Server(object):
 
     def __init__(self):
         ip = self.settings.getSetting('main_server_ip')
-        port = int(self.settings.getSetting('main_server_normal_port'))
+        port = int(self.settings.getSetting('main_server_port'))
         connected = False
         while not connected:
             connected = True

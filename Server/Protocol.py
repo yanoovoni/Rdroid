@@ -22,7 +22,4 @@ class Protocol(object):
     printer = Printer()
     settings = Settings()
 
-    def encodeLogin(self):
-
-
 #endregion -----------------Class-----------------

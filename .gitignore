@@ -48,3 +48,4 @@ Temporary Items
 Server/toaster.py
 Server/toast server.py
 Server/toast phone.py
+*.pyc
