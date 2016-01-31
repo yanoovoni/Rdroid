@@ -40,6 +40,7 @@ class Server(object):
             except Exception:
                 connected = False
         self.printer.printMessage(self.__class__.__name__, 'Connected to server')
+        self.runThreads()
 
     def runThreads(self):
         server_listener_thread = Thread(name='server_listener_thread', target=self.__serverListenerThread)
@@ -65,11 +66,12 @@ class Server(object):
         self.__addInput('closing')
 
     def __serverListenerThread(self):
-        buffer_size = self.settings.getSetting('buffer_size')
+        buffer_size = int(self.settings.getSetting('buffer_size'))
         while not self.__close:
             self.__addInput(self.__server_socket.recv(buffer_size))
 
     def __outputSenderThread(self):
+        self.printer.printMessage(self.__class__.__name__, 'i believe im alive')
         while not self.__close:
             self.__send(self.__output_queue.get())
 

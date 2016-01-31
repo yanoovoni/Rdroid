@@ -49,8 +49,9 @@ class PhoneManager(object):
     def __addPhoneToDict(self, phone):
         phone.establishConnection()
         phone_ip_address = phone.getIp()
+        self.printer.printMessage(self.__class__.__name__, 'ip: ' + phone_ip_address)
         self.__phone_dict[phone_ip_address] = phone
-        phone_thread = Thread(name='phone_thread-%s' % phone_ip_address, target=phone.runThread)
+        phone_thread = Thread(name=('phone_thread-%s' % phone_ip_address), target=phone.runThread)
         phone_thread.setDaemon(True)
         phone_thread.start()
 

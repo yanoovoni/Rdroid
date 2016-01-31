@@ -23,10 +23,18 @@ class Encryptor(object):
         self.__encryption_key = key
 
     def encrypt(self, message):
-        return self.__encryption_key.encrypt(message)
+        padded_message = self.__addPadding(message)
+        encrypted_message = self.__encryption_key.encrypt(padded_message)
+        return encrypted_message
 
     def decrypt(self, message):
         return self.__encryption_key.decrypt(message)
 
+    def __addPadding(self, message):
+        padding = (len(message) % 16) * '\x08'
+        return message + padding
+
+    def __removePadding(self, message):
+        pass
 
 #endregion -----------------Class-----------------

@@ -44,6 +44,7 @@ class Phone(object):
         while not self.__close:
             message = self.recv()
             if self.filter.filter(message):
+                message = '%s:%s' % (self.getIp(), message)
                 self.server.send(message)
 
     def rawSend(self, message):
