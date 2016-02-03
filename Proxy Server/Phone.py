@@ -12,7 +12,7 @@ from Encryptor import *
 from Filter import *
 from Server import *
 from Protocol import *
-from socket import *
+import socket
 #endregion -----------------Imports-----------------
 
 #region -----------------Constants-----------------
@@ -36,16 +36,20 @@ class Phone(object):
     __close = False
 
 
-    def __init__(self, phone_socket, phone_ip_address):
+    def __init__(self, phone_socket, phone_ip_address, phone_manager):
         self.__socket = phone_socket
         self.__ip_address = phone_ip_address
+        self.phone_manager = phone_manager
 
     def runThread(self):
         while not self.__close:
-            message = self.recv()
-            if self.filter.filter(message):
-                message = '%s:%s' % (self.getIp(), message)
-                self.server.send(message)
+            try:
+                message = self.recv()
+                if self.filter.filter(message):
+                    message = '%s:%s' % (self.getIp(), message)
+                    self.server.send(message)
+            except socket.error:
+                self.closeObject()
 
     def rawSend(self, message):
         phone_socket = self.getSocket()
@@ -82,11 +86,15 @@ class Phone(object):
     def getIp(self):
         return self.__ip_address
 
-    def closeThread(self):
-        self.__close = True
+    def closeObject(self):
+        self.__closeThread()
+        self.phone_manager.deletePhone(self.getIp())
 
     def getEncryptor(self):
         return self.__encryptor
+
+    def __closeThread(self):
+        self.__close = True
 
     def __setEncryptor(self):
         self.__encryptor = self.encryption_key_maker.createEncryptor(self.getSocket())

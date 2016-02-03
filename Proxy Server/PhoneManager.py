@@ -29,10 +29,15 @@ class PhoneManager(object):
     __close = False
 
     def addPhone(self, phone_socket, phone_ip_address):
-        phone = Phone(phone_socket, phone_ip_address)
+        phone = Phone(phone_socket, phone_ip_address, self)
         add_phone_thread = Thread(name='add_phone_thread', target=self.__addPhoneToDict, args=[phone])
         add_phone_thread.setDaemon(True)
         add_phone_thread.start()
+
+    def deletePhone(self, phone_ip_address):
+        phone_dict = self.__phone_dict
+        if phone_dict.has_key(phone_ip_address):
+            del phone_dict[phone_ip_address]
 
     def getPhone(self, ip_address):
         return self.__phone_dict[ip_address]
