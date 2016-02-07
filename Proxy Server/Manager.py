@@ -9,7 +9,6 @@ from Singleton import *
 from Printer import *
 from Settings import *
 from PhoneListener import *
-from Server import *
 from PhoneManager import *
 from threading import Thread
 #endregion -----------------Imports-----------------
@@ -25,14 +24,9 @@ class Manager(object):
     __metaclass__ = Singleton
     settings = Settings()
     printer = Printer()
-    encryption_key_maker = EncryptionKeyMaker()
-    server = Server()
     phone_listener = PhoneListener()
     phone_manager = PhoneManager()
     __close = False
-
-    def __init__(self):
-        return
 
     def run(self):
         phone_listener_thread = Thread(name='phone_listener_thread', target=self.phone_listener.runThread)
