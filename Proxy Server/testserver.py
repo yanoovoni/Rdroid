@@ -12,5 +12,9 @@ proxy, addr = sock.accept()
 print 'connected'
 message = proxy.recv(1028)
 printer.printMessage('yo mama', message)
-proxy.send('127.0.0.1:you ugly')
+message = proxy.recv(1028)
+printer.printMessage('yo mama', message)
+proxy.send('1:you ugly')
 print 'sent'
+message = proxy.recv(1028)
+printer.printMessage('yo mama', message)

@@ -63,6 +63,7 @@ class Settings(object):
             if setting != '':
                 if setting[0] != '#':
                     setting = setting.split('=', 1)
+                    setting[1] = setting[1].replace('<CRLF>', '\r\n')
                     self.__settings_dict[setting[0]] = setting[1]
         return
 
