@@ -10,6 +10,7 @@ from Printer import *
 from Singleton import *
 from Queue import *
 from threading import *
+import time
 import socket
 #endregion -----------------Imports-----------------
 
@@ -46,10 +47,9 @@ class Server(object):
         self.__output_queue.put(message)
 
     def recv(self):
-        if self.__input_queue.not_empty:
-            return self.__input_queue.get()
-        else:
-            return None
+        while self.__input_queue.empty():
+            time.sleep(0.1)
+        return self.__input_queue.get()
 
     def closeThreads(self):
         self.__close = True

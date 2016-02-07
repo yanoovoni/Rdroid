@@ -10,6 +10,7 @@ from Settings import *
 from Printer import *
 from Server import *
 from Phone import *
+from IDGenerator import *
 from threading import Thread
 #endregion -----------------Imports-----------------
 
@@ -25,40 +26,54 @@ class PhoneManager(object):
     settings = Settings()
     printer = Printer()
     server = Server()
+    id_generator = IDGenerator()
     __phone_dict = {}
     __close = False
 
     def addPhone(self, phone_socket, phone_ip_address):
-        phone = Phone(phone_socket, phone_ip_address, self)
+        phone = Phone(phone_socket, phone_ip_address, self.id_generator.generateId(), self)
         add_phone_thread = Thread(name='add_phone_thread', target=self.__addPhoneToDict, args=[phone])
         add_phone_thread.setDaemon(True)
         add_phone_thread.start()
 
-    def deletePhone(self, phone_ip_address):
+    def deletePhone(self, phone_id):
         phone_dict = self.__phone_dict
-        if phone_dict.has_key(phone_ip_address):
-            del phone_dict[phone_ip_address]
+        if phone_dict.has_key(phone_id):
+            del phone_dict[phone_id]
 
-    def getPhone(self, ip_address):
-        return self.__phone_dict[ip_address]
+    def getPhone(self, phone_id):
+        self.printer.printMessage(self.__class__.__name__, 'phone_dict: %s' % (self.__phone_dict))
+        if self.__phone_dict.has_key(phone_id):
+            phone = self.__phone_dict[phone_id]
+            return phone
+        return None
 
     def runThread(self):
         while not self.__close:
             server_message = self.server.recv()
-            if server_message is not None:
-                if ':' in server_message:
-                    phone_ip_address, message = server_message.split(':', 1)
-                    phone = self.getPhone(phone_ip_address)
+            if ':' in server_message:
+                phone_id, message = server_message.split(':', 1)
+                phone = self.getPhone(phone_id)
+                if phone is not None:
                     phone.send(message)
+                else:
+                    self.__notifyDeletedPhone(phone_id)
 
     def __addPhoneToDict(self, phone):
         phone.establishConnection()
         phone_ip_address = phone.getIp()
-        self.printer.printMessage(self.__class__.__name__, 'ip: ' + phone_ip_address)
-        self.__phone_dict[phone_ip_address] = phone
-        phone_thread = Thread(name=('phone_thread-%s' % phone_ip_address), target=phone.runThread)
+        phone_id = phone.getId()
+        self.printer.printMessage(self.__class__.__name__, 'ip: %s, id: %s' % (phone_ip_address, phone_id))
+        self.__phone_dict[phone_id] = phone
+        phone_thread = Thread(name=('phone_thread-%s' % phone_id), target=phone.runThread)
         phone_thread.setDaemon(True)
         phone_thread.start()
+
+    def __notifyDeletedPhone(self, phone_id):
+        end_line = self.settings.getSetting('end_line')
+        notification_message = self.settings.getSetting('disconnect_notification_message')
+        notification_message += 'session_id:%s%s' % (phone_id, end_line)
+        self.server.send(notification_message)
 
     def closeThread(self):
         self.__close = True

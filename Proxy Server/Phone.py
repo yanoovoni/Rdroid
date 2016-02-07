@@ -36,17 +36,19 @@ class Phone(object):
     __close = False
 
 
-    def __init__(self, phone_socket, phone_ip_address, phone_manager):
+    def __init__(self, phone_socket, phone_ip_address, phone_id, phone_manager):
         self.__socket = phone_socket
         self.__ip_address = phone_ip_address
+        self.__phone_id = phone_id
         self.phone_manager = phone_manager
 
     def runThread(self):
+        self.__notifyCreation()
         while not self.__close:
             try:
                 message = self.recv()
                 if self.filter.filter(message):
-                    message = '%s:%s' % (self.getIp(), message)
+                    message = '%s:%s' % (self.getId(), message)
                     self.server.send(message)
             except socket.error:
                 self.closeObject()
@@ -86,12 +88,22 @@ class Phone(object):
     def getIp(self):
         return self.__ip_address
 
+    def getId(self):
+        return self.__phone_id
+
     def closeObject(self):
         self.__closeThread()
-        self.phone_manager.deletePhone(self.getIp())
+        self.phone_manager.deletePhone(self.getId())
 
     def getEncryptor(self):
         return self.__encryptor
+
+    def __notifyCreation(self):
+        end_line = self.settings.getSetting('end_line')
+        my_id = self.getId()
+        notification_message = self.settings.getSetting('id_notification_message')
+        notification_message += 'session_id:%s%s' % (my_id, end_line)
+        self.server.send(notification_message)
 
     def __closeThread(self):
         self.__close = True
