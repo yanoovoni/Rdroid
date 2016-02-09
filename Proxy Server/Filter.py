@@ -10,23 +10,15 @@ from Printer import *
 from Singleton import *
 #endregion -----------------Imports-----------------
 
-#region -----------------Constants-----------------
-
-#endregion -----------------Constants-----------------
-
 #region -----------------Class-----------------
 
 
 class Filter(object):
+    # An object that is used for filtering the messages that do not fit the protocol.
     __metaclass__ = Singleton
 
-    def __init__(self):
-        pass
-
     def filter(self, message):
-        return True
-
-    def isLoginMessage(self, message):
+        # Returns whether the given message fits the protocol or does not.
         return True
 
 

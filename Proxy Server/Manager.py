@@ -8,14 +8,11 @@
 from Singleton import *
 from Printer import *
 from Settings import *
+from Server import *
 from PhoneListener import *
 from PhoneManager import *
 from threading import Thread
 #endregion -----------------Imports-----------------
-
-#region -----------------Constants-----------------
-
-#endregion -----------------Constants-----------------
 
 #region -----------------Class-----------------
 
@@ -24,6 +21,7 @@ class Manager(object):
     __metaclass__ = Singleton
     settings = Settings()
     printer = Printer()
+    server = Server()
     phone_listener = PhoneListener()
     phone_manager = PhoneManager()
     __close = False
@@ -39,16 +37,16 @@ class Manager(object):
             user_input = raw_input()
             self.__inputResponse(user_input)
 
-    def __inputResponse(self, user_input):
-        if user_input == 'stop':
-            self.closeThreads()
-
     def closeThreads(self):
         self.__closeThread()
         self.phone_listener.closeThread()
         self.phone_manager.closeThread()
         self.server.closeThreads()
         return
+
+    def __inputResponse(self, user_input):
+        if user_input == 'stop':
+            self.closeThreads()
 
     def __closeThread(self):
         self.__close = True

@@ -9,10 +9,6 @@ from Singleton import *
 import time
 #endregion -----------------Imports-----------------
 
-#region -----------------Constants-----------------
-
-#endregion -----------------Constants-----------------
-
 #region -----------------Class-----------------
 
 
@@ -22,14 +18,14 @@ class Printer(object):
     def __init__(self):
         print 'Current time:%s' % (self.__getFullTime())
 
+    def printMessage(self, class_name, message):
+        print '%s-%s: %s' % (class_name, self.__getTime(), message)
+
     def __getTime(self):
         return time.strftime("%H:%M:%S", time.strptime(time.ctime()))
 
     def __getFullTime(self):
         return time.strftime("%a %b %d %H:%M:%S %Y", time.strptime(time.ctime()))
-
-    def printMessage(self, class_name, message):
-        print '%s-%s: %s' % (class_name, self.__getTime(), message)
 
 
 #endregion -----------------Class-----------------

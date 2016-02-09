@@ -11,10 +11,6 @@ from Printer import *
 from threading import *
 #endregion -----------------Imports-----------------
 
-#region -----------------Constants-----------------
-
-#endregion -----------------Constants-----------------
-
 #region -----------------Class-----------------
 
 
@@ -65,7 +61,6 @@ class Settings(object):
                     setting = setting.split('=', 1)
                     setting[1] = setting[1].replace('<CRLF>', '\r\n')
                     self.__settings_dict[setting[0]] = setting[1]
-        return
 
     def __updateSettingsFile(self):
         new_settings_text = ''
@@ -90,7 +85,6 @@ class Settings(object):
         for i in xrange(10):
             self.__read_lock.release()
         self.__write_lock.release()
-        return
 
 
 #endregion -----------------Class-----------------

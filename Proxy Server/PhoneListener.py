@@ -12,10 +12,6 @@ from PhoneManager import *
 from socket import *
 #endregion -----------------Imports-----------------
 
-#region -----------------Constants-----------------
-
-#endregion -----------------Constants-----------------
-
 #region -----------------Class-----------------
 
 
@@ -24,7 +20,7 @@ class PhoneListener(object):
     settings = Settings()
     printer = Printer()
     phone_manager = PhoneManager()
-    close = False
+    __close = False
 
     def __init__(self):
         self.my_ip = self.settings.getSetting('my_ip')
@@ -34,14 +30,14 @@ class PhoneListener(object):
 
     def runThread(self):
         self.listen_socket.listen(10)
-        while not self.close:
+        while not self.__close:
             client_socket, client_address = self.listen_socket.accept()
             client_ip = client_address[0]
             self.phone_manager.addPhone(client_socket, client_ip)
         self.listen_socket.close()
 
     def closeThread(self):
-        self.close = True
+        self.__close = True
         accept_trigger_socket = socket()
         accept_trigger_socket.connect(('127.0.0.1', self.my_port))
         accept_trigger_socket.close()

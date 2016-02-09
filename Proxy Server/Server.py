@@ -14,10 +14,6 @@ import time
 import socket
 #endregion -----------------Imports-----------------
 
-#region -----------------Constants-----------------
-
-#endregion -----------------Constants-----------------
-
 #region -----------------Class-----------------
 
 
@@ -43,6 +39,12 @@ class Server(object):
         output_sender_thread.setDaemon(True)
         output_sender_thread.start()
 
+    def closeThreads(self):
+        self.__close = True
+        self.send('closing')
+        self.__server_socket.close()
+        self.__addInput('closing')
+
     def send(self, message):
         self.__output_queue.put(message)
 
@@ -50,12 +52,6 @@ class Server(object):
         while self.__input_queue.empty():
             time.sleep(0.1)
         return self.__input_queue.get()
-
-    def closeThreads(self):
-        self.__close = True
-        self.send('closing')
-        self.__server_socket.close()
-        self.__addInput('closing')
 
     def __serverListenerThread(self):
         buffer_size = int(self.settings.getSetting('buffer_size'))

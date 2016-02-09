@@ -14,10 +14,6 @@ from IDGenerator import *
 from threading import Thread
 #endregion -----------------Imports-----------------
 
-#region -----------------Constants-----------------
-
-#endregion -----------------Constants-----------------
-
 #region -----------------Class-----------------
 
 
@@ -59,6 +55,9 @@ class PhoneManager(object):
                 else:
                     self.__notifyDeletedPhone(phone_id)
 
+    def closeThread(self):
+        self.__close = True
+
     def __addPhoneToDict(self, phone):
         phone.establishConnection()
         phone_ip_address = phone.getIp()
@@ -74,9 +73,6 @@ class PhoneManager(object):
         notification_message = self.settings.getSetting('disconnect_notification_message')
         notification_message += 'session_id:%s%s' % (phone_id, end_line)
         self.server.send(notification_message)
-
-    def closeThread(self):
-        self.__close = True
 
 
 #endregion -----------------Class-----------------

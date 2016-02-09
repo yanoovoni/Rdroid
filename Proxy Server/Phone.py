@@ -11,13 +11,8 @@ from EncryptionKeyMaker import *
 from Encryptor import *
 from Filter import *
 from Server import *
-from Protocol import *
 import socket
 #endregion -----------------Imports-----------------
-
-#region -----------------Constants-----------------
-
-#endregion -----------------Constants-----------------
 
 #region -----------------Class-----------------
 
