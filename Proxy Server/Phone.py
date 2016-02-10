@@ -40,13 +40,10 @@ class Phone(object):
         # The method that the thread runs.
         self.__notifyCreation()
         while not self.__close:
-            try:
-                message = self.recv()
-                if self.filter.filter(message):
-                    message = '%s:%s' % (self.getID(), message)
-                    self.server.send(message)
-            except socket.error:
-                self.closeObject()
+            message = self.recv()
+            if self.filter.filter(message):
+                message = '%s:%s' % (self.getID(), message)
+                self.server.send(message)
 
     def rawSend(self, message):
         # Sends a message to the phone.
@@ -56,7 +53,11 @@ class Phone(object):
     def rawRecv(self):
         # Receives a message from the phone.
         phone_socket = self.getSocket()
-        return phone_socket.recv(int(self.settings.getSetting('buffer_size')))
+        try:
+            message = phone_socket.recv(int(self.settings.getSetting('buffer_size')))
+        except socket.error:
+            self.closeObject()
+        return message
 
     def send(self, message):
         # encrypts and then sends a message to the phone.

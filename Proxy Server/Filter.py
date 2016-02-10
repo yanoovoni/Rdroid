@@ -19,7 +19,11 @@ class Filter(object):
 
     def filter(self, message):
         # Returns whether the given message fits the protocol or does not.
-        return True
+        if message is None:
+            return False
+        if message.startswith('Rdroid CLIENT\r\n'):
+            return True
+        return False
 
 
 #endregion -----------------Class-----------------

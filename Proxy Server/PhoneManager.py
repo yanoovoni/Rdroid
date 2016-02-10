@@ -68,7 +68,7 @@ class PhoneManager(object):
         # A method that is supposed to run on a new thread that adds a phone to the dictionary and start it's thread.
         phone.establishConnection()
         phone_ip_address = phone.getIp()
-        phone_id = phone.getId()
+        phone_id = phone.getID()
         self.printer.printMessage(self.__class__.__name__, 'ip: %s, id: %s' % (phone_ip_address, phone_id))
         self.__phone_dict[phone_id] = phone
         phone_thread = Thread(name=('phone_thread-%s' % phone_id), target=phone.runThread)

@@ -11,4 +11,4 @@ sock.connect(('127.0.0.1', int(settings.getSetting('my_port'))))
 print 'connected'
 sock.send(encryptor.encrypt('you are a faggot'))
 print 'sent'
-print sock.recv(1028)
+print encryptor.decrypt(sock.recv(1028))
