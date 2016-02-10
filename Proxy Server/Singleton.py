@@ -1,6 +1,6 @@
 #region -----------------Info-----------------
-#Name:
-#Version:
+#Name: Singleton
+#Version: 1.0
 #By: Yaniv Sharon
 #endregion -----------------Info-----------------
 
@@ -8,6 +8,7 @@
 
 
 class Singleton(type):
+    # A metaclass to all of the singleton classes that makes them be singletons.
     _instances = {}
 
     def __call__(cls, *args, **kwargs):

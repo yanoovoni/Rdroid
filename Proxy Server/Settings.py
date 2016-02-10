@@ -1,6 +1,6 @@
 #region -----------------Info-----------------
-#Name:
-#Version:
+#Name: Settings
+#Version: 1.0
 #By: Yaniv Sharon
 #endregion -----------------Info-----------------
 
@@ -15,13 +15,14 @@ from threading import *
 
 
 class Settings(object):
+    # An object that is used as an interface to the settings files.
     __metaclass__ = Singleton
-    __settings_location = os.path.dirname(os.path.abspath(__file__)) + '\\Files\\server settings.cfg'
-    __default_settings_location = os.path.dirname(os.path.abspath(__file__)) + '\\Files\\default server settings.cfg'
-    __settings_dict = {}
     __printer = Printer()
-    __read_lock = Semaphore(10)
-    __write_lock = Lock()
+    __settings_location = os.path.dirname(os.path.abspath(__file__)) + '\\Files\\server settings.cfg' # A string of the location of the settings file.
+    __default_settings_location = os.path.dirname(os.path.abspath(__file__)) + '\\Files\\default server settings.cfg' # A string of the location of the default settings file.
+    __settings_dict = {} # A dictionary that remembers the settings from the settings file.
+    __read_lock = Semaphore(10) # A semaphore used to make sure that there are no reading threads running when a writing thread is running.
+    __write_lock = Lock() # A lock used to make sure that no writing threads are running at the same time.
 
     def __init__(self):
         if os.path.isfile(self.__settings_location):
@@ -33,12 +34,14 @@ class Settings(object):
             self.__printer.printMessage(self.__class__.__name__, 'No settings files found. The program will likely crush soon.')
 
     def getSetting(self, key):
+        # Returns the requested settings.
         if self.__settings_dict.has_key(key):
             return self.__settings_dict[key]
         else:
             return None
 
     def setSetting(self, key, value):
+        # Sets the requested setting to given value.
         if self.__settings_dict.has_key(key):
             self.__settings_dict[key] = value
             self.__updateSettingsFile()
@@ -47,6 +50,7 @@ class Settings(object):
             return False
 
     def __loadSettings(self, location=__settings_location):
+        # Loads the settings from the settings file to the settings dictionary.
         self.__write_lock.acquire()
         self.__read_lock.acquire()
         self.__write_lock.release()
@@ -63,6 +67,7 @@ class Settings(object):
                     self.__settings_dict[setting[0]] = setting[1]
 
     def __updateSettingsFile(self):
+        # Writes the current settings to the settings file.
         new_settings_text = ''
         settings_template = open(self.__default_settings_location, 'r')
         settings_list = settings_template.read().split('\n')

@@ -1,6 +1,6 @@
 #region -----------------Info-----------------
-#Name:
-#Version:
+#Name: Phone Manager
+#Version: 1.0
 #By: Yaniv Sharon
 #endregion -----------------Info-----------------
 
@@ -23,28 +23,33 @@ class PhoneManager(object):
     printer = Printer()
     server = Server()
     id_generator = IDGenerator()
-    __phone_dict = {}
-    __close = False
+    __phone_dict = {} # A dictionary that is used to remember the connected phones sessions by session IDs.
+    __close = False # Specifies whether the thread that this object runs should close.
 
     def addPhone(self, phone_socket, phone_ip_address):
+        # Starts a thread that adds a phone to the phone dictionary.
         phone = Phone(phone_socket, phone_ip_address, self.id_generator.generateId(), self)
-        add_phone_thread = Thread(name='add_phone_thread', target=self.__addPhoneToDict, args=[phone])
+        add_phone_thread = Thread(name='add_phone_thread', target=self.__addPhoneToDictThread, args=[phone])
         add_phone_thread.setDaemon(True)
         add_phone_thread.start()
 
     def deletePhone(self, phone_id):
+        # Removes a phone from the dictionary.
         phone_dict = self.__phone_dict
         if phone_dict.has_key(phone_id):
             del phone_dict[phone_id]
 
     def getPhone(self, phone_id):
-        self.printer.printMessage(self.__class__.__name__, 'phone_dict: %s' % (self.__phone_dict))
-        if self.__phone_dict.has_key(phone_id):
-            phone = self.__phone_dict[phone_id]
+        # Returns the phone that has the given ID.
+        phone_dict = self.__phone_dict
+        self.printer.printMessage(self.__class__.__name__, 'phone_dict: %s' % phone_dict)
+        if phone_dict.has_key(phone_id):
+            phone = phone_dict[phone_id]
             return phone
         return None
 
     def runThread(self):
+        # The main method of this object that is supposed to run on a new thread.
         while not self.__close:
             server_message = self.server.recv()
             if ':' in server_message:
@@ -56,9 +61,11 @@ class PhoneManager(object):
                     self.__notifyDeletedPhone(phone_id)
 
     def closeThread(self):
+        # Tells the thread of this object to close.
         self.__close = True
 
-    def __addPhoneToDict(self, phone):
+    def __addPhoneToDictThread(self, phone):
+        # A method that is supposed to run on a new thread that adds a phone to the dictionary and start it's thread.
         phone.establishConnection()
         phone_ip_address = phone.getIp()
         phone_id = phone.getId()
@@ -69,6 +76,7 @@ class PhoneManager(object):
         phone_thread.start()
 
     def __notifyDeletedPhone(self, phone_id):
+        # Notifies the server of phones that were deleted from the dictionary (most likely disconnected) and their IDs.
         end_line = self.settings.getSetting('end_line')
         notification_message = self.settings.getSetting('disconnect_notification_message')
         notification_message += 'session_id:%s%s' % (phone_id, end_line)

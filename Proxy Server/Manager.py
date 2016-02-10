@@ -1,6 +1,6 @@
 #region -----------------Info-----------------
-#Name:
-#Version:
+#Name: Manager
+#Version: 1.0
 #By: Yaniv Sharon
 #endregion -----------------Info-----------------
 
@@ -24,9 +24,10 @@ class Manager(object):
     server = Server()
     phone_listener = PhoneListener()
     phone_manager = PhoneManager()
-    __close = False
+    __close = False # Specifies whether the thread that this object runs should close.
 
     def run(self):
+        # Runs the main code of the object.
         phone_listener_thread = Thread(name='phone_listener_thread', target=self.phone_listener.runThread)
         phone_listener_thread.setDaemon(True)
         phone_listener_thread.start()
@@ -38,6 +39,7 @@ class Manager(object):
             self.__inputResponse(user_input)
 
     def closeThreads(self):
+        # Tells the open threads to close.
         self.__closeThread()
         self.phone_listener.closeThread()
         self.phone_manager.closeThread()
@@ -45,10 +47,12 @@ class Manager(object):
         return
 
     def __inputResponse(self, user_input):
+        # Analizes the given input and calls the matching method.
         if user_input == 'stop':
             self.closeThreads()
 
     def __closeThread(self):
+        # Tells the thread of this object to close.
         self.__close = True
 
 #endregion -----------------Class-----------------

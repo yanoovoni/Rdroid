@@ -1,6 +1,6 @@
 #region -----------------Info-----------------
-#Name:
-#Version:
+#Name: Filter
+#Version: 1.0
 #By: Yaniv Sharon
 #endregion -----------------Info-----------------
 

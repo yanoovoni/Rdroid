@@ -1,6 +1,6 @@
 #region -----------------Info-----------------
-#Name:
-#Version:
+#Name: Phone Listener
+#Version: 1.0
 #By: Yaniv Sharon
 #endregion -----------------Info-----------------
 
@@ -16,11 +16,12 @@ from socket import *
 
 
 class PhoneListener(object):
+    # An object that simplifies the use of the listening socket of this proxy server.
     __metaclass__ = Singleton
     settings = Settings()
     printer = Printer()
     phone_manager = PhoneManager()
-    __close = False
+    __close = False # Specifies whether the thread that this object runs should close.
 
     def __init__(self):
         self.my_ip = self.settings.getSetting('my_ip')
@@ -29,6 +30,7 @@ class PhoneListener(object):
         self.listen_socket.bind((self.my_ip, self.my_port))
 
     def runThread(self):
+        # The main method that is supposed to run on a thread.
         self.listen_socket.listen(10)
         while not self.__close:
             client_socket, client_address = self.listen_socket.accept()
@@ -37,6 +39,7 @@ class PhoneListener(object):
         self.listen_socket.close()
 
     def closeThread(self):
+        # Tells the thread of this object to close.
         self.__close = True
         accept_trigger_socket = socket()
         accept_trigger_socket.connect(('127.0.0.1', self.my_port))
