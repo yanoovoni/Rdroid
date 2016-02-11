@@ -53,8 +53,11 @@ class Phone(object):
     def rawRecv(self):
         # Receives a message from the phone.
         phone_socket = self.getSocket()
+        message = ''
         try:
             message = phone_socket.recv(int(self.settings.getSetting('buffer_size')))
+            if message == '':
+                self.closeObject()
         except socket.error:
             self.closeObject()
         return message
@@ -67,7 +70,8 @@ class Phone(object):
     def recv(self):
         # Receives a message from the phone and decrypts it.
         encryptor = self.getEncryptor()
-        return encryptor.decrypt(self.rawRecv())
+        message = encryptor.decrypt(self.rawRecv())
+        return message
 
     def establishConnection(self):
         # Handles important early communication with the phone (sets encryption).

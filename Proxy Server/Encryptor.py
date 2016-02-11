@@ -37,6 +37,6 @@ class Encryptor(object):
 
     def __removePadding(self, message):
         # Removes padding from the message.
-        pass
+        return message
 
 #endregion -----------------Class-----------------

@@ -37,6 +37,7 @@ class PhoneManager(object):
         # Removes a phone from the dictionary.
         phone_dict = self.__phone_dict
         if phone_dict.has_key(phone_id):
+            self.__notifyDeletedPhone(phone_id)
             del phone_dict[phone_id]
 
     def getPhone(self, phone_id):
