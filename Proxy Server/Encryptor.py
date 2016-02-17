@@ -14,6 +14,8 @@ from Printer import *
 
 class Encryptor(object):
     # An object that simplifies the use of symmetric keys.
+    printer = Printer()
+    settings = Settings()
     __encryption_key = None # The symmetric key that the object uses.
 
     def __init__(self, encryption_key):
@@ -32,11 +34,12 @@ class Encryptor(object):
 
     def __addPadding(self, message):
         # Adds padding to the message
-        padding = (len(message) % 16) * '\x08'
-        return message + padding
+        padded_message = message.ljust(len(message) + (len(message) % 16), ' ')
+        return padded_message
 
     def __removePadding(self, message):
         # Removes padding from the message.
-        return message
+        real_message = message.lstrip(' ')
+        return real_message
 
 #endregion -----------------Class-----------------
