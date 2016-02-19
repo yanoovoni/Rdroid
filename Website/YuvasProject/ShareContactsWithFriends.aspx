@@ -11,11 +11,10 @@
     <div>
     <center style="height: 380px">
     
-        <asp:ObjectDataSource ID="ObjectDataSource1" runat="server">
-        </asp:ObjectDataSource>
         <br />
         <br />
-        <asp:CheckBoxList ID="CheckBoxList1" runat="server">
+        <asp:CheckBoxList ID="CheckBoxList1" runat="server" DataTextField="FriendNAME" 
+            DataValueField="UserID">
         </asp:CheckBoxList>
     
     </center>

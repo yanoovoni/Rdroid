@@ -2,6 +2,8 @@ package com.yanoonigmail.rdroid;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import java.net.Socket;
+import java.net.InetSocketAddress;
 
 
 /**
@@ -9,14 +11,15 @@ import android.content.SharedPreferences;
  */
 public class Server {
     public Server(){
-        SharedPreferences sharedPref = .getPreferences(Context.MODE_PRIVATE);
     }
 
     /**
      * Connects to the server.
      */
     public void connect(){
-
+        InetSocketAddress server_address = new InetSocketAddress("127.0.0.1", 9000);
+        Socket server_socket = new Socket();
+        server_socket.connect(server_address);
     }
 
     /**
@@ -25,9 +28,9 @@ public class Server {
      * @param password
      * @return
      */
-    public Integer tryLogin(String email, String password){
-        if (!isEmailValid(email)){
-            return ;
+    public Boolean tryLogin(String email, String password){
+        if (!isEmailValid(email) || !isPassswordVaild(password)){
+            return false;
         }
     }
 

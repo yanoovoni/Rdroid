@@ -92,6 +92,31 @@ public class UserService
 
     }
 
+    public DataSet GetFriends(UserDetails user)
+    {
+        OleDbCommand myCmd = new OleDbCommand("ShowFriends", myConnection);
+        myCmd.CommandType = CommandType.StoredProcedure;
+        OleDbDataAdapter adapter = new OleDbDataAdapter(myCmd);
+        DataSet dataset = new DataSet();
+
+        OleDbParameter parameter;
+        parameter = myCmd.Parameters.Add("@UserID", OleDbType.BSTR);
+        parameter.Direction = ParameterDirection.Input;
+        parameter.Value = user.userID;
+
+        try
+        {
+            adapter.Fill(dataset, "Users");
+            dataset.Tables["Users"].PrimaryKey = new DataColumn[] { dataset.Tables["Users"].Columns["UserID"] };
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        return dataset;
+
+    }
+
     //public DataSet getUsersAndCities()
     //{
     //    OleDbCommand myCmd = new OleDbCommand("allFromUser&Cities", myConnection);
