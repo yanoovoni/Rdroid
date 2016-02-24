@@ -15,8 +15,6 @@ public class UserService
     {
         string connectionString = Connect.getConnectionString();
         myConnection = new OleDbConnection(connectionString);
-        
-
     }
     public void InsertUser(UserDetails userDetails)
     {
@@ -115,6 +113,152 @@ public class UserService
         }
         return dataset;
 
+    }
+
+    public DataSet GetContacts(UserDetails user)
+    {
+        OleDbCommand myCmd = new OleDbCommand("ShowContacts", myConnection);
+        myCmd.CommandType = CommandType.StoredProcedure;
+        OleDbDataAdapter adapter = new OleDbDataAdapter(myCmd);
+        DataSet dataset = new DataSet();
+
+        OleDbParameter parameter;
+        parameter = myCmd.Parameters.Add("@UserID", OleDbType.BSTR);
+        parameter.Direction = ParameterDirection.Input;
+        parameter.Value = user.userID;
+
+        try
+        {
+            adapter.Fill(dataset, "Contacts");
+            dataset.Tables["Contacts"].PrimaryKey = new DataColumn[] { dataset.Tables["Contacts"].Columns["UserIDBelong"] };
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        return dataset;
+    }
+    public DataSet GetFriendsAndContacts(UserDetails user)
+    {
+        OleDbParameter parameter;
+        OleDbCommand myCmd = new OleDbCommand("ShowFriends", myConnection);
+        myCmd.CommandType = CommandType.StoredProcedure;
+        OleDbDataAdapter adapterFriends = new OleDbDataAdapter(myCmd);
+       
+        
+        parameter = myCmd.Parameters.Add("@UserID", OleDbType.BSTR);
+        parameter.Direction = ParameterDirection.Input;
+        parameter.Value = user.userID;
+
+        myCmd = new OleDbCommand("GetContacts", myConnection);
+        myCmd.CommandType = CommandType.StoredProcedure;
+        OleDbDataAdapter adapterContacts = new OleDbDataAdapter(myCmd);
+        parameter = myCmd.Parameters.Add("@UserID", OleDbType.BSTR);
+        parameter.Direction = ParameterDirection.Input;
+        parameter.Value = user.userID;
+        
+        
+        DataSet dataSet = new DataSet();
+
+        try
+        {
+            myConnection.Open();
+            adapterFriends.Fill(dataSet, "Friends");
+            dataSet.Tables["Friends"].PrimaryKey = new DataColumn[] { dataSet.Tables["Friends"].Columns["UserID"] };
+            adapterContacts.Fill(dataSet, "Contacts");
+            dataSet.Tables["Contacts"].PrimaryKey = new DataColumn[] { dataSet.Tables["Contacts"].Columns["ID"] };
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            myConnection.Close();
+        }
+        return dataSet;
+    }
+
+    public void InsertContact( ContactDetails contactDetais)//הפעולה מאפשרת להוסיף מידע לתוך טבלת אנשי הקשר
+    {
+        OleDbCommand myCmd = new OleDbCommand("InsertIntoContacts", myConnection);
+        myCmd.CommandType = CommandType.StoredProcedure;
+        //INSERT INTO Contacts ( UserIDBelong, PhoneNumber, FirstName, LastName, Email )
+       // VALUES(@UserIDBelong, @PhoneNumber, @FirstName, @LastName, @Email);
+
+        OleDbParameter objParam;
+
+        objParam = myCmd.Parameters.Add("@UserIDBelong", OleDbType.Integer);
+        objParam.Direction = ParameterDirection.Input;
+        objParam.Value = contactDetais.userIDbelong;
+
+        objParam = myCmd.Parameters.Add("@PhoneNumber", OleDbType.BSTR);
+        objParam.Direction = ParameterDirection.Input;
+        objParam.Value = contactDetais.phoneNumber;
+
+        objParam = myCmd.Parameters.Add("@FirstName", OleDbType.BSTR);
+        objParam.Direction = ParameterDirection.Input;
+        objParam.Value = contactDetais.firstName;
+
+        objParam = myCmd.Parameters.Add("@LastName", OleDbType.BSTR);
+        objParam.Direction = ParameterDirection.Input;
+        objParam.Value = contactDetais.lastName;
+
+        objParam = myCmd.Parameters.Add("@Email", OleDbType.BSTR);
+        objParam.Direction = ParameterDirection.Input;
+        objParam.Value = contactDetais.email;
+
+        try
+        {
+            myConnection.Open();
+            myCmd.ExecuteNonQuery();
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            myConnection.Close();
+        }
+    }
+
+    public ContactDetails GetContactsByID(int IDmy)//הפעולה מחזירה פרתי איש קשר על פי מספרו בטבלה
+    {
+        OleDbCommand myCmd = new OleDbCommand("ReturnContactByID", myConnection);
+        myCmd.CommandType = CommandType.StoredProcedure;
+        OleDbDataReader reader;
+        DataSet dataset = new DataSet();
+        ContactDetails contact = new ContactDetails();
+        
+        OleDbParameter parameter;
+        parameter = myCmd.Parameters.Add("@ID", OleDbType.BSTR);
+        parameter.Direction = ParameterDirection.Input;
+        parameter.Value = IDmy;
+
+        try
+        {
+            myConnection.Open();
+            reader = myCmd.ExecuteReader();
+            while (reader.Read())
+            {
+                contact.id = IDmy;
+                contact.phoneNumber = reader["PhoneNumber"].ToString();
+                contact.firstName = reader["FirstName"].ToString();
+                contact.lastName = reader["LastName"].ToString();
+                contact.email = reader["Email"].ToString();
+            }
+
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            myConnection.Close();
+        }
+        return contact;
     }
 
     //public DataSet getUsersAndCities()

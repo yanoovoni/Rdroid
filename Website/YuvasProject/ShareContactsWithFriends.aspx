@@ -13,9 +13,20 @@
     
         <br />
         <br />
-        <asp:CheckBoxList ID="CheckBoxList1" runat="server" DataTextField="FriendNAME" 
+        <asp:CheckBoxList ID="CheckBoxListFriends" runat="server" DataTextField="FriendNAME" 
             DataValueField="UserID">
         </asp:CheckBoxList>
+    
+        <br />
+        <br />
+        <asp:CheckBoxList ID="CheckBoxListContacts" runat="server" 
+            onselectedindexchanged="CheckBoxListContacts_SelectedIndexChanged">
+        </asp:CheckBoxList>
+        <br />
+        <br />
+        <asp:Button ID="Button1" runat="server" onclick="Button1_Click" Text="Button" />
+    
+        <asp:Label ID="Label1" runat="server" Text="Label"></asp:Label>
     
     </center>
     </div>
