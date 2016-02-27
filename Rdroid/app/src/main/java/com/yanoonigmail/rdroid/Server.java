@@ -19,8 +19,13 @@ public class Server {
     private InetSocketAddress mServerAddress;
     private EncryptionKeyMaker mEncryptionKeyMaker;
     private Encryptor mEncryptor;
+    private static Server ourInstance = new Server();
 
-    public Server() {
+    public static Server getInstance() {
+        return ourInstance;
+    }
+
+    private Server() {
         InetAddress ip_address = InetAddress.getLoopbackAddress();
         mServerAddress = new InetSocketAddress(ip_address, 9000);
         mServerSocket = new Socket();
