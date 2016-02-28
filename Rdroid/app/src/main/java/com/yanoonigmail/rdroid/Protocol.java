@@ -1,16 +1,58 @@
 package com.yanoonigmail.rdroid;
 
-import android.content.Context;
+import android.content.res.Resources;
+
+import static com.yanoonigmail.rdroid.R.string.protocol_client_header;
+import static com.yanoonigmail.rdroid.R.string.protocol_client_login_announcement;
+import static com.yanoonigmail.rdroid.R.string.protocol_client_login_password;
+import static com.yanoonigmail.rdroid.R.string.protocol_client_login_email;
+import static com.yanoonigmail.rdroid.R.string.protocol_parameter_separator;
+import static com.yanoonigmail.rdroid.R.string.protocol_server_header;
+import static com.yanoonigmail.rdroid.R.string.protocol_server_login_announcement;
+import static com.yanoonigmail.rdroid.R.string.protocol_server_login_bool;
+import static com.yanoonigmail.rdroid.R.string.protocol_server_login_success;
 
 /**
- * Created by yanoo on 27-Feb-16.
+ * Created by Yaniv on 27-Feb-16.
  */
 public class Protocol {
-    public static String line_separator = System.getProperty("line.separator");
-    public static String loginRequest(String username, String password) {
+    private static String line_separator = System.getProperty("line.separator");
+    private static Resources resources = new LoginActivity().getResources();
+
+    public static boolean isServerMessage(String message) {
+        return message.startsWith(resources.getString(protocol_server_header));
+    }
+
+    public static String loginRequest(String email, String password) {
         String message;
-        message = new LoginActivity().getResources().getString(R.string.protocol_header);
-        //to do
+        message = resources.getString(protocol_client_header) +
+                line_separator;
+        message += resources.getString(protocol_client_login_announcement) +
+                line_separator;
+        message += resources.getString(protocol_client_login_email) +
+                resources.getString(protocol_parameter_separator) +
+                email +
+                line_separator;
+        message += resources.getString(protocol_client_login_password) +
+                resources.getString(protocol_parameter_separator) +
+                password +
+                line_separator;
         return message;
+    }
+
+    public static boolean loginResponseBool(String login_response) {
+        if (!isServerMessage(login_response))
+            return false;
+        String[] line_array = login_response.split(line_separator);
+        if (line_array.length != 3)
+            return false;
+        if (!line_array[1].equals(resources.getString(protocol_server_login_announcement)))
+            return false;
+        if (!line_array[2].startsWith(resources.getString(protocol_server_login_bool) +
+                resources.getString(protocol_parameter_separator)))
+            return false;
+        String[] line3_array;
+        line3_array = line_array[2].split(resources.getString(protocol_parameter_separator));
+        return line3_array[1].equals(resources.getString(protocol_server_login_success));
     }
 }

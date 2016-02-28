@@ -15,5 +15,14 @@
         completions."
     </string>
     <string name="user_data">user_data</string>
-    <string name="protocol_header">Rdroid CLIENT</string>
+    <string name="protocol_client_header">Rdroid CLIENT</string>
+    <string name="protocol_server_header">Rdroid SERVER</string>
+    <string name="protocol_parameter_separator">:</string>
+    <string name="protocol_client_login_announcement">LOGIN</string>
+    <string name="protocol_client_login_email">email</string>
+    <string name="protocol_client_login_password">password</string>
+    <string name="protocol_server_login_announcement">LOGIN</string>
+    <string name="protocol_server_login_bool">result</string>
+    <string name="protocol_server_login_success">success</string>
+    <string name="protocol_server_login_failure">failure</string>
 </resources>

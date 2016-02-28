@@ -100,8 +100,10 @@ public class Server {
         if (!isEmailValid(email) || !isPassswordVaild(password)) {
             return false;
         }
-        // to do
-        return true;
+        String login_request = Protocol.loginRequest(email, password);
+        send(login_request);
+        String login_response = recv();
+        return Protocol.loginResponseBool(login_response);
     }
 
     private boolean isEmailValid(String email) {

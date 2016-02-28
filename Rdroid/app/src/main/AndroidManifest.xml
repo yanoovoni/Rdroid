@@ -17,12 +17,12 @@
             android:name=".LoginActivity"
             android:label="@string/title_activity_login" />
         <!-- Declaring broadcast receiver for BOOT_COMPLETED event. -->
-        <receiver android:name="com.yanoonigmail.rdroid.BootupReceiver" android:enabled="true" android:exported="false">
+        <receiver android:name=".BootUpReceiver" android:enabled="true" android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
-        <service android:name="com.yanoonigmail.rdroid.BootupService" >
+        <service android:name=".BootUpService" >
         </service>
     </application>
 </manifest>

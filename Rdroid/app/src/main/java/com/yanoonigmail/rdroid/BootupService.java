@@ -12,7 +12,7 @@ import static com.yanoonigmail.rdroid.R.string.user_data;
 /**
  * Created by Yaniv on 24-Feb-16.
  */
-public class BootupService extends Service {
+public class BootUpService extends Service {
     private String mUsername;
     private String mPassword;
 
