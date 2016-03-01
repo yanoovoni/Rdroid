@@ -8,6 +8,8 @@ import android.content.Intent;
  * Created by yanoo on 24-Feb-16.
  */
 public class BootUpReceiver extends BroadcastReceiver {
+    public BootUpReceiver() {
+        }
 
     @Override
     public void onReceive(Context context, Intent intent) {

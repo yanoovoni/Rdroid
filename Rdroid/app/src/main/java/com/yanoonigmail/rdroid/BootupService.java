@@ -16,6 +16,9 @@ public class BootUpService extends Service {
     private String mUsername;
     private String mPassword;
 
+    public BootUpService() {
+    }
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;
