@@ -37,7 +37,7 @@ public class TaskManager extends Service {
             mPassword = preferences.getString("password", "");
             mServer.tryLogin(mEmail, mPassword);
         }
-        manageTasks();
+        /**manageTasks();**/
     }
 
     @Override
@@ -50,7 +50,7 @@ public class TaskManager extends Service {
         mServer = Server.getInstance();
         mServer.connect();
     }
-
+/**
     private void manageTasks() {
         mManageTasksThread = new Thread(new Runnable() {
             public void run() {
@@ -74,4 +74,5 @@ public class TaskManager extends Service {
     private void startTask(String task) {
 
     }
+ **/
 }

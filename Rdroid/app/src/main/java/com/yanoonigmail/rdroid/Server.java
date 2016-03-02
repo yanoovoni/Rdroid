@@ -2,6 +2,7 @@ package com.yanoonigmail.rdroid;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -9,6 +10,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.InetSocketAddress;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.lang.Thread;
 
 
 /**
@@ -22,37 +25,61 @@ public class Server {
     private boolean mConnected = false;
     private boolean mLoggedIn = false;
     private static Server ourInstance = new Server();
+    private Thread mManageTasksThread;
 
     public static Server getInstance() {
         return ourInstance;
     }
 
     private Server() {
-        InetAddress ip_address = InetAddress.getLoopbackAddress();
-        mServerAddress = new InetSocketAddress(ip_address, 9000);
-        mServerSocket = new Socket();
-        mEncryptionKeyMaker = new EncryptionKeyMaker();
-        connect();
+        byte[] ip_address_byte_array = new byte[4];
+        String ip_string = "79.182.190.155";
+        String[] stringed_ip_address_byte_array = ip_string.split("\\.");
+        for (int i = 0; i < stringed_ip_address_byte_array.length; i++) {
+            String stringed_byte = stringed_ip_address_byte_array[i];
+            ip_address_byte_array[i] = (byte) (Integer.valueOf(stringed_byte) & 0xFF);
+        }
+        try {
+            InetAddress ip_address = InetAddress.getByAddress(ip_address_byte_array);
+            mServerAddress = new InetSocketAddress(ip_address, 9001);
+            mServerSocket = new Socket();
+            mEncryptionKeyMaker = new EncryptionKeyMaker();
+            connect();
+        }
+        catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
      * Connects to the server.
      */
     public void connect() {
-        if (!mConnected) {
-            boolean connected = false;
-            while (!connected) {
-                connected = true;
-                try {
-                    mServerSocket.connect(mServerAddress);
-                } catch (IOException e) {
-                    connected = false;
-                    e.printStackTrace();
+        mManageTasksThread = new Thread(new Runnable() {
+            public void run() {
+                if (!mConnected) {
+                    boolean connected = false;
+                    while (!connected) {
+                        connected = true;
+                        try {
+                            mServerSocket.connect(mServerAddress);
+                        } catch (IOException e) {
+                            connected = false;
+                            e.printStackTrace();
+                            try {
+                                Thread.sleep(5000);
+                            }
+                            catch (InterruptedException e2) {
+                                e2.printStackTrace();
+                            }
+                        }
+                    }
+                    mEncryptor = mEncryptionKeyMaker.createEncryptor(mServerSocket);
+                    mConnected = true;
                 }
             }
-            mEncryptor = mEncryptionKeyMaker.createEncryptor(mServerSocket);
-            mConnected = true;
-        }
+        });
+        mManageTasksThread.start();
     }
 
     public void send(String message) {
@@ -102,9 +129,6 @@ public class Server {
     }
 
     public boolean tryLogin(String email, String password) {
-        if (!isEmailValid(email) || !isPassswordVaild(password)) {
-            return false;
-        }
         String login_request = Protocol.loginRequest(email, password);
         send(login_request);
         String login_response = recv();
@@ -119,13 +143,5 @@ public class Server {
 
     public boolean isLoggedIn() {
         return mLoggedIn;
-    }
-
-    private boolean isEmailValid(String email) {
-        return email.contains("@");
-    }
-
-    private boolean isPassswordVaild(String password) {
-        return (password.length() >= 4);
     }
 }
