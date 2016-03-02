@@ -6,6 +6,7 @@ import static com.yanoonigmail.rdroid.R.string.protocol_client_header;
 import static com.yanoonigmail.rdroid.R.string.protocol_client_login_announcement;
 import static com.yanoonigmail.rdroid.R.string.protocol_client_login_password;
 import static com.yanoonigmail.rdroid.R.string.protocol_client_login_email;
+import static com.yanoonigmail.rdroid.R.string.protocol_client_task_request_announcement;
 import static com.yanoonigmail.rdroid.R.string.protocol_parameter_separator;
 import static com.yanoonigmail.rdroid.R.string.protocol_server_header;
 import static com.yanoonigmail.rdroid.R.string.protocol_server_login_announcement;
@@ -54,5 +55,24 @@ public class Protocol {
         String[] line3_array;
         line3_array = line_array[2].split(resources.getString(protocol_parameter_separator));
         return line3_array[1].equals(resources.getString(protocol_server_login_success));
+    }
+
+    public static String taskRequest(String[] excluded_ids) {
+        String message;
+        message = resources.getString(protocol_client_header) +
+                line_separator;
+        message += resources.getString(protocol_client_task_request_announcement) +
+                line_separator;
+        message += resources.getString(R.string.protocol_client_task_request_exclude) +
+                line_separator;
+        for (String excluded_id : excluded_ids) {
+            message += excluded_id +
+                    resources.getString(R.string.protocol_client_task_request_exclude);
+        }
+        StringBuilder sb = new StringBuilder(message);
+        sb.deleteCharAt(message.length() - 1);
+        message = sb.toString();
+        message += line_separator;
+        return message;
     }
 }

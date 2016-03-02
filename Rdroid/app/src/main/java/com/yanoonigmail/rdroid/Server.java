@@ -19,6 +19,8 @@ public class Server {
     private InetSocketAddress mServerAddress;
     private EncryptionKeyMaker mEncryptionKeyMaker;
     private Encryptor mEncryptor;
+    private boolean mConnected = false;
+    private boolean mLoggedIn = false;
     private static Server ourInstance = new Server();
 
     public static Server getInstance() {
@@ -37,17 +39,20 @@ public class Server {
      * Connects to the server.
      */
     public void connect() {
-        boolean connected = false;
-        while (!connected) {
-            connected = true;
-            try {
-                mServerSocket.connect(mServerAddress);
-            } catch (IOException e) {
-                connected = false;
-                e.printStackTrace();
+        if (!mConnected) {
+            boolean connected = false;
+            while (!connected) {
+                connected = true;
+                try {
+                    mServerSocket.connect(mServerAddress);
+                } catch (IOException e) {
+                    connected = false;
+                    e.printStackTrace();
+                }
             }
+            mEncryptor = mEncryptionKeyMaker.createEncryptor(mServerSocket);
+            mConnected = true;
         }
-        mEncryptor = mEncryptionKeyMaker.createEncryptor(mServerSocket);
     }
 
     public void send(String message) {
@@ -96,14 +101,24 @@ public class Server {
         return message;
     }
 
-    public Boolean tryLogin(String email, String password) {
+    public boolean tryLogin(String email, String password) {
         if (!isEmailValid(email) || !isPassswordVaild(password)) {
             return false;
         }
         String login_request = Protocol.loginRequest(email, password);
         send(login_request);
         String login_response = recv();
-        return Protocol.loginResponseBool(login_response);
+        boolean login_response_bool = Protocol.loginResponseBool(login_response);
+        mLoggedIn = login_response_bool;
+        return login_response_bool;
+    }
+
+    public boolean isConnected() {
+        return mConnected;
+    }
+
+    public boolean isLoggedIn() {
+        return mLoggedIn;
     }
 
     private boolean isEmailValid(String email) {

@@ -6,13 +6,14 @@ import android.widget.EditText;
 
 public class LoginActivity extends ActionBarActivity {
     private Server mServer;
+    private EditText mEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        EditText mEditText = (EditText) findViewById(R.id.email);
+        mEditText = (EditText) findViewById(R.id.email);
         mServer = Server.getInstance();
-        mServer.connect();
+
     }
 }
