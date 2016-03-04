@@ -18,7 +18,7 @@ import static com.yanoonigmail.rdroid.R.string.protocol_server_login_success;
  */
 public class Protocol {
     private static String line_separator = System.getProperty("line.separator");
-    private static Resources resources = new LoginActivity().getResources();
+    private static Resources resources = ApplicationContext.getContext().getResources();
 
     public static boolean isServerMessage(String message) {
         return message.startsWith(resources.getString(protocol_server_header));
