@@ -64,6 +64,7 @@ class Phone(object):
 
     def send(self, message):
         # encrypts and then sends a message to the phone.
+        message = message.replace(self.settings.getSetting('new_line'), '\n') + '\n'
         encryptor = self.getEncryptor()
         self.rawSend(encryptor.encrypt(message))
 
@@ -113,10 +114,10 @@ class Phone(object):
 
     def __notifyCreation(self):
         # Send the server a message to notify it that this phone connected and it's ID.
-        end_line = self.settings.getSetting('end_line')
+        new_line = self.settings.getSetting('new_line')
         my_id = self.getID()
         notification_message = self.settings.getSetting('id_notification_message')
-        notification_message += 'session_id:%s%s' % (my_id, end_line)
+        notification_message += 'session_id:%s%s' % (my_id, new_line)
         self.server.send(notification_message)
 
     def __closeThread(self):

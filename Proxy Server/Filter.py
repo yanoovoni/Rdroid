@@ -21,7 +21,7 @@ class Filter(object):
         # Returns whether the given message fits the protocol or does not.
         if message is None:
             return False
-        if message.startswith('Rdroid CLIENT\r\n'):
+        if message.startswith('Rdroid CLIENT\n'):
             return True
         return False
 

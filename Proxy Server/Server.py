@@ -50,6 +50,7 @@ class Server(object):
 
     def send(self, message):
         # Adds a message to the output queue so it will be sent when possible.
+        message = message.replace(self.settings.getSetting('new_line'), '\n')
         self.__output_queue.put(message)
 
     def recv(self):

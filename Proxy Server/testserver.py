@@ -14,7 +14,7 @@ message = proxy.recv(1028)
 printer.printMessage('yo mama', message)
 message = proxy.recv(1028)
 printer.printMessage('yo mama', message)
-proxy.send('1:Rdroid SERVER\r\nLOGIN\r\nresult:success\r\n')
+proxy.send('1:Rdroid SERVER\nLOGIN\nresult:success\n')
 print 'sent'
 message = proxy.recv(1028)
 printer.printMessage('yo mama', message)

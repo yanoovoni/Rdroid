@@ -78,9 +78,9 @@ class PhoneManager(object):
 
     def __notifyDeletedPhone(self, phone_id):
         # Notifies the server of phones that were deleted from the dictionary (most likely disconnected) and their IDs.
-        end_line = self.settings.getSetting('end_line')
+        new_line = self.settings.getSetting('new_line')
         notification_message = self.settings.getSetting('disconnect_notification_message')
-        notification_message += 'session_id:%s%s' % (phone_id, end_line)
+        notification_message += 'session_id:%s%s' % (phone_id, new_line)
         self.server.send(notification_message)
 
 
