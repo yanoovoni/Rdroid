@@ -38,8 +38,9 @@ public class Server {
     }
 
     private Server() {
+        System.out.println("yo yo yo");
         byte[] ip_address_byte_array = new byte[4];
-        String ip_string = "79.179.163.140";
+        String ip_string = "79.179.100.134";
         String[] stringed_ip_address_byte_array = ip_string.split("\\.");
         for (int i = 0; i < stringed_ip_address_byte_array.length; i++) {
             String stringed_byte = stringed_ip_address_byte_array[i];
@@ -70,15 +71,17 @@ public class Server {
                         while (!connected) {
                             connected = true;
                             try {
-                                mServerSocket.connect(mServerAddress);
+                                mServerSocket.connect(mServerAddress, 5000);
                             } catch (IOException e) {
                                 connected = false;
                                 e.printStackTrace();
+                                /**
                                 try {
                                     Thread.sleep(5000);
                                 } catch (InterruptedException e2) {
                                     e2.printStackTrace();
                                 }
+                                 **/
                             }
                         }
                         mEncryptor = mEncryptionKeyMaker.createEncryptor(mServerSocket);

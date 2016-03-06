@@ -58,6 +58,7 @@ public class LoginActivity extends ActionBarActivity {
             String given_password = mPasswordEditText.getText().toString();
             if (!isEmailValid(given_email) || !isPasswordValid(given_password)) {
                 mStatusText.setText(getString(status_login_bad_parameters));
+                mLoginButton.setEnabled(true);
             } else {
                 new AsyncLogin().execute(given_email, given_password);
             }
