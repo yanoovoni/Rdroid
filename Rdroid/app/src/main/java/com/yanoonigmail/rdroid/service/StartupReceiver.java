@@ -1,4 +1,4 @@
-package com.yanoonigmail.rdroid;
+package com.yanoonigmail.rdroid.service;
 
         import android.content.BroadcastReceiver;
         import android.content.Context;

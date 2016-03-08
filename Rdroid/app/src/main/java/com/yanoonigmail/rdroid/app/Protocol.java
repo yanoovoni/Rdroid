@@ -1,6 +1,8 @@
-package com.yanoonigmail.rdroid;
+package com.yanoonigmail.rdroid.app;
 
 import android.content.res.Resources;
+
+import com.yanoonigmail.rdroid.R;
 
 import static com.yanoonigmail.rdroid.R.string.protocol_client_header;
 import static com.yanoonigmail.rdroid.R.string.protocol_client_login_announcement;

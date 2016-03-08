@@ -1,11 +1,6 @@
-package com.yanoonigmail.rdroid;
+package com.yanoonigmail.rdroid.app;
 
 import java.net.Socket;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 
 /**
  * Created by Yaniv Sharon on 17/02/2016.

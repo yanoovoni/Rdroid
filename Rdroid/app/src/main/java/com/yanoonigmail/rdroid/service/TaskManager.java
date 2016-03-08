@@ -1,11 +1,12 @@
-package com.yanoonigmail.rdroid;
+package com.yanoonigmail.rdroid.service;
 
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.content.Context;
-import android.os.SystemClock;
+
+import com.yanoonigmail.rdroid.app.GlobalInfo;
 
 import static com.yanoonigmail.rdroid.R.string.user_data;
 
@@ -35,7 +36,10 @@ public class TaskManager extends Service {
         if (preferences.contains("email") && preferences.contains("password")) {
             mEmail = preferences.getString("email", "");
             mPassword = preferences.getString("password", "");
-            mServer.tryLogin(mEmail, mPassword);
+            boolean logged_in = mServer.tryLogin(mEmail, mPassword);
+        }
+        else {
+            // wait for the app to send the email and password
         }
         /**manageTasks();**/
     }

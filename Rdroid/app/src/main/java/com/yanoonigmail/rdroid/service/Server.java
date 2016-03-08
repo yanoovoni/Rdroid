@@ -1,9 +1,8 @@
-package com.yanoonigmail.rdroid;
+package com.yanoonigmail.rdroid.service;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.res.Resources;
+import com.yanoonigmail.rdroid.app.EncryptionKeyMaker;
+import com.yanoonigmail.rdroid.app.Encryptor;
+import com.yanoonigmail.rdroid.app.Protocol;
 
 import java.io.DataInputStream;
 import java.io.IOException;

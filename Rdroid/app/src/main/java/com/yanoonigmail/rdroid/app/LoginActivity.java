@@ -1,6 +1,8 @@
-package com.yanoonigmail.rdroid;
+package com.yanoonigmail.rdroid.app;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -8,6 +10,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.yanoonigmail.rdroid.service.TaskManager;
+
 import java.lang.Thread;
 
 import static com.yanoonigmail.rdroid.R.id.email;
@@ -18,8 +23,8 @@ import static com.yanoonigmail.rdroid.R.layout.activity_login;
 import static com.yanoonigmail.rdroid.R.string.status_login_attempt;
 import static com.yanoonigmail.rdroid.R.string.status_login_bad_parameters;
 import static com.yanoonigmail.rdroid.R.string.status_login_not_connected;
-import static com.yanoonigmail.rdroid.R.string.status_login_successful;
 import static com.yanoonigmail.rdroid.R.string.status_login_wrong_parameters;
+import static com.yanoonigmail.rdroid.R.string.user_data;
 
 public class LoginActivity extends ActionBarActivity {
     private Server mServer;
@@ -38,6 +43,11 @@ public class LoginActivity extends ActionBarActivity {
         mLoginButton = (Button) findViewById(login_button);
         mStatusText = (TextView) findViewById(status_text);
         mServer = Server.getInstance();
+        SharedPreferences preferences = getSharedPreferences (getString(user_data), Context.MODE_PRIVATE);
+        if (preferences.contains("email") && preferences.contains("password")) {
+            Intent i = new Intent(ApplicationContext.getContext(), MainMenuActivity.class);
+            ApplicationContext.getContext().startActivity(i);
+        }
     }
 
     @Override

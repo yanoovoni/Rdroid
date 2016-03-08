@@ -1,4 +1,4 @@
-package com.yanoonigmail.rdroid;
+package com.yanoonigmail.rdroid.app;
 
 import android.app.Application;
 import android.content.Context;

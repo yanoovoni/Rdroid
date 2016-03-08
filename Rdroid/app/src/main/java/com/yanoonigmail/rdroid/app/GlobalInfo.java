@@ -1,4 +1,4 @@
-package com.yanoonigmail.rdroid;
+package com.yanoonigmail.rdroid.app;
 
 /**
  * Created by 34v7 on 02/03/2016.

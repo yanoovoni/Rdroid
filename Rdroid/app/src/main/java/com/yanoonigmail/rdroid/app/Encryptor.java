@@ -1,4 +1,4 @@
-package com.yanoonigmail.rdroid;
+package com.yanoonigmail.rdroid.app;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
