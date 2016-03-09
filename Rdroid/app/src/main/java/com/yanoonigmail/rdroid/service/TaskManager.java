@@ -3,10 +3,14 @@ package com.yanoonigmail.rdroid.service;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Binder;
 import android.os.IBinder;
 import android.content.Context;
+import android.os.Parcel;
 
 import com.yanoonigmail.rdroid.app.GlobalInfo;
+
+import java.util.Random;
 
 import static com.yanoonigmail.rdroid.R.string.user_data;
 
@@ -18,13 +22,17 @@ public class TaskManager extends Service {
     private String mPassword;
     private Server mServer;
     private Thread mManageTasksThread;
+    // Binder given to clients
+    private final LocalBinder mBinder = new LocalBinder();
+    // Random number generator
+    private final Random mGenerator = new Random();
 
     public TaskManager() {
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return mBinder;
     }
 
     @Override
@@ -41,7 +49,7 @@ public class TaskManager extends Service {
         else {
             // wait for the app to send the email and password
         }
-        /**manageTasks();**/
+        //manageTasks();
     }
 
     @Override
@@ -53,6 +61,22 @@ public class TaskManager extends Service {
     public void connectToServer() {
         mServer = Server.getInstance();
         mServer.connect();
+    }
+
+    public class LocalBinder extends Binder {
+        TaskManager getService() {
+            // Return this instance of the service so clients can call public methods.
+            return TaskManager.this;
+        }
+    }
+
+    /** method for clients **/
+    public int getRandomNumber() {
+        return mGenerator.nextInt(100);
+    }
+
+    public boolean onTransact(int code, Parcel data, Parcel reply, int flags) {
+
     }
 /**
     private void manageTasks() {
@@ -80,3 +104,6 @@ public class TaskManager extends Service {
     }
  **/
 }
+
+
+
