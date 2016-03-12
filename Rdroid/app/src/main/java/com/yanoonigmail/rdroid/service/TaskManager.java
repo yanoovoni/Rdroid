@@ -7,6 +7,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.content.Context;
 import android.os.Parcel;
+import android.os.RemoteException;
 
 import com.yanoonigmail.rdroid.app.GlobalInfo;
 
@@ -75,8 +76,17 @@ public class TaskManager extends Service {
         return mGenerator.nextInt(100);
     }
 
-    public boolean onTransact(int code, Parcel data, Parcel reply, int flags) {
-
+    @Override
+    protected boolean onTransact(int code, Parcel data, Parcel reply,
+                                 int flags) {
+        boolean success = false;
+        switch (code) {
+            case 1:
+                String[] strings = new String[2];
+                data.readStringArray(strings);
+                success = mServer.tryLogin(strings[0], strings[1]);
+        }
+        return success;
     }
 /**
     private void manageTasks() {
