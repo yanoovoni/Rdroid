@@ -5,42 +5,51 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Data;
-
+using System.Collections;
 public partial class ShareContactsWithFriends : System.Web.UI.Page
+{  UserDetails user;
+ArrayList phoneFriendList;
+protected void Page_Load(object sender, EventArgs e)
 {
-    protected void Page_Load(object sender, EventArgs e)
+    user = new UserDetails();
+    user.phoneNumber = "0547645029";
+    Page.Session["User"] = user;
+    if (Page.Session["User"] != null)
     {
+
+        user = (UserDetails)Page.Session["User"];
+
         if (!Page.IsPostBack)
         {
-            UserDetails user = new UserDetails();
-            user.userID = 1;
-            UserService userService = new UserService();
-            DataSet dataSet = new DataSet();
-            
-
-            dataSet = userService.GetFriendsAndContacts(user);
-            Session["DataSet"] = dataSet;
+            Load_Friends_And_Contacts();
             //Populate1();
 
             //dataSet = userService.GetContacts(user);
             //Session["DataSet"] = dataSet;
             PopulateFriends();
-            Populate2();
+            PopulateConacts();
         }
+    }
+    else Response.Redirect("");
 
-
-
+}
+    private void Load_Friends_And_Contacts()
+    {
+        UserService userService = new UserService();
+        DataSet dataSet = new DataSet();
+        dataSet = userService.GetFriendsAndContacts(user);
+        Session["DataSet"] = dataSet;
     }
     private void PopulateFriends()
     {
         DataSet dataset = (DataSet)Session["DataSet"];
         CheckBoxListFriends.DataSource = dataset.Tables["Friends"];
         CheckBoxListFriends.DataTextField = "FriendNAME";
-        CheckBoxListFriends.DataValueField = "UserID";
+        CheckBoxListFriends.DataValueField = "PhoneNumber";
         CheckBoxListFriends.DataBind();
     }
 
-    private void Populate2()
+    private void PopulateConacts()
     {
         DataSet dataset = (DataSet)Session["DataSet"];
         CheckBoxListContacts.DataSource = dataset.Tables[1];
@@ -52,29 +61,45 @@ public partial class ShareContactsWithFriends : System.Web.UI.Page
     {
         UserService userservice = new UserService();
         ContactDetails contact = new ContactDetails();
-        foreach (ListItem item in CheckBoxListContacts.Items)
+        phoneFriendList = new ArrayList();
+        foreach (ListItem friend in CheckBoxListFriends.Items)
         {
-            if (item.Selected)
+            // רשימה של החברים שאיתם 
+            // מעוניינים לשתף חברים
+            if (friend.Selected)
             {
-                contact = userservice.GetContactsByID(int.Parse(item.Value));
+               phoneFriendList.Add(friend.Value);
             }
-            foreach (ListItem item1 in CheckBoxListFriends.Items)
+        }
+        
+        foreach (ListItem contactItem in CheckBoxListContacts.Items)
+        { // עבור כל איש קשר ברשימה לשיתוף מעתיק לחבר
+            //יצירת רשימה של אנשי הקשר
+            if (contactItem.Selected)
             {
-                if (item1.Selected)
+                contact = userservice.GetContactsByID(int.Parse(contactItem.Value));
+
+                for (int i = 0; i < phoneFriendList.Count; i++ )
                 {
-                    moveContactsToAFriend(contact, int.Parse(item1.Value));
+
+                    moveContactsToAFriend(contact, phoneFriendList[i].ToString());
+
                 }
             }
         }
     }
-
-    public void moveContactsToAFriend(ContactDetails contact, int IdFriend)//כאשר לוחצים על הכפור יעבור המידע של אנשי הקשר שסומנו אל החברים שסומנו
+   
+    public void moveContactsToAFriend(ContactDetails contact, string  friendPhone)//כאשר לוחצים על הכפור יעבור המידע של אנשי הקשר שסומנו אל החברים שסומנו 
     {
         UserService userService = new UserService();
-        contact.userIDbelong = IdFriend;
+        contact.userPhoneBelong = friendPhone;
+        contact.status = "לאישור";
         try
         {
-            userService.InsertContact(contact);
+          if(!userService.IfContactExist(contact))  // מוסיפים איש קשר רק אם לא קיים
+          {
+              userService.InsertContact(contact);
+          }
             Label1.Text = "yaaay";
         }
         catch (Exception ex)

@@ -59,18 +59,36 @@
 
         <br />
 
-        birth date: day:
-        <asp:TextBox ID="TextBox5" runat="server" Width="22px"></asp:TextBox>
- month:
-        <asp:TextBox ID="TextBox6" runat="server" Width="24px"></asp:TextBox>
- year:
-        <asp:TextBox ID="TextBox7" runat="server" Width="51px"></asp:TextBox>
+        birth date: day:<asp:DropDownList 
+            ID="DropDownListBDay" runat="server" Height="22px" Width="55px">
+        </asp:DropDownList>
+&nbsp;month:<asp:DropDownList ID="DropDownListBMonth" runat="server" Height="17px" 
+             Width="54px" 
+            onselectedindexchanged="DropDownListBMonth_SelectedIndexChanged">
+            <asp:ListItem>1</asp:ListItem>
+            <asp:ListItem>2</asp:ListItem>
+            <asp:ListItem>3</asp:ListItem>
+            <asp:ListItem>4</asp:ListItem>
+            <asp:ListItem>5</asp:ListItem>
+            <asp:ListItem>6</asp:ListItem>
+            <asp:ListItem>7</asp:ListItem>
+            <asp:ListItem>8</asp:ListItem>
+            <asp:ListItem>9</asp:ListItem>
+            <asp:ListItem>10</asp:ListItem>
+            <asp:ListItem>11</asp:ListItem>
+            <asp:ListItem>12</asp:ListItem>
+        </asp:DropDownList>
+&nbsp;year:
+        <asp:DropDownList ID="DropDownListBYears" runat="server">
+        </asp:DropDownList>
         <br />
         <br />
         <br />
 
         sex:
-        <asp:DropDownList ID="DropDownList1" runat="server">
+        <asp:DropDownList ID="DropDownList1" runat="server" Height="17px" Width="57px">
+            <asp:ListItem>male</asp:ListItem>
+            <asp:ListItem>female</asp:ListItem>
         </asp:DropDownList>
         <br />
         <br />

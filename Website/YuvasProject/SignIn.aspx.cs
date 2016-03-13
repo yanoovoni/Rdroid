@@ -34,4 +34,33 @@ public partial class SignIn : System.Web.UI.Page
         }
 
     }
+
+    private void addYearsToDropDownList()
+    {
+        int startYear = DateTime.Now.Year;
+        int endYear = DateTime.Now.Year - 100;
+
+        for (int year = startYear; year > endYear; year--)
+        {
+            DropDownListBYears.Items.Add(year.ToString());
+        }
+    }
+
+    private void addDaysToDropDownList(int daysInMonth)
+    {
+        DropDownListBDay.Items.Clear();
+        for (int day = 1; day <= daysInMonth; day++)
+        {
+            DropDownListBDay.Items.Add(day.ToString());
+        }
+    }
+
+
+    protected void DropDownListBMonth_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        int month = int.Parse(DropDownListBMonth.SelectedValue);
+        int year = int.Parse(DropDownListBYears.SelectedValue);
+        int daysInMonth = DateTime.DaysInMonth(year, month);
+        addDaysToDropDownList(daysInMonth);
+    }
 }

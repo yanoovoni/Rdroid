@@ -8,7 +8,7 @@ using System.Web;
 /// </summary>
 public class UserDetails
 {
-    private int UserID;
+    private string PhoneNumber;
     private string FirstName;
     private string LastName;
     private string Password;
@@ -24,10 +24,10 @@ public class UserDetails
         //
     }
 
-    public int userID
+    public string phoneNumber
     {
-        get { return UserID; }
-        set { UserID = value; }
+        get { return PhoneNumber; }
+        set { PhoneNumber = value; }
     }
 
     public string firstName

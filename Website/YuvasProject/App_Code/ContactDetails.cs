@@ -9,12 +9,12 @@ using System.Web;
 public class ContactDetails
 {
     private int ID;
-    private int UserIDBelong;
+    private string UserPhoneBelong;
     private string PhoneNumber;
     private string FirstName;
     private string LastName;
-    private string Email; 
-
+    private string Email;
+    private string Status;
 	public ContactDetails()
 	{
 		
@@ -26,10 +26,10 @@ public class ContactDetails
         set { ID = value; }
     }
 
-    public int userIDbelong
+    public string  userPhoneBelong
     {
-        get { return UserIDBelong; }
-        set { UserIDBelong = value; }
+        get { return UserPhoneBelong; }
+        set { UserPhoneBelong = value; }
     }
 
     public string phoneNumber
@@ -54,5 +54,10 @@ public class ContactDetails
     {
         get { return Email; }
         set { Email = value; }
+    }
+    public string status
+    {
+        get { return Status; }
+        set { Status = value; }
     }
 }

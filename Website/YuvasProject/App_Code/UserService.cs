@@ -100,7 +100,7 @@ public class UserService
         OleDbParameter parameter;
         parameter = myCmd.Parameters.Add("@UserID", OleDbType.BSTR);
         parameter.Direction = ParameterDirection.Input;
-        parameter.Value = user.userID;
+        parameter.Value = user.phoneNumber;
 
         try
         {
@@ -123,9 +123,9 @@ public class UserService
         DataSet dataset = new DataSet();
 
         OleDbParameter parameter;
-        parameter = myCmd.Parameters.Add("@UserID", OleDbType.BSTR);
+        parameter = myCmd.Parameters.Add("@UserPhone", OleDbType.BSTR);
         parameter.Direction = ParameterDirection.Input;
-        parameter.Value = user.userID;
+        parameter.Value = user.phoneNumber;
 
         try
         {
@@ -138,24 +138,24 @@ public class UserService
         }
         return dataset;
     }
-    public DataSet GetFriendsAndContacts(UserDetails user)
+    public DataSet GetFriendsAndContacts(UserDetails user)// הפעולה מחזירה "דטה סט" בו נמצאים גם החברים וגם אנשי הקשר
     {
         OleDbParameter parameter;
         OleDbCommand myCmd = new OleDbCommand("ShowFriends", myConnection);
         myCmd.CommandType = CommandType.StoredProcedure;
         OleDbDataAdapter adapterFriends = new OleDbDataAdapter(myCmd);
-       
-        
-        parameter = myCmd.Parameters.Add("@UserID", OleDbType.BSTR);
+
+
+        parameter = myCmd.Parameters.Add("@PhoneID", OleDbType.BSTR);
         parameter.Direction = ParameterDirection.Input;
-        parameter.Value = user.userID;
+        parameter.Value = user.phoneNumber;
 
         myCmd = new OleDbCommand("GetContacts", myConnection);
         myCmd.CommandType = CommandType.StoredProcedure;
         OleDbDataAdapter adapterContacts = new OleDbDataAdapter(myCmd);
-        parameter = myCmd.Parameters.Add("@UserID", OleDbType.BSTR);
+        parameter = myCmd.Parameters.Add("@PhoneID", OleDbType.BSTR);
         parameter.Direction = ParameterDirection.Input;
-        parameter.Value = user.userID;
+        parameter.Value = user.phoneNumber;
         
         
         DataSet dataSet = new DataSet();
@@ -179,6 +179,43 @@ public class UserService
         return dataSet;
     }
 
+    public bool IfContactExist(ContactDetails contactDetais)//הפעולה בודקת האם איש הקשר כבר קיים
+    {
+        bool find = false;
+        object obj = null;
+        OleDbCommand myCmd = new OleDbCommand("checkIfContactExistsByUserPhoneBelong", myConnection);
+        myCmd.CommandType = CommandType.StoredProcedure;
+        OleDbParameter objParam;
+
+        objParam = myCmd.Parameters.Add("@UserPhoneBelong", OleDbType.BSTR);
+        objParam.Direction = ParameterDirection.Input;
+        objParam.Value = contactDetais.userPhoneBelong;
+
+        objParam = myCmd.Parameters.Add("@PhoneNumber", OleDbType.BSTR);
+        objParam.Direction = ParameterDirection.Input;
+        objParam.Value = contactDetais.phoneNumber;
+
+        try
+        {
+            myConnection.Open();
+            obj = myCmd.ExecuteScalar();
+            if (obj == null)
+                return find;
+            find = true;
+            return find;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            myConnection.Close();
+        }
+
+       
+    }
+
     public void InsertContact( ContactDetails contactDetais)//הפעולה מאפשרת להוסיף מידע לתוך טבלת אנשי הקשר
     {
         OleDbCommand myCmd = new OleDbCommand("InsertIntoContacts", myConnection);
@@ -188,9 +225,9 @@ public class UserService
 
         OleDbParameter objParam;
 
-        objParam = myCmd.Parameters.Add("@UserIDBelong", OleDbType.Integer);
+        objParam = myCmd.Parameters.Add("@UserPhoneBelong", OleDbType.Integer);
         objParam.Direction = ParameterDirection.Input;
-        objParam.Value = contactDetais.userIDbelong;
+        objParam.Value = contactDetais.userPhoneBelong;
 
         objParam = myCmd.Parameters.Add("@PhoneNumber", OleDbType.BSTR);
         objParam.Direction = ParameterDirection.Input;
@@ -207,7 +244,9 @@ public class UserService
         objParam = myCmd.Parameters.Add("@Email", OleDbType.BSTR);
         objParam.Direction = ParameterDirection.Input;
         objParam.Value = contactDetais.email;
-
+        objParam = myCmd.Parameters.Add("@Status", OleDbType.BSTR);
+        objParam.Direction = ParameterDirection.Input;
+        objParam.Value = contactDetais.status;
         try
         {
             myConnection.Open();
@@ -223,7 +262,7 @@ public class UserService
         }
     }
 
-    public ContactDetails GetContactsByID(int IDmy)//הפעולה מחזירה פרתי איש קשר על פי מספרו בטבלה
+    public ContactDetails GetContactsByID(int IDmy)//הפעולה מחזירה פרטי איש קשר על פי מספרו בטבלה
     {
         OleDbCommand myCmd = new OleDbCommand("ReturnContactByID", myConnection);
         myCmd.CommandType = CommandType.StoredProcedure;
