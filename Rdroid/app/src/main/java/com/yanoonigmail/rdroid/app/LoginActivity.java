@@ -1,15 +1,12 @@
 package com.yanoonigmail.rdroid.app;
 
-import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.Binder;
 import android.os.IBinder;
-import android.os.IInterface;
 import android.os.RemoteException;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -21,7 +18,6 @@ import android.os.Parcel;
 
 import com.yanoonigmail.rdroid.service.TaskManager;
 
-import java.io.FileDescriptor;
 import java.lang.Thread;
 
 import static com.yanoonigmail.rdroid.R.id.email;
@@ -49,7 +45,6 @@ public class LoginActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(activity_login);
         mEmailEditText = (EditText) findViewById(email);
         mPasswordEditText = (EditText) findViewById(password);
         mLoginButton = (Button) findViewById(login_button);
@@ -59,12 +54,15 @@ public class LoginActivity extends ActionBarActivity {
             Intent i = new Intent(ApplicationContext.getContext(), MainMenuActivity.class);
             ApplicationContext.getContext().startActivity(i);
         }
+        else {
+            setContentView(activity_login);
+        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if (!GlobalInfo.getInstance().isServiceRunning()) {
+        if (!Service.getInstance().isRunning()) {
             mServiceIntent = new Intent(this, TaskManager.class);
             mServiceConnection = new ServiceConnection() {
                 @Override

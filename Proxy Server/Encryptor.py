@@ -34,7 +34,7 @@ class Encryptor(object):
 
     def __addPadding(self, message):
         # Adds padding to the message
-        padded_message = message.ljust(len(message) + (len(message) % 16), ' ')
+        padded_message = message.ljust(len(message) + (16 - (len(message) % 16)), ' ')
         return padded_message
 
     def __removePadding(self, message):

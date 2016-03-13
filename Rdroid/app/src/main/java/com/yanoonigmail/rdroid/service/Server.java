@@ -1,5 +1,7 @@
 package com.yanoonigmail.rdroid.service;
 
+import android.util.Log;
+
 import com.yanoonigmail.rdroid.app.EncryptionKeyMaker;
 import com.yanoonigmail.rdroid.app.Encryptor;
 import com.yanoonigmail.rdroid.app.Protocol;
@@ -27,6 +29,7 @@ public class Server {
     private boolean mLoggedIn = false;
     private static Server ourInstance = new Server();
     private Thread mManageTasksThread;
+    private Thread mInitThread;
     private ReentrantLock mConnectLock = new ReentrantLock();
     private ReentrantLock mLoginLock = new ReentrantLock();
     private String mEmail;
@@ -37,24 +40,31 @@ public class Server {
     }
 
     private Server() {
-        System.out.println("yo yo yo");
-        byte[] ip_address_byte_array = new byte[4];
-        String ip_string = "79.179.100.134";
-        String[] stringed_ip_address_byte_array = ip_string.split("\\.");
-        for (int i = 0; i < stringed_ip_address_byte_array.length; i++) {
-            String stringed_byte = stringed_ip_address_byte_array[i];
-            ip_address_byte_array[i] = (byte) (Integer.valueOf(stringed_byte) & 0xFF);
-        }
-        try {
-            InetAddress ip_address = InetAddress.getByAddress(ip_address_byte_array);
-            mServerAddress = new InetSocketAddress(ip_address, 9001);
-            mServerSocket = new Socket();
-            mEncryptionKeyMaker = new EncryptionKeyMaker();
-            connect();
-        }
-        catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
+        mInitThread = new Thread(new Runnable() {
+            public void run() {
+                /**
+                byte[] ip_address_byte_array = new byte[4];
+                String ip_string = "79.179.100.134";
+                String[] stringed_ip_address_byte_array = ip_string.split("\\.");
+                for (int i = 0; i < stringed_ip_address_byte_array.length; i++) {
+                    String stringed_byte = stringed_ip_address_byte_array[i];
+                    ip_address_byte_array[i] = (byte) (Integer.valueOf(stringed_byte) & 0xFF);
+                }
+
+                try {
+                    InetAddress ip_address = InetAddress.getByAddress(ip_address_byte_array);
+
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                    Log.w("Server", "Problem with ip address. #crush");
+                 }
+                 **/
+                mServerAddress = new InetSocketAddress("bzq-79-179-100-134.red.bezeqint.net", 9000);
+                connect();
+                mEncryptionKeyMaker = new EncryptionKeyMaker();
+            }
+        });
+        mInitThread.start();
     }
 
     /**
@@ -68,19 +78,17 @@ public class Server {
                         mLoggedIn = false;
                         boolean connected = false;
                         while (!connected) {
-                            connected = true;
                             try {
+                                mServerSocket = new Socket();
                                 mServerSocket.connect(mServerAddress, 5000);
+                                connected = true;
                             } catch (IOException e) {
-                                connected = false;
                                 e.printStackTrace();
-                                /**
                                 try {
                                     Thread.sleep(5000);
                                 } catch (InterruptedException e2) {
                                     e2.printStackTrace();
                                 }
-                                 **/
                             }
                         }
                         mEncryptor = mEncryptionKeyMaker.createEncryptor(mServerSocket);
