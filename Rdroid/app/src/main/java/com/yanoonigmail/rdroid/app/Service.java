@@ -12,21 +12,24 @@ import com.yanoonigmail.rdroid.service.TaskManager;
 /**
  * Created by 34v7 on 02/03/2016.
  */
-public class Service implements ServiceConnection {
+public class Service {
     private static Service ourInstance = new Service();
 
     public static Service getInstance() {
         return ourInstance;
     }
+
     private Context context = ApplicationContext.getContext();
     private Class<?> serviceClass = TaskManager.class;
     private boolean bound = false;
     private IBinder binder;
     private Intent serviceIntent;
+    private LocalServiceConnection serviceConnection;
 
     private Service() {
         serviceIntent = new Intent(context, serviceClass);
-
+        serviceConnection = new LocalServiceConnection();
+        assureServiceIsRunning();
     }
 
     public boolean isRunning() {
@@ -48,29 +51,44 @@ public class Service implements ServiceConnection {
     }
 
     public IBinder getBinder() {
-        return binder;
+        while (true) {
+            if (isBound()) {
+                return binder;
+            } else {
+                assureServiceIsRunning();
+            }
+        }
     }
 
     public void setBinder(IBinder binder) {
         this.binder = binder;
     }
 
-    @Override
-    public void onServiceConnected(ComponentName name, IBinder service) {
-        setBound(true);
+    public void assureServiceIsRunning() {
+        if (!isRunning()) {
+            context.startService(serviceIntent);
+        }
+        while (!context.bindService(serviceIntent, serviceConnection, 0)) {
+            try {
+                Thread.sleep(5000);
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    @Override
-    public void onServiceDisconnected(ComponentName name) {
-        setBound(false);
-        boolean cont = false;
-        while (!cont) {
-            if (!isRunning()) {
-                context.startService(serviceIntent);
-            }
-            if (context.bindService(serviceIntent, ourInstance, 0)) {
-                cont = true;
-            }
+    private class LocalServiceConnection implements ServiceConnection {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            setBinder(service);
+            setBound(true);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            setBound(false);
+            assureServiceIsRunning();
         }
     }
 }

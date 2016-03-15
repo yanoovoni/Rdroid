@@ -19,6 +19,7 @@ import android.os.Parcel;
 import com.yanoonigmail.rdroid.service.TaskManager;
 
 import java.lang.Thread;
+import java.net.BindException;
 
 import static com.yanoonigmail.rdroid.R.id.email;
 import static com.yanoonigmail.rdroid.R.id.login_button;
@@ -36,74 +37,65 @@ public class LoginActivity extends ActionBarActivity {
     private EditText mPasswordEditText;
     private Button mLoginButton;
     private TextView mStatusText;
-    private Intent mServiceIntent;
-    private ServiceConnection mServiceConnection;
-    private IBinder mServiceBinder;
-    private boolean mServiceConnected = false;
     private Thread mTryLoginThread;
+    private Service mService = Service.getInstance();
+    private Context mApplicationContext = ApplicationContext.getContext();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mEmailEditText = (EditText) findViewById(email);
-        mPasswordEditText = (EditText) findViewById(password);
-        mLoginButton = (Button) findViewById(login_button);
-        mStatusText = (TextView) findViewById(status_text);
         SharedPreferences preferences = getSharedPreferences (getString(user_data), Context.MODE_PRIVATE);
         if (preferences.contains("email") && preferences.contains("password")) {
-            Intent i = new Intent(ApplicationContext.getContext(), MainMenuActivity.class);
-            ApplicationContext.getContext().startActivity(i);
+            Intent i = new Intent(mApplicationContext, MainMenuActivity.class);
+            mApplicationContext.startActivity(i);
         }
         else {
             setContentView(activity_login);
+            mEmailEditText = (EditText) findViewById(email);
+            mPasswordEditText = (EditText) findViewById(password);
+            mLoginButton = (Button) findViewById(login_button);
+            mStatusText = (TextView) findViewById(status_text);
         }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if (!Service.getInstance().isRunning()) {
-            mServiceIntent = new Intent(this, TaskManager.class);
-            mServiceConnection = new ServiceConnection() {
-                @Override
-                public void onServiceConnected(ComponentName name, IBinder service) {
-                    mServiceConnected = true;
-                    mServiceBinder = service;
-                }
-
-                @Override
-                public void onServiceDisconnected(ComponentName name) {
-                    mServiceConnected = false;
-                }
-            };
-            startService(mServiceIntent);
-            while (!bindService(mServiceIntent, mServiceConnection, 0)) {
-                try {
-                    wait(5000);
-                }
-                catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        mService.assureServiceIsRunning();
     }
 
     public void tryLogin(View v) {
         mLoginButton.setEnabled(false);
-        if (!mServiceConnected) {
-            mStatusText.setText(getString(status_login_not_connected));
-        } else {
-            mStatusText.setText(getString(status_login_attempt));
-            String given_email = mEmailEditText.getText().toString();
-            String given_password = mPasswordEditText.getText().toString();
-            if (!isEmailValid(given_email) || !isPasswordValid(given_password)) {
-                mStatusText.setText(getString(status_login_bad_parameters));
+        try {
+            Parcel input_parcel = Parcel.obtain();
+            Parcel output_parcel = Parcel.obtain();
+            mService.getBinder().transact(2, input_parcel, output_parcel, 0);
+            boolean[] val = new boolean[1];
+            output_parcel.readBooleanArray(val);
+            if (!val[0]) {
+                mStatusText.setText(mApplicationContext.getString(status_login_not_connected));
                 mLoginButton.setEnabled(true);
             } else {
-                new AsyncLogin().execute(given_email, given_password);
+                mStatusText.setText(mApplicationContext.getString(status_login_attempt));
+                String given_email = mEmailEditText.getText().toString();
+                String given_password = mPasswordEditText.getText().toString();
+                if (!isEmailValid(given_email) || !isPasswordValid(given_password)) {
+                    mStatusText.setText(mApplicationContext.getString(status_login_bad_parameters));
+                    mLoginButton.setEnabled(true);
+                } else {
+                    try {
+                        new AsyncLogin().execute(given_email, given_password);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            mLoginButton.setEnabled(true);
         }
     }
+
 
     private boolean isEmailValid(String email) {
         return email.contains("@");
@@ -123,12 +115,15 @@ public class LoginActivity extends ActionBarActivity {
             if (strings.length != 2) {
                 throw new IllegalArgumentException("Method requires exactly 2 strings");
             }
+            if (!mService.isRunning()) {
+                throw new Error("Service is ded");
+            }
             Parcel input_parcel = Parcel.obtain();
             input_parcel.writeStringArray(strings);
             Parcel output_parcel = Parcel.obtain();
             boolean login_result = false;
             try {
-                mServiceBinder.transact(IBinder.FIRST_CALL_TRANSACTION, input_parcel, output_parcel, 0);
+                mService.getBinder().transact(1, input_parcel, output_parcel, 0);
                 boolean[] val = new boolean[1];
                 output_parcel.readBooleanArray(val);
                 login_result = val[0];
@@ -142,8 +137,8 @@ public class LoginActivity extends ActionBarActivity {
         protected void onPostExecute(Boolean logged_in) {
             mLoginButton.setEnabled(true);
             if (logged_in) {
-                Intent i = new Intent(ApplicationContext.getContext(), MainMenuActivity.class);
-                ApplicationContext.getContext().startActivity(i);
+                Intent i = new Intent(mApplicationContext, MainMenuActivity.class);
+                mApplicationContext.startActivity(i);
             }
             else {
                 mStatusText.setText(getString(status_login_wrong_parameters));

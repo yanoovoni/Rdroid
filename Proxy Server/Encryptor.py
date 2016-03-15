@@ -7,6 +7,7 @@
 #region -----------------Imports-----------------
 from Settings import *
 from Printer import *
+import base64
 #endregion -----------------Imports-----------------
 
 #region -----------------Class-----------------
@@ -23,13 +24,20 @@ class Encryptor(object):
 
     def encrypt(self, message):
         # Adds padding to the message and encrypts it.
+        message = base64.b64encode(message)
         padded_message = self.__addPadding(message)
         encrypted_message = self.__encryption_key.encrypt(padded_message)
         return encrypted_message
 
     def decrypt(self, message):
         # Decrypts the message and removes the padding.
-        padded_message = self.__encryption_key.decrypt(message)
+        try:
+            message = base64.b64decode(message)
+            print message
+            padded_message = self.__encryption_key.decrypt(message)
+            print padded_message
+        except ValueError:
+            padded_message = message
         return self.__removePadding(padded_message)
 
     def __addPadding(self, message):

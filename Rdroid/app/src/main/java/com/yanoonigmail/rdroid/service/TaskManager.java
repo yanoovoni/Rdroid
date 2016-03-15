@@ -79,9 +79,18 @@ public class TaskManager extends android.app.Service {
             boolean success = false;
             switch (code) {
                 case 1:
-                    String[] strings = new String[2];
-                    data.readStringArray(strings);
-                    success = mServer.tryLogin(strings[0], strings[1]);
+                    String[] inputStrings = new String[2];
+                    data.readStringArray(inputStrings);
+                    boolean[] outputBoolean = new boolean[1];
+                    outputBoolean[0] = mServer.tryLogin(inputStrings[0], inputStrings[1]);
+                    success = true;
+                    break;
+                case 2:
+                    boolean[] bool = new boolean[1];
+                    bool[0] = mServer.isConnected();
+                    reply.writeBooleanArray(bool);
+                    success = true;
+                    break;
             }
             return success;
         }

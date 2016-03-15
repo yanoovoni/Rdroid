@@ -6,8 +6,12 @@ import com.yanoonigmail.rdroid.app.EncryptionKeyMaker;
 import com.yanoonigmail.rdroid.app.Encryptor;
 import com.yanoonigmail.rdroid.app.Protocol;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.InetSocketAddress;
@@ -21,6 +25,7 @@ import 	java.util.concurrent.locks.ReentrantLock;
  * Created by Yaniv Sharon on 17/02/2016.
  */
 public class Server {
+    private boolean mInitialized = false;
     private Socket mServerSocket;
     private InetSocketAddress mServerAddress;
     private EncryptionKeyMaker mEncryptionKeyMaker;
@@ -50,18 +55,18 @@ public class Server {
                     String stringed_byte = stringed_ip_address_byte_array[i];
                     ip_address_byte_array[i] = (byte) (Integer.valueOf(stringed_byte) & 0xFF);
                 }
-
                 try {
                     InetAddress ip_address = InetAddress.getByAddress(ip_address_byte_array);
-
                 } catch (UnknownHostException e) {
                     e.printStackTrace();
                     Log.w("Server", "Problem with ip address. #crush");
-                 }
+                }
                  **/
                 mServerAddress = new InetSocketAddress("bzq-79-179-100-134.red.bezeqint.net", 9000);
-                connect();
+                Log.d("Server init", mServerAddress.toString());
                 mEncryptionKeyMaker = new EncryptionKeyMaker();
+                mInitialized = true;
+                connect();
             }
         });
         mInitThread.start();
@@ -75,6 +80,13 @@ public class Server {
             public void run() {
                 if (mConnectLock.tryLock()) {
                     if (!mConnected) {
+                        while (!mInitialized) {
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
                         mLoggedIn = false;
                         boolean connected = false;
                         while (!connected) {
@@ -113,8 +125,11 @@ public class Server {
             connect();
         }
         try {
-            PrintWriter output_stream = new PrintWriter(mServerSocket.getOutputStream(), true);
-            output_stream.print(encrypted_message);
+            PrintWriter output_stream =
+                    new PrintWriter(
+                    new BufferedWriter(
+                    new OutputStreamWriter(mServerSocket.getOutputStream())), true);
+            output_stream.println(encrypted_message);
         } catch (IOException e) {
             mConnected = false;
             e.printStackTrace();
@@ -124,14 +139,14 @@ public class Server {
     }
 
     public String recv() {
-        DataInputStream input_stream;
+        BufferedReader input_stream;
         String encrypted_message;
         if (!mServerSocket.isConnected()) {
             connect();
         }
         try {
-            input_stream = new DataInputStream(mServerSocket.getInputStream());
-            encrypted_message = input_stream.readUTF();
+            input_stream = new BufferedReader(new InputStreamReader(this.mServerSocket.getInputStream()));
+            encrypted_message = input_stream.readLine();
         } catch (IOException e) {
             mConnected = false;
             e.printStackTrace();
