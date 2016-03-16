@@ -83,6 +83,7 @@ public class TaskManager extends android.app.Service {
                     data.readStringArray(inputStrings);
                     boolean[] outputBoolean = new boolean[1];
                     outputBoolean[0] = mServer.tryLogin(inputStrings[0], inputStrings[1]);
+                    reply.writeBooleanArray(outputBoolean);
                     success = true;
                     break;
                 case 2:
