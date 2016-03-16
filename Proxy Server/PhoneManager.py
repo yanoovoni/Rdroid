@@ -57,6 +57,7 @@ class PhoneManager(object):
                 phone_id, message = server_message.split(':', 1)
                 phone = self.getPhone(phone_id)
                 if phone is not None:
+                    self.printer.printMessage(self.__class__.__name__, 'sending to phone: ' + message)
                     phone.send(message)
                 else:
                     self.__notifyDeletedPhone(phone_id)

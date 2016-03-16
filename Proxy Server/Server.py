@@ -12,6 +12,7 @@ from Queue import *
 from threading import *
 import time
 import socket
+import base64
 #endregion -----------------Imports-----------------
 
 #region -----------------Class-----------------
@@ -64,7 +65,9 @@ class Server(object):
         buffer_size = int(self.settings.getSetting('buffer_size'))
         while not self.__close:
             try:
-                self.__addInput(self.__server_socket.recv(buffer_size))
+                message = self.__server_socket.recv(buffer_size)
+                message = base64.b64decode(message)
+                self.__addInput(message)
             except socket.error:
                 self.__connectToServer()
 
@@ -82,6 +85,7 @@ class Server(object):
 
     def __send(self, message):
         # sends a message to the server.
+        message = base64.b64encode(message)
         self.__server_socket.send(message)
 
     def __connectToServer(self):

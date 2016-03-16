@@ -24,19 +24,22 @@ class Encryptor(object):
 
     def encrypt(self, message):
         # Adds padding to the message and encrypts it.
-        message = base64.b64encode(message)
         padded_message = self.__addPadding(message)
         encrypted_message = self.__encryption_key.encrypt(padded_message)
+        encrypted_message = base64.b64encode(encrypted_message)
         return encrypted_message
 
     def decrypt(self, message):
         # Decrypts the message and removes the padding.
         try:
+            print 'before base64: ' + message
             message = base64.b64decode(message)
-            print message
+            print 'after base64: ' + message
             padded_message = self.__encryption_key.decrypt(message)
-            print padded_message
+            print 'after decryption: ' + padded_message
         except ValueError:
+            padded_message = message
+        except TypeError:
             padded_message = message
         return self.__removePadding(padded_message)
 

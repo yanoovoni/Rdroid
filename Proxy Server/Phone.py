@@ -20,6 +20,7 @@ import socket
 class Phone(object):
     server = Server()
     settings = Settings()
+    printer = Printer()
     filter = Filter()
     encryption_key_maker = EncryptionKeyMaker()
     __ready = False # Tells if the phone is ready for communication.
@@ -65,8 +66,11 @@ class Phone(object):
     def send(self, message):
         # encrypts and then sends a message to the phone.
         message = message.replace(self.settings.getSetting('new_line'), '\n') + '\n'
+        self.printer.printMessage(self.__class__.__name__, 'after edit to phone: ' + message)
         encryptor = self.getEncryptor()
-        self.rawSend(encryptor.encrypt(message))
+        encrypted_message = encryptor.encrypt(message)
+        self.printer.printMessage(self.__class__.__name__, 'after encryption to phone: ' + encrypted_message)
+        self.rawSend(encrypted_message)
 
     def recv(self):
         # Receives a message from the phone and decrypts it.
