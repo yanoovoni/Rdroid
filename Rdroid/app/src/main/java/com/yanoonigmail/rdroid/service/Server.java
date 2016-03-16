@@ -62,7 +62,7 @@ public class Server {
                     Log.w("Server", "Problem with ip address. #crush");
                 }
                  **/
-                mServerAddress = new InetSocketAddress("79.179.100.134", 9000);
+                mServerAddress = new InetSocketAddress("bzq-79-179-100-134.red.bezeqint.net", 9000);
                 Log.d("Server init", mServerAddress.toString());
                 mEncryptionKeyMaker = new EncryptionKeyMaker();
                 mInitialized = true;

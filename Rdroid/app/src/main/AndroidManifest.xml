@@ -19,9 +19,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".app.LoginActivity"
-            android:label="@string/title_activity_login"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait">
+            android:label="@string/title_activity_login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -38,9 +36,9 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".service.TaskManager"/>
+        <service android:name=".service.TaskManager"></service>
 
-        <activity android:name=".app.MainMenuActivity"/>
+        <activity android:name=".app.MainMenuActivity"></activity>
     </application>
 
 </manifest>
