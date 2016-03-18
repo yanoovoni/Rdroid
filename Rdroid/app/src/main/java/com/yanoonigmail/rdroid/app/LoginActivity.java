@@ -23,6 +23,7 @@ import java.net.BindException;
 
 import static com.yanoonigmail.rdroid.R.id.email;
 import static com.yanoonigmail.rdroid.R.id.login_button;
+import static com.yanoonigmail.rdroid.R.id.middle;
 import static com.yanoonigmail.rdroid.R.id.password;
 import static com.yanoonigmail.rdroid.R.id.status_text;
 import static com.yanoonigmail.rdroid.R.layout.activity_login;
@@ -40,6 +41,7 @@ public class LoginActivity extends ActionBarActivity {
     private Thread mTryLoginThread;
     private Service mService = Service.getInstance();
     private Context mApplicationContext = ApplicationContext.getContext();
+    private LoginActivity mLoginActivity = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,8 +139,9 @@ public class LoginActivity extends ActionBarActivity {
         protected void onPostExecute(Boolean logged_in) {
             mLoginButton.setEnabled(true);
             if (logged_in) {
-                Intent i = new Intent(mApplicationContext, MainMenuActivity.class);
-                mApplicationContext.startActivity(i);
+                Intent mainMenuIntent = new Intent(mLoginActivity, MainMenuActivity.class);
+                mainMenuIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mApplicationContext.startActivity(mainMenuIntent);
             }
             else {
                 mStatusText.setText(getString(status_login_wrong_parameters));

@@ -4,6 +4,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 import android.util.Base64;
+import android.util.Log;
 
 /**
  * Created by Yaniv Sharon on 17/02/2016.
@@ -26,8 +27,10 @@ public class Encryptor {
     public String decrypt(String encrypted) throws Exception
     {
         Cipher cipher = getCipher(Cipher.DECRYPT_MODE);
-        byte[] plainBytes = cipher.doFinal(Base64.decode(encrypted, Base64.DEFAULT));
-        return new String(plainBytes);
+        byte[] encryptedBytes = Base64.decode(encrypted, Base64.DEFAULT);
+        String s = new String(encryptedBytes);
+        byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
+        return new String(decryptedBytes);
     }
 
     private Cipher getCipher(int cipherMode)
