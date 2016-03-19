@@ -26,12 +26,16 @@ class EncryptionKeyMaker(object):
 
     def __init__(self):
         self.printer.printMessage(self.__class__.__name__, 'Generating RSA key.')
-        self.__key = RSA.generate(int(self.settings.getSetting('RSA_bits')))
+        self.__encryption_key = RSA.generate(int(self.settings.getSetting('RSA_bits')))
         self.printer.printMessage(self.__class__.__name__, 'RSA key generated.')
 
     def createEncryptor(self, phone_socket):
         # Communicates with the given socket and creates a symmetric key that is used by both sides.
-        return Encryptor(AES.new(b'01234567890123456789012345678901'))
+        public_key = str(self.__encryption_key.exportKey())
+        phone_socket.send(base64.b64encode(public_key))
+        phone_key = self.__encryption_key.decrypt(base64.b64decode(phone_socket.recv(self.settings.getSetting('buffer_size'))))
+        return Encryptor(AES.new(phone_key))
+        # return Encryptor(AES.new(b'01234567890123456789012345678901'))
         #phone_socket.send()
 
 

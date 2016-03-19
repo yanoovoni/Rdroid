@@ -9,6 +9,7 @@ import android.os.Parcel;
 
 import com.yanoonigmail.rdroid.app.Service;
 
+import java.util.Queue;
 import java.util.Random;
 
 import static com.yanoonigmail.rdroid.R.string.user_data;
@@ -21,6 +22,7 @@ public class TaskManager extends android.app.Service {
     private String mPassword;
     private Server mServer;
     private Thread mManageTasksThread;
+    private Queue<Task> mTaskQueue;
     // Binder given to clients
     private final LocalBinder mBinder = new LocalBinder();
     // Random number generator
@@ -96,31 +98,35 @@ public class TaskManager extends android.app.Service {
             return success;
         }
     }
-/**
+
     private void manageTasks() {
         mManageTasksThread = new Thread(new Runnable() {
             public void run() {
                 while (true) {
-                    String[] tasks = getTasks();
-                    for (String task : tasks) {
-                        startTask(task);
-                    }
+                    String task = getTask();
+                    startTask(task);
                 }
             }
         });
         mManageTasksThread.start();
     }
 
-    private String[] getTasks() {
+    private String getTask() {
+        return "";
+    }
+
+    private String[] getNewTasks() {
+        /**
         mServer.send(Protocol.taskRequest());
         mServer.recv();
-        Protocol.tasksResponse();
+        Protocol.taskResponse();
+         **/
+        return new String[1];
     }
 
     private void startTask(String task) {
 
     }
- **/
 }
 
 

@@ -24,7 +24,7 @@ class Encryptor(object):
 
     def encrypt(self, message):
         # Adds padding to the message and encrypts it.
-        padded_message = self.__addPadding(message)
+        padded_message = addPadding(message)
         encrypted_message = self.__encryption_key.encrypt(padded_message)
         encrypted_message = base64.b64encode(encrypted_message)
         return encrypted_message
@@ -37,7 +37,7 @@ class Encryptor(object):
             print 'after base64: ' + message
             padded_message = self.__encryption_key.decrypt(message)
             print 'after decryption: ' + padded_message
-            unpadded_message = self.__removePadding(padded_message)
+            unpadded_message = removePadding(padded_message)
             print 'after unpadding: ' + unpadded_message
         except ValueError:
             unpadded_message = message
@@ -47,18 +47,18 @@ class Encryptor(object):
             unpadded_message = message
         return unpadded_message
 
-    def __addPadding(self, message):
+def addPadding(message):
         # Adds padding to the message
         pad_len = 16 - len(message) % 16
         padded_message = message.ljust(len(message) + pad_len, chr(pad_len))
         return padded_message
 
-    def __removePadding(self, message):
-        # Removes padding from the message.
-        pad_len = ord(message[-1])
-        if pad_len >= 16:
-            return message
-        real_message = message[:-pad_len]
-        return real_message
+def removePadding(message):
+    # Removes padding from the message.
+    pad_len = ord(message[-1])
+    if pad_len >= 16:
+        return message
+    real_message = message[:-pad_len]
+    return real_message
 
 #endregion -----------------Class-----------------

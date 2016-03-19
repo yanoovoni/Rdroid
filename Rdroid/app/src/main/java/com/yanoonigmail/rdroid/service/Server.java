@@ -2,21 +2,14 @@ package com.yanoonigmail.rdroid.service;
 
 import android.util.Log;
 
-import com.yanoonigmail.rdroid.app.EncryptionKeyMaker;
-import com.yanoonigmail.rdroid.app.Encryptor;
-import com.yanoonigmail.rdroid.app.Protocol;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.InetSocketAddress;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.lang.Thread;
 import 	java.util.concurrent.locks.ReentrantLock;
 
@@ -28,7 +21,7 @@ public class Server {
     private boolean mInitialized = false;
     private Socket mServerSocket;
     private InetSocketAddress mServerAddress;
-    private EncryptionKeyMaker mEncryptionKeyMaker;
+    private EncryptorFactory mEncryptorFactory;
     private Encryptor mEncryptor;
     private boolean mConnected = false;
     private boolean mLoggedIn = false;
@@ -64,7 +57,7 @@ public class Server {
                  **/
                 mServerAddress = new InetSocketAddress("79.179.100.134", 9000);
                 Log.d("Server init", mServerAddress.toString());
-                mEncryptionKeyMaker = new EncryptionKeyMaker();
+                mEncryptorFactory = new EncryptorFactory();
                 mInitialized = true;
                 connect();
             }
@@ -103,7 +96,7 @@ public class Server {
                                 }
                             }
                         }
-                        mEncryptor = mEncryptionKeyMaker.createEncryptor(mServerSocket);
+                        mEncryptor = mEncryptorFactory.createEncryptor(mServerSocket);
                         mConnected = true;
                     }
                     mConnectLock.unlock();
@@ -121,15 +114,8 @@ public class Server {
             e.printStackTrace();
             return false;
         }
-        if (!mServerSocket.isConnected()) {
-            connect();
-        }
         try {
-            PrintWriter output_stream =
-                    new PrintWriter(
-                    new BufferedWriter(
-                    new OutputStreamWriter(mServerSocket.getOutputStream())), true);
-            output_stream.println(encrypted_message);
+            pureSend(encrypted_message);
         } catch (IOException e) {
             mConnected = false;
             e.printStackTrace();
@@ -138,15 +124,24 @@ public class Server {
         return true;
     }
 
+    public void pureSend(String message) throws IOException{
+        if (!mServerSocket.isConnected()) {
+            connect();
+        }
+        PrintWriter output_stream =
+                        new PrintWriter(
+                        new BufferedWriter(
+                        new OutputStreamWriter(mServerSocket.getOutputStream())), true);
+        output_stream.println(message);
+    }
+
     public String recv() {
-        BufferedReader input_stream;
         String encrypted_message;
         if (!mServerSocket.isConnected()) {
             connect();
         }
         try {
-            input_stream = new BufferedReader(new InputStreamReader(this.mServerSocket.getInputStream()));
-            encrypted_message = input_stream.readLine();
+            encrypted_message = pureRecv();
         } catch (IOException e) {
             mConnected = false;
             e.printStackTrace();
@@ -158,6 +153,11 @@ public class Server {
             e.printStackTrace();
             return "";
         }
+    }
+
+    public String pureRecv() throws IOException {
+        BufferedReader input_stream = new BufferedReader(new InputStreamReader(this.mServerSocket.getInputStream()));
+        return (input_stream.readLine());
     }
 
     public boolean tryLogin(String email, String password) {

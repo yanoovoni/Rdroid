@@ -1,8 +1,9 @@
-package com.yanoonigmail.rdroid.app;
+package com.yanoonigmail.rdroid.service;
 
 import android.content.res.Resources;
 
 import com.yanoonigmail.rdroid.R;
+import com.yanoonigmail.rdroid.app.ApplicationContext;
 
 import static com.yanoonigmail.rdroid.R.string.protocol_client_header;
 import static com.yanoonigmail.rdroid.R.string.protocol_client_login_announcement;
@@ -76,5 +77,9 @@ public class Protocol {
         message = sb.toString();
         message += line_separator;
         return message;
+    }
+
+    public static String taskResponse() {
+        return "dasda";
     }
 }
