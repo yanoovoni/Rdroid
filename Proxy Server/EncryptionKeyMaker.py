@@ -11,6 +11,7 @@ from Singleton import *
 from Encryptor import *
 from socket import *
 from Crypto.PublicKey import RSA
+from Crypto.Cipher import PKCS1_v1_5
 from Crypto.Cipher import AES
 #endregion -----------------Imports-----------------
 
@@ -22,21 +23,26 @@ class EncryptionKeyMaker(object):
     __metaclass__ = Singleton
     printer = Printer()
     settings = Settings()
-    __encryption_key = None # The asymmetric encryption key that is used for the process of creating the symmetric key.
+    __pure_encryption_key = None # The asymmetric encryption key that is used for the process of creating the symmetric key.
+    __encryption_key = None
 
     def __init__(self):
         self.printer.printMessage(self.__class__.__name__, 'Generating RSA key.')
-        self.__encryption_key = RSA.generate(int(self.settings.getSetting('RSA_bits')))
+        self.__pure_encryption_key = RSA.generate(int(self.settings.getSetting('RSA_bits')))
+        self.__encryption_key = PKCS1_v1_5.new(self.__pure_encryption_key)
         self.printer.printMessage(self.__class__.__name__, 'RSA key generated.')
 
     def createEncryptor(self, phone_socket):
         # Communicates with the given socket and creates a symmetric key that is used by both sides.
-        public_key = str(self.__encryption_key.exportKey())
+        errors_param = None
+        public_key = str(self.__pure_encryption_key.exportKey(format='OpenSSH'))
         phone_socket.send(base64.b64encode(public_key))
-        phone_key = self.__encryption_key.decrypt(base64.b64decode(phone_socket.recv(self.settings.getSetting('buffer_size'))))
+        encrypted_key = base64.b64decode(phone_socket.recv(int(self.settings.getSetting('buffer_size'))))
+        print 'key: ' + encrypted_key
+        print 'key len: ' + str(len(encrypted_key))
+        phone_key = self.__encryption_key.decrypt(encrypted_key, errors_param)
+        print phone_key
         return Encryptor(AES.new(phone_key))
-        # return Encryptor(AES.new(b'01234567890123456789012345678901'))
-        #phone_socket.send()
 
 
 #endregion -----------------Class-----------------
