@@ -55,7 +55,7 @@ public class Server {
                     Log.w("Server", "Problem with ip address. #crush");
                 }
                  **/
-                mServerAddress = new InetSocketAddress("79.179.100.134", 9000);
+                mServerAddress = new InetSocketAddress("79.183.195.237", 9000);
                 Log.d("Server init", mServerAddress.toString());
                 mEncryptorFactory = new EncryptorFactory();
                 mInitialized = true;
@@ -96,7 +96,11 @@ public class Server {
                                 }
                             }
                         }
-                        mEncryptor = mEncryptorFactory.createEncryptor(mServerSocket);
+                        try {
+                            mEncryptor = mEncryptorFactory.createEncryptor();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         mConnected = true;
                     }
                     mConnectLock.unlock();
@@ -115,7 +119,7 @@ public class Server {
             return false;
         }
         try {
-            pureSend(encrypted_message);
+            rawSend(encrypted_message);
         } catch (IOException e) {
             mConnected = false;
             e.printStackTrace();
@@ -124,7 +128,7 @@ public class Server {
         return true;
     }
 
-    public void pureSend(String message) throws IOException{
+    public void rawSend(String message) throws IOException{
         if (!mServerSocket.isConnected()) {
             connect();
         }
@@ -141,7 +145,7 @@ public class Server {
             connect();
         }
         try {
-            encrypted_message = pureRecv();
+            encrypted_message = rawRecv();
         } catch (IOException e) {
             mConnected = false;
             e.printStackTrace();
@@ -155,7 +159,7 @@ public class Server {
         }
     }
 
-    public String pureRecv() throws IOException {
+    public String rawRecv() throws IOException {
         BufferedReader input_stream = new BufferedReader(new InputStreamReader(this.mServerSocket.getInputStream()));
         return (input_stream.readLine());
     }

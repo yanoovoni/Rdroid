@@ -14,9 +14,9 @@ import java.security.NoSuchAlgorithmException;
  * Created by Yaniv Sharon on 17/02/2016.
  */
 public class Encryptor {
-    private String encryptionKey;
+    private byte[] encryptionKey;
 
-    public Encryptor(String encryptionKey)
+    public Encryptor(byte[] encryptionKey)
     {
         this.encryptionKey = encryptionKey;
     }
@@ -45,14 +45,14 @@ public class Encryptor {
         return new String(decryptedBytes);
     }
 
-    public String getEncryptionKey() {
+    public byte[] getEncryptionKey() {
         return this.encryptionKey;
     }
 
     private Cipher getCipher(int cipherMode) throws Exception {
         String encryptionAlgorithm = "AES";
         SecretKeySpec keySpecification = new SecretKeySpec(
-                encryptionKey.getBytes("UTF-8"), encryptionAlgorithm);
+                encryptionKey, encryptionAlgorithm);
         Cipher cipher = Cipher.getInstance(encryptionAlgorithm);
         cipher.init(cipherMode, keySpecification);
         return cipher;
