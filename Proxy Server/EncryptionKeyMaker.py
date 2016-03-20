@@ -35,8 +35,9 @@ class EncryptionKeyMaker(object):
     def createEncryptor(self, phone_socket):
         # Communicates with the given socket and creates a symmetric key that is used by both sides.
         errors_param = None
-        public_key = str(self.__pure_encryption_key.exportKey(format='OpenSSH'))
-        phone_socket.send(base64.b64encode(public_key))
+        public_key = self.__pure_encryption_key.exportKey(format='DER')
+        print public_key
+        phone_socket.send(base64.b64encode(public_key) + '\n')
         encrypted_key = base64.b64decode(phone_socket.recv(int(self.settings.getSetting('buffer_size'))))
         print 'key: ' + encrypted_key
         print 'key len: ' + str(len(encrypted_key))
