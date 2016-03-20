@@ -24,7 +24,7 @@ public class Encryptor {
     public Encryptor() {
         try {
             KeyGenerator keyGen = KeyGenerator.getInstance("AES");
-            keyGen.init(256); // for example
+            keyGen.init(256);
             SecretKey secretKey = keyGen.generateKey();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();

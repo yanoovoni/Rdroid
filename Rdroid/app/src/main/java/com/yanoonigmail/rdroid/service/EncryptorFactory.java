@@ -35,7 +35,7 @@ public class EncryptorFactory {
         KeyGenerator keyGen = KeyGenerator.getInstance("AES");
         keyGen.init(256);
         SecretKey secretKey = keyGen.generateKey();
-        server.rawSend(Base64.encode(cipher.doFinal(secretKey.getEncoded()), Base64.DEFAULT).toString());
+        server.rawSend(new String(Base64.encode(cipher.doFinal(secretKey.getEncoded()), Base64.DEFAULT)));
         return new Encryptor(secretKey.getEncoded());
     }
 }
