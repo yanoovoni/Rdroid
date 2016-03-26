@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
+import com.yanoonigmail.rdroid.ApplicationContext;
 import com.yanoonigmail.rdroid.service.TaskManager;
 
 /**

@@ -9,7 +9,8 @@ import android.os.Parcel;
 
 import com.yanoonigmail.rdroid.app.Service;
 
-import java.util.Queue;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import static com.yanoonigmail.rdroid.R.string.user_data;
@@ -18,17 +19,19 @@ import static com.yanoonigmail.rdroid.R.string.user_data;
  * Created by Yaniv on 24-Feb-16.
  */
 public class TaskManager extends android.app.Service {
+    private static TaskManager ourInstance = new TaskManager();
     private String mEmail;
     private String mPassword;
     private Server mServer;
     private Thread mManageTasksThread;
-    private Queue<Task> mTaskQueue;
+    private ArrayList<String> mIDList = new ArrayList<>();
     // Binder given to clients
     private final LocalBinder mBinder = new LocalBinder();
     // Random number generator
     private final Random mGenerator = new Random();
 
-    public TaskManager() {
+    public static TaskManager getInstance() {
+        return ourInstance;
     }
 
     @Override
@@ -116,11 +119,10 @@ public class TaskManager extends android.app.Service {
     }
 
     private String[] getNewTasks() {
-        /**
-        mServer.send(Protocol.taskRequest());
-        mServer.recv();
-        Protocol.taskResponse();
-         **/
+        String[] IDArray = new String[mIDList.size()];
+        this.mIDList.toArray(IDArray);
+        mServer.send(Protocol.taskRequest(IDArray));
+        Task[] taskArray = Protocol.taskResponse(mServer.recv());
         return new String[1];
     }
 

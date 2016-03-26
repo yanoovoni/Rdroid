@@ -1,12 +1,9 @@
 package com.yanoonigmail.rdroid.app;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -16,14 +13,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.os.Parcel;
 
-import com.yanoonigmail.rdroid.service.TaskManager;
+import com.yanoonigmail.rdroid.ApplicationContext;
 
 import java.lang.Thread;
-import java.net.BindException;
 
 import static com.yanoonigmail.rdroid.R.id.email;
 import static com.yanoonigmail.rdroid.R.id.login_button;
-import static com.yanoonigmail.rdroid.R.id.middle;
 import static com.yanoonigmail.rdroid.R.id.password;
 import static com.yanoonigmail.rdroid.R.id.status_text;
 import static com.yanoonigmail.rdroid.R.layout.activity_login;
