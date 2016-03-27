@@ -118,16 +118,23 @@ public class LoginActivity extends ActionBarActivity {
             Parcel input_parcel = Parcel.obtain();
             input_parcel.writeStringArray(strings);
             Parcel output_parcel = Parcel.obtain();
-            boolean login_result = false;
+            boolean login_successful = false;
             try {
                 mService.getBinder().transact(1, input_parcel, output_parcel, 0);
                 boolean[] val = new boolean[1];
                 output_parcel.readBooleanArray(val);
-                login_result = val[0];
+                login_successful = val[0];
+                if (login_successful) {
+                    SharedPreferences preferences = getSharedPreferences (getString(user_data), Context.MODE_PRIVATE);
+                    SharedPreferences.Editor preferences_editor = preferences.edit();
+                    preferences_editor.putString("email", strings[0]);
+                    preferences_editor.putString("password", strings[1]);
+                    preferences_editor.commit();
+                }
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
-            return login_result;
+            return login_successful;
         }
 
         @Override

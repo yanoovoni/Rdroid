@@ -12,9 +12,9 @@ import static com.yanoonigmail.rdroid.R.string.protocol_client_header;
 import static com.yanoonigmail.rdroid.R.string.protocol_client_login_announcement;
 import static com.yanoonigmail.rdroid.R.string.protocol_client_login_password;
 import static com.yanoonigmail.rdroid.R.string.protocol_client_login_email;
-import static com.yanoonigmail.rdroid.R.string.protocol_client_task_output_announcement;
-import static com.yanoonigmail.rdroid.R.string.protocol_client_task_output_id;
-import static com.yanoonigmail.rdroid.R.string.protocol_client_task_output_output;
+import static com.yanoonigmail.rdroid.R.string.protocol_client_task_results_announcement;
+import static com.yanoonigmail.rdroid.R.string.protocol_client_task_results_id;
+import static com.yanoonigmail.rdroid.R.string.protocol_client_task_results_output;
 import static com.yanoonigmail.rdroid.R.string.protocol_client_task_request_announcement;
 import static com.yanoonigmail.rdroid.R.string.protocol_server_task_response_task_parameters_separator;
 import static com.yanoonigmail.rdroid.R.string.protocol_server_task_response_announcement;
@@ -146,16 +146,16 @@ public class Protocol {
         return new Task(id, type, parameters);
     }
 
-    public static String taskOutputMessage(String id, String output) {
+    public static String taskResultsMessage(String id, String output) {
         String outputString = resources.getString(protocol_client_header) +
                 line_separator;
-        outputString += resources.getString(protocol_client_task_output_announcement) +
+        outputString += resources.getString(protocol_client_task_results_announcement) +
                 line_separator;
-        outputString += resources.getString(protocol_client_task_output_id) +
+        outputString += resources.getString(protocol_client_task_results_id) +
                 resources.getString(protocol_parameter_separator) +
                 id +
                 line_separator;
-        outputString += resources.getString(protocol_client_task_output_output) +
+        outputString += resources.getString(protocol_client_task_results_output) +
                 resources.getString(protocol_parameter_separator) +
                 output +
                 line_separator;

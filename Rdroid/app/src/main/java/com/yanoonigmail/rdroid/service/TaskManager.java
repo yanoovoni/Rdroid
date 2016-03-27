@@ -43,26 +43,13 @@ public class TaskManager extends android.app.Service {
     public void onCreate() {
         super.onCreate();
         SharedPreferences preferences = getSharedPreferences (getString(user_data), Context.MODE_PRIVATE);
-        connectToServer();
-        if (preferences.contains("email") && preferences.contains("password")) {
-            mEmail = preferences.getString("email", "");
-            mPassword = preferences.getString("password", "");
-            boolean logged_in = mServer.tryLogin(mEmail, mPassword);
-        }
-        else {
-            // wait for the app to send the email and password
-        }
-        //manageTasks();
+        mServer = Server.getInstance();
+        manageTasks();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-    }
-
-    public void connectToServer() {
-        mServer = Server.getInstance();
-        mServer.connect();
     }
 
     public class LocalBinder extends Binder {
@@ -106,28 +93,26 @@ public class TaskManager extends android.app.Service {
         mManageTasksThread = new Thread(new Runnable() {
             public void run() {
                 while (true) {
-                    String task = getTask();
-                    startTask(task);
+                    getNewTasks();
+                    try {
+                        this.wait(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
         mManageTasksThread.start();
     }
 
-    private String getTask() {
-        return "";
-    }
-
-    private String[] getNewTasks() {
+    private void getNewTasks() {
         String[] IDArray = new String[mIDList.size()];
-        this.mIDList.toArray(IDArray);
+        mIDList.toArray(IDArray);
         mServer.send(Protocol.taskRequest(IDArray));
         Task[] taskArray = Protocol.taskResponse(mServer.recv());
-        return new String[1];
-    }
-
-    private void startTask(String task) {
-
+        for (Task task : taskArray) {
+            mIDList.add(task.getId());
+        }
     }
 }
 

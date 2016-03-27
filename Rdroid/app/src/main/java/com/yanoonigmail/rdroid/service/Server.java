@@ -1,6 +1,10 @@
 package com.yanoonigmail.rdroid.service;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
+
+import com.yanoonigmail.rdroid.ApplicationContext;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -13,11 +17,14 @@ import java.net.InetSocketAddress;
 import java.lang.Thread;
 import 	java.util.concurrent.locks.ReentrantLock;
 
+import static com.yanoonigmail.rdroid.R.string.user_data;
+
 
 /**
  * Created by Yaniv Sharon on 17/02/2016.
  */
 public class Server {
+    private Context context = ApplicationContext.getContext();
     private boolean mInitialized = false;
     private Socket mServerSocket;
     private InetSocketAddress mServerAddress;
@@ -26,7 +33,6 @@ public class Server {
     private boolean mConnected = false;
     private boolean mLoggedIn = false;
     private static Server ourInstance = new Server();
-    private Thread mManageTasksThread;
     private Thread mInitThread;
     private ReentrantLock mConnectLock = new ReentrantLock();
     private ReentrantLock mLoginLock = new ReentrantLock();
@@ -40,21 +46,6 @@ public class Server {
     private Server() {
         mInitThread = new Thread(new Runnable() {
             public void run() {
-                /**
-                byte[] ip_address_byte_array = new byte[4];
-                String ip_string = "79.179.100.134";
-                String[] stringed_ip_address_byte_array = ip_string.split("\\.");
-                for (int i = 0; i < stringed_ip_address_byte_array.length; i++) {
-                    String stringed_byte = stringed_ip_address_byte_array[i];
-                    ip_address_byte_array[i] = (byte) (Integer.valueOf(stringed_byte) & 0xFF);
-                }
-                try {
-                    InetAddress ip_address = InetAddress.getByAddress(ip_address_byte_array);
-                } catch (UnknownHostException e) {
-                    e.printStackTrace();
-                    Log.w("Server", "Problem with ip address. #crush");
-                }
-                 **/
                 mServerAddress = new InetSocketAddress("79.183.195.237", 9000);
                 Log.d("Server init", mServerAddress.toString());
                 mEncryptorFactory = new EncryptorFactory();
@@ -69,7 +60,7 @@ public class Server {
      * Connects to the server.
      */
     public void connect() {
-        mManageTasksThread = new Thread(new Runnable() {
+        Thread manageTasksThread = new Thread(new Runnable() {
             public void run() {
                 if (mConnectLock.tryLock()) {
                     if (!mConnected) {
@@ -104,10 +95,30 @@ public class Server {
                         mConnected = true;
                     }
                     mConnectLock.unlock();
+                    passiveLogin();
                 }
             }
         });
-        mManageTasksThread.start();
+        manageTasksThread.start();
+    }
+
+    private void passiveLogin() {
+        if (!isLoggedIn()) {
+            SharedPreferences preferences = context.getSharedPreferences(context.getString(user_data), Context.MODE_PRIVATE);
+            if (preferences.contains("email") && preferences.contains("password")) {
+                mEmail = preferences.getString("email", "");
+                mPassword = preferences.getString("password", "");
+                tryLogin(mEmail, mPassword);
+            } else {
+                SharedPreferences.OnSharedPreferenceChangeListener changeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+                    @Override
+                    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                        passiveLogin();
+                    }
+                };
+                preferences.registerOnSharedPreferenceChangeListener(changeListener);
+            }
+        }
     }
 
     public boolean send(String message) {
@@ -122,6 +133,7 @@ public class Server {
             rawSend(encrypted_message);
         } catch (IOException e) {
             mConnected = false;
+            connect();
             e.printStackTrace();
             return false;
         }
@@ -129,8 +141,17 @@ public class Server {
     }
 
     public void rawSend(String message) throws IOException{
-        if (!mServerSocket.isConnected()) {
-            connect();
+        while (!isConnected()) {
+            if (!mConnectLock.isLocked()) {
+                connect();
+            }
+            else {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         PrintWriter output_stream =
                         new PrintWriter(
@@ -141,13 +162,23 @@ public class Server {
 
     public String recv() {
         String encrypted_message;
-        if (!mServerSocket.isConnected()) {
-            connect();
+        while (!isConnected()) {
+            if (!mConnectLock.isLocked()) {
+                connect();
+            }
+            else {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         try {
             encrypted_message = rawRecv();
         } catch (IOException e) {
             mConnected = false;
+            connect();
             e.printStackTrace();
             return "";
         }

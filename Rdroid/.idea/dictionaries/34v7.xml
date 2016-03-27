@@ -3,6 +3,7 @@
     <words>
       <w>encryptor</w>
       <w>pkcs</w>
+      <w>recv</w>
     </words>
   </dictionary>
 </component>

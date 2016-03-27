@@ -40,7 +40,8 @@
     <string name="protocol_server_task_response_announcement">GET_TASKS</string>
     <string name="protocol_server_task_response_task">task</string>
     <string name="protocol_server_task_response_task_parameters_separator">,</string>
-    <string name="protocol_client_task_output_announcement">TASK</string>
-    <string name="protocol_client_task_output_id">id</string>
-    <string name="protocol_client_task_output_output">output</string>
+    <string name="protocol_client_task_results_announcement">TASK_RESULTS</string>
+    <string name="protocol_client_task_results_id">id</string>
+    <string name="protocol_client_task_results_output">output</string>
+    <string name="protocol_client_task_results_output_separator">,</string>
 </resources>

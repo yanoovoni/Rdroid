@@ -9,7 +9,7 @@ import com.yanoonigmail.rdroid.R;
 
 import java.io.File;
 
-import static com.yanoonigmail.rdroid.R.string.protocol_client_task_output_output;
+import static com.yanoonigmail.rdroid.R.string.protocol_client_task_results_output_separator;
 
 /**
  * Created by yanoo on 19-Mar-16.
@@ -48,22 +48,28 @@ public class Task {
                     case "GET_FILES_IN_FOLDER":
                         output = getFilesInFolder(parameters.split(resources.getString(R.string.protocol_parameter_separator))[1]);
                 }
-                Server.getInstance().send(Protocol.taskOutputMessage(id, output));
+                Server.getInstance().send(Protocol.taskResultsMessage(id, output));
             }
         });
         taskThread.start();
     }
 
     private String getFilesInFolder(String folder) {
+        String filesString = "";
         File sdCardRoot = Environment.getExternalStorageDirectory();
         File yourDir = new File(sdCardRoot, folder);
         for (File f : yourDir.listFiles()) {
+            String name;
             if (f.isFile()) {
-                String name = f.getName();
-                Log.i("file names", name);
+                name = f.getName();
+                Log.i("file name", name);
             }
+            else {
+                name = f.getName() + ":folder";
+            }
+            filesString += name + resources.getString(protocol_client_task_results_output_separator);
         }
-
+        return filesString;
     }
 
 }
