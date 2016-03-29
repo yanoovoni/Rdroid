@@ -46,7 +46,7 @@ public class Server {
     private Server() {
         mInitThread = new Thread(new Runnable() {
             public void run() {
-                mServerAddress = new InetSocketAddress("79.183.195.237", 9000);
+                mServerAddress = new InetSocketAddress("79.180.166.70", 9000);
                 Log.d("Server init", mServerAddress.toString());
                 mEncryptorFactory = new EncryptorFactory();
                 mInitialized = true;
@@ -66,7 +66,7 @@ public class Server {
                     if (!mConnected) {
                         while (!mInitialized) {
                             try {
-                                Thread.sleep(1000);
+                                Thread.sleep(10);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
@@ -141,7 +141,7 @@ public class Server {
     }
 
     public void rawSend(String message) throws IOException{
-        while (!isConnected()) {
+        while (!mServerSocket.isConnected()) {
             if (!mConnectLock.isLocked()) {
                 connect();
             }

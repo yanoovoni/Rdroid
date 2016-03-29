@@ -3,8 +3,6 @@ from Printer import *
 from Settings import *
 import base64
 
-DEBUG = True
-
 settings = Settings()
 printer = Printer()
 sock = socket()
@@ -16,10 +14,7 @@ message = proxy.recv(1028)
 printer.printMessage('yo mama', base64.b64decode(message))
 message = proxy.recv(1028)
 printer.printMessage('yo mama', base64.b64decode(message))
-if DEBUG:
-    proxy.send(base64.b64encode('1:Rdroid SERVER\nLOGIN\nresult:success\n'))
-else:
-    proxy.send('1:Rdroid SERVER\nLOGIN\nresult:success\n')
+proxy.send(base64.b64encode('1:Rdroid SERVER\nLOGIN\nresult:success\n'))
 print 'sent'
 message = proxy.recv(1028)
 printer.printMessage('yo mama', base64.b64decode(message))
