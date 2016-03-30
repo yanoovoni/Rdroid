@@ -35,12 +35,11 @@
     <string name="protocol_server_login_success">success</string>
     <string name="protocol_server_login_failure">failure</string>
     <!-- Strings related to protocol task request -->
-    <string name="protocol_client_task_request_announcement">GET_TASKS</string>
-    <string name="protocol_client_task_request_exclude">exclude</string>
-    <string name="protocol_client_task_request_exclude_separator">,</string>
-    <string name="protocol_server_task_response_announcement">GET_TASKS</string>
-    <string name="protocol_server_task_response_task">task</string>
-    <string name="protocol_server_task_response_task_parameters_separator">,</string>
+    <string name="protocol_server_task_request_announcement">TASK</string>
+    <string name="protocol_server_task_request_id">id</string>
+    <string name="protocol_server_task_request_type">type</string>
+    <string name="protocol_server_task_request_parameters">parameters</string>
+    <string name="protocol_server_task_request_parameters_separator">,</string>
     <string name="protocol_client_task_results_announcement">TASK_RESULTS</string>
     <string name="protocol_client_task_results_id">id</string>
     <string name="protocol_client_task_results_output">output</string>

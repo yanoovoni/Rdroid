@@ -129,7 +129,7 @@ public class LoginActivity extends ActionBarActivity {
                     SharedPreferences.Editor preferences_editor = preferences.edit();
                     preferences_editor.putString("email", strings[0]);
                     preferences_editor.putString("password", strings[1]);
-                    preferences_editor.commit();
+                    preferences_editor.apply();
                 }
             } catch (RemoteException e) {
                 e.printStackTrace();

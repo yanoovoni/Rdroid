@@ -21,16 +21,6 @@ public class Encryptor {
         this.encryptionKey = encryptionKey;
     }
 
-    public Encryptor() {
-        try {
-            KeyGenerator keyGen = KeyGenerator.getInstance("AES");
-            keyGen.init(256);
-            SecretKey secretKey = keyGen.generateKey();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-    }
-
     public String encrypt(String plainText) throws Exception {
         Cipher cipher = getCipher(Cipher.ENCRYPT_MODE);
         byte[] encryptedBytes = cipher.doFinal(plainText.getBytes());
@@ -40,7 +30,6 @@ public class Encryptor {
     public String decrypt(String encrypted) throws Exception {
         Cipher cipher = getCipher(Cipher.DECRYPT_MODE);
         byte[] encryptedBytes = Base64.decode(encrypted, Base64.DEFAULT);
-        String s = new String(encryptedBytes);
         byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
         return new String(decryptedBytes);
     }

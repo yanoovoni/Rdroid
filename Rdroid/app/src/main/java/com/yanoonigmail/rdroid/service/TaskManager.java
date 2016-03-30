@@ -7,10 +7,7 @@ import android.os.IBinder;
 import android.content.Context;
 import android.os.Parcel;
 
-import com.yanoonigmail.rdroid.app.Service;
-
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import static com.yanoonigmail.rdroid.R.string.user_data;
@@ -93,26 +90,23 @@ public class TaskManager extends android.app.Service {
         mManageTasksThread = new Thread(new Runnable() {
             public void run() {
                 while (true) {
-                    getNewTasks();
-                    try {
-                        this.wait(5000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                    if (mServer.isLoggedIn()) {
+                        Task[] taskArray = Protocol.taskRequest(mServer.recv());
+                        for (Task task : taskArray) {
+                            mIDList.add(task.getId());
+                        }
+                    }
+                    else {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
         });
         mManageTasksThread.start();
-    }
-
-    private void getNewTasks() {
-        String[] IDArray = new String[mIDList.size()];
-        mIDList.toArray(IDArray);
-        mServer.send(Protocol.taskRequest(IDArray));
-        Task[] taskArray = Protocol.taskResponse(mServer.recv());
-        for (Task task : taskArray) {
-            mIDList.add(task.getId());
-        }
     }
 }
 

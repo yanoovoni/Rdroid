@@ -27,7 +27,6 @@ public class Task {
     private Thread taskThread;
     private static Resources resources = ApplicationContext.getContext().getResources();
     private Server server = Server.getInstance();
-    private ServerFileTransferor fileTransferor = ServerFileTransferor.getInstance();
 
     public Task(String id, String type, String parameters) {
         this.id = id;
@@ -56,12 +55,6 @@ public class Task {
                     case "GET_FILES_IN_FOLDER":
                         output = getFilesInFolder(parameters.split(resources.getString(protocol_parameter_separator))[1]);
                         break;
-                    case "SET_FILE_TRANSFER_MODE":
-                        try {
-                            setFileTransferMode(parameters.split(resources.getString(protocol_parameter_separator))[1]);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
                 }
                 server.send(Protocol.taskResultsMessage(id, output));
             }
@@ -85,16 +78,5 @@ public class Task {
             filesString += name + resources.getString(protocol_client_task_results_output_separator);
         }
         return filesString;
-    }
-
-    private void setFileTransferMode(String work) throws IOException {
-        if (work.equals("true")) {
-            fileTransferor.runCommunicationThread();
-        }
-        else {
-            if (work.equals("false")) {
-                fileTransferor.close();
-            }
-        }
     }
 }
