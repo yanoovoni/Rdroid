@@ -3,7 +3,9 @@ package com.yanoonigmail.rdroid.service;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.content.res.Resources;
 
+import com.yanoonigmail.rdroid.R;
 import com.yanoonigmail.rdroid.ApplicationContext;
 
 import java.io.BufferedReader;
@@ -17,6 +19,7 @@ import java.net.InetSocketAddress;
 import java.lang.Thread;
 import 	java.util.concurrent.locks.ReentrantLock;
 
+import static com.yanoonigmail.rdroid.R.string.server_address;
 import static com.yanoonigmail.rdroid.R.string.user_data;
 
 
@@ -24,29 +27,30 @@ import static com.yanoonigmail.rdroid.R.string.user_data;
  * Created by Yaniv Sharon on 17/02/2016.
  */
 public class Server {
-    private Context context = ApplicationContext.getContext();
-    private boolean mInitialized = false;
-    private Socket mServerSocket;
-    private InetSocketAddress mServerAddress;
-    private EncryptorFactory mEncryptorFactory;
-    private Encryptor mEncryptor;
-    private boolean mConnected = false;
-    private boolean mLoggedIn = false;
+    protected Context context = ApplicationContext.getContext();
+    protected boolean mInitialized = false;
+    protected Socket mServerSocket;
+    protected InetSocketAddress mServerAddress;
+    protected EncryptorFactory mEncryptorFactory;
+    protected Encryptor mEncryptor;
+    protected boolean mConnected = false;
+    protected boolean mLoggedIn = false;
     private static Server ourInstance = new Server();
-    private Thread mInitThread;
-    private ReentrantLock mConnectLock = new ReentrantLock();
-    private ReentrantLock mLoginLock = new ReentrantLock();
-    private String mEmail;
-    private String mPassword;
+    protected Thread mInitThread;
+    protected ReentrantLock mConnectLock = new ReentrantLock();
+    protected ReentrantLock mLoginLock = new ReentrantLock();
+    protected String mEmail;
+    protected String mPassword;
+    protected static Resources resources = ApplicationContext.getContext().getResources();
 
     public static Server getInstance() {
         return ourInstance;
     }
 
-    private Server() {
+    protected Server() {
         mInitThread = new Thread(new Runnable() {
             public void run() {
-                mServerAddress = new InetSocketAddress("79.180.166.70", 9000);
+                mServerAddress = new InetSocketAddress(resources.getString(server_address), 9000);
                 Log.d("Server init", mServerAddress.toString());
                 mEncryptorFactory = new EncryptorFactory();
                 mInitialized = true;
@@ -102,7 +106,7 @@ public class Server {
         manageTasksThread.start();
     }
 
-    private void passiveLogin() {
+    protected void passiveLogin() {
         if (!isLoggedIn()) {
             SharedPreferences preferences = context.getSharedPreferences(context.getString(user_data), Context.MODE_PRIVATE);
             if (preferences.contains("email") && preferences.contains("password")) {

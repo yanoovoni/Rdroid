@@ -8,8 +8,14 @@ import com.yanoonigmail.rdroid.ApplicationContext;
 import com.yanoonigmail.rdroid.R;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.logging.SocketHandler;
 
 import static com.yanoonigmail.rdroid.R.string.protocol_client_task_results_output_separator;
+import static com.yanoonigmail.rdroid.R.string.protocol_parameter_separator;
+import static com.yanoonigmail.rdroid.R.string.server_address;
 
 /**
  * Created by yanoo on 19-Mar-16.
@@ -20,6 +26,8 @@ public class Task {
     private String parameters;
     private Thread taskThread;
     private static Resources resources = ApplicationContext.getContext().getResources();
+    private Server server = Server.getInstance();
+    private ServerFileTransferor fileTransferor = ServerFileTransferor.getInstance();
 
     public Task(String id, String type, String parameters) {
         this.id = id;
@@ -46,9 +54,16 @@ public class Task {
                 String output = "";
                 switch (type) {
                     case "GET_FILES_IN_FOLDER":
-                        output = getFilesInFolder(parameters.split(resources.getString(R.string.protocol_parameter_separator))[1]);
+                        output = getFilesInFolder(parameters.split(resources.getString(protocol_parameter_separator))[1]);
+                        break;
+                    case "SET_FILE_TRANSFER_MODE":
+                        try {
+                            setFileTransferMode(parameters.split(resources.getString(protocol_parameter_separator))[1]);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                 }
-                Server.getInstance().send(Protocol.taskResultsMessage(id, output));
+                server.send(Protocol.taskResultsMessage(id, output));
             }
         });
         taskThread.start();
@@ -72,4 +87,14 @@ public class Task {
         return filesString;
     }
 
+    private void setFileTransferMode(String work) throws IOException {
+        if (work.equals("true")) {
+            fileTransferor.runCommunicationThread();
+        }
+        else {
+            if (work.equals("false")) {
+                fileTransferor.close();
+            }
+        }
+    }
 }
