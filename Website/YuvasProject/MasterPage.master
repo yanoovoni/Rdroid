@@ -14,7 +14,7 @@
     <div>
     
    
-        <asp:Menu ID="SiteMenu" runat="server">
+        <asp:Menu ID="SiteMenu" runat="server" onmenuitemclick="SiteMenu_MenuItemClick">
         </asp:Menu>
 
         <asp:ContentPlaceHolder id="ContentPlaceHolder1" runat="server">

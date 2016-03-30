@@ -300,6 +300,76 @@ public class UserService
         return contact;
     }
 
+    public DataSet FindFriends(string firstName, string lastName)//הפעולה מחזירה משמש על פי שם מלא
+    {
+        OleDbCommand myCmd = new OleDbCommand("FindFriend", myConnection);
+        myCmd.CommandType = CommandType.StoredProcedure;
+        OleDbDataAdapter adapter = new OleDbDataAdapter(myCmd);
+
+        DataSet dataset = new DataSet();
+        UserDetails userDetails = new UserDetails();
+
+        OleDbParameter parameter;
+        parameter = myCmd.Parameters.Add("@FirstName", OleDbType.BSTR);
+        parameter.Direction = ParameterDirection.Input;
+        parameter.Value = firstName;
+
+        parameter = myCmd.Parameters.Add("@LastName", OleDbType.BSTR);
+        parameter.Direction = ParameterDirection.Input;
+        parameter.Value = lastName;
+
+        try
+        {
+            adapter.Fill(dataset, "users");
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    
+        return dataset;
+    }
+
+
+    public void InsertContact(FriendDetails friendDetais)//הפעולה מאפשרת להוסיף מידע לתוך טבלת אנשי הקשר
+    {
+        OleDbCommand myCmd = new OleDbCommand("InsertIntoFriends", myConnection);
+        myCmd.CommandType = CommandType.StoredProcedure;
+        //INSERT INTO Friends ( PhoneIDAsking, PhoneIDAccepting, DateOfFriendship, Status )
+        //VALUES(@PhoneIDAsking, @PhoneIDAccepting, @DateOfFriendship, @Status);
+
+
+        OleDbParameter objParam;
+
+        objParam = myCmd.Parameters.Add("@PhoneIDAsking", OleDbType.BSTR);
+        objParam.Direction = ParameterDirection.Input;
+        objParam.Value = friendDetais.phoneIDAsking;
+
+        objParam = myCmd.Parameters.Add("@PhoneIDAccepting", OleDbType.BSTR);
+        objParam.Direction = ParameterDirection.Input;
+        objParam.Value = friendDetais.phoneIDAccepting;
+
+        objParam = myCmd.Parameters.Add("@DateOfFriendship", OleDbType.Date);
+        objParam.Direction = ParameterDirection.Input;
+        objParam.Value = friendDetais.dateOfFriendship;
+
+        objParam = myCmd.Parameters.Add("@Status", OleDbType.Boolean);
+        objParam.Direction = ParameterDirection.Input;
+        objParam.Value = friendDetais.status;
+        try
+        {
+            myConnection.Open();
+            myCmd.ExecuteNonQuery();
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            myConnection.Close();
+        }
+    }
     //public DataSet getUsersAndCities()
     //{
     //    OleDbCommand myCmd = new OleDbCommand("allFromUser&Cities", myConnection);
