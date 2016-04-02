@@ -73,30 +73,19 @@ public class Protocol {
      * @param message The request packet that was received.
      * @return The given Task object.
      */
-    public static Task taskRequest(String message) {
-        ArrayList<Task> taskList = new ArrayList<>();
+    public static Task taskRequest(String message) throws BadInputException {
         if (isServerMessage(message)) {
             String[] lineArray = message.split(line_separator);
-            if (lineArray[1].equals(resources.getString(protocol_server_task_response_announcement))) {
+            if (lineArray[1].equals(resources.getString(protocol_server_task_request_announcement))) {
                 String[] parameterLineArray = Arrays.copyOfRange(lineArray, 2, lineArray.length);
-                for (String line : parameterLineArray) {
-                    if (line.startsWith(resources.getString(protocol_server_task_response_task))) {
-                        String[] taskParamsArray = line.split(resources.getString(protocol_parameter_separator), 1)[1].split(resources.getString(protocol_server_task_response_task_parameters_separator));
-                        if (taskParamsArray.length == 3) {
-                            try {
-                                taskList.add(taskCreator(taskParamsArray));
-                            } catch (BadInputException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
+                if (parameterLineArray.length == 3) {
+                    return taskCreator(parameterLineArray);
                 }
             }
         }
-        Task[] taskArray = new Task[taskList.size()];
-        taskList.toArray(taskArray);
-        return taskArray;
+        throw new BadInputException("Something is wrong with the message");
     }
+
 
     /**
      * Made for taskRequest.

@@ -91,9 +91,11 @@ public class TaskManager extends android.app.Service {
             public void run() {
                 while (true) {
                     if (mServer.isLoggedIn()) {
-                        Task[] taskArray = Protocol.taskRequest(mServer.recv());
-                        for (Task task : taskArray) {
+                        try {
+                            Task task = Protocol.taskRequest(mServer.recv());
                             mIDList.add(task.getId());
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     }
                     else {
