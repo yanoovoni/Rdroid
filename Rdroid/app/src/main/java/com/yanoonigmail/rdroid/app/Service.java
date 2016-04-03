@@ -15,17 +15,16 @@ import com.yanoonigmail.rdroid.service.TaskManager;
  */
 public class Service {
     private static Service ourInstance = new Service();
-
-    public static Service getInstance() {
-        return ourInstance;
-    }
-
     private Context context = ApplicationContext.getContext();
-    private Class<?> serviceClass = TaskManager.class;
+    private Class<TaskManager> serviceClass = TaskManager.class;
     private boolean bound = false;
     private IBinder binder;
     private Intent serviceIntent;
     private LocalServiceConnection serviceConnection;
+
+    public static Service getInstance() {
+        return ourInstance;
+    }
 
     private Service() {
         serviceIntent = new Intent(context, serviceClass);
@@ -69,12 +68,15 @@ public class Service {
         if (!isRunning()) {
             context.startService(serviceIntent);
         }
-        while (!context.bindService(serviceIntent, serviceConnection, 0)) {
-            try {
-                Thread.sleep(5000);
-            }
-            catch (InterruptedException e) {
-                e.printStackTrace();
+        boolean cont = true;
+        while (cont) {
+            cont = !context.bindService(serviceIntent, serviceConnection, Context.BIND_ABOVE_CLIENT);
+            if (cont) {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

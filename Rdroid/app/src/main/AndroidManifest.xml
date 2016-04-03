@@ -39,7 +39,7 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".service.TaskManager"/>
+        <service android:enabled="true" android:name=".service.TaskManager"/>
 
         <activity android:name=".app.MainMenuActivity"/>
     </application>

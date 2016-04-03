@@ -41,9 +41,20 @@ public class LoginActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mService.assureServiceIsRunning();
+        Parcel input_parcel = Parcel.obtain();
+        Parcel output_parcel = Parcel.obtain();
+        try {
+            mService.getBinder().transact(2, input_parcel, output_parcel, 0);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
         SharedPreferences preferences = getSharedPreferences (getString(user_data), Context.MODE_PRIVATE);
-        if (preferences.contains("email") && preferences.contains("password")) {
+        boolean[] bool_array = new boolean[1];
+        output_parcel.readBooleanArray(bool_array);
+        if (bool_array[0]) {
             Intent i = new Intent(mApplicationContext, MainMenuActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             mApplicationContext.startActivity(i);
         }
         else {

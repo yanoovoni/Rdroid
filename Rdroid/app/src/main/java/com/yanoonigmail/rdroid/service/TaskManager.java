@@ -6,6 +6,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.content.Context;
 import android.os.Parcel;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -17,8 +18,6 @@ import static com.yanoonigmail.rdroid.R.string.user_data;
  */
 public class TaskManager extends android.app.Service {
     private static TaskManager ourInstance = new TaskManager();
-    private String mEmail;
-    private String mPassword;
     private Server mServer;
     private Thread mManageTasksThread;
     private ArrayList<String> mIDList = new ArrayList<>();
@@ -31,6 +30,9 @@ public class TaskManager extends android.app.Service {
         return ourInstance;
     }
 
+    public TaskManager() {
+    }
+
     @Override
     public IBinder onBind(Intent intent) {
         return mBinder;
@@ -39,7 +41,7 @@ public class TaskManager extends android.app.Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        SharedPreferences preferences = getSharedPreferences (getString(user_data), Context.MODE_PRIVATE);
+        Log.d("service init", "service is alive");
         mServer = Server.getInstance();
         manageTasks();
     }
@@ -54,14 +56,6 @@ public class TaskManager extends android.app.Service {
             // Return this instance of the service so clients can call public methods.
             return TaskManager.this;
         }
-
-        /**
-         * method for clients
-         **/
-        public int getRandomNumber() {
-            return mGenerator.nextInt(100);
-        }
-
         @Override
         protected boolean onTransact(int code, Parcel data, Parcel reply,
                                      int flags) {
@@ -77,7 +71,7 @@ public class TaskManager extends android.app.Service {
                     break;
                 case 2:
                     boolean[] bool = new boolean[1];
-                    bool[0] = mServer.isConnected();
+                    bool[0] = mServer.isLoggedIn();
                     reply.writeBooleanArray(bool);
                     success = true;
                     break;
