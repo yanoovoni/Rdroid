@@ -38,14 +38,15 @@ public class LoadingActivity extends ActionBarActivity {
                 boolean[] bool_array = new boolean[1];
                 output_parcel.readBooleanArray(bool_array);
                 Intent i;
-                    if (bool_array[0]) {
-                        i = new Intent(mApplicationContext, MainMenuActivity.class);
-                    } else {
-                        i = new Intent(mApplicationContext, LoginActivity.class);
-                    }
-                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    mApplicationContext.startActivity(i);
+                if (bool_array[0]) {
+                    i = new Intent(mApplicationContext, MainMenuActivity.class);
+                } else {
+                    i = new Intent(mApplicationContext, LoginActivity.class);
                 }
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mApplicationContext.startActivity(i);
+                finish();
+            }
         });
         loadingThread.start();
     }

@@ -137,6 +137,7 @@ public class LoginActivity extends ActionBarActivity {
                 Intent mainMenuIntent = new Intent(mLoginActivity, MainMenuActivity.class);
                 mainMenuIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 mApplicationContext.startActivity(mainMenuIntent);
+                finish();
             }
             else {
                 mStatusText.setText(getString(status_login_wrong_parameters));
