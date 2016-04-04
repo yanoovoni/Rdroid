@@ -19,9 +19,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".app.LoginActivity"
-            android:label="@string/title_activity_login"
+            android:name=".app.LoadingActivity"
             android:configChanges="orientation"
+            android:label="@string/label_activity_loading"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,6 +29,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".app.LoginActivity"
+            android:configChanges="orientation"
+            android:label="@string/label_activity_login"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".app.MainMenuActivity"
+            android:configChanges="orientation"
+            android:label="@string/label_activity_main_menu"
+            android:screenOrientation="portrait"/>
         <!-- Declaring broadcast receiver for BOOT_COMPLETED event. -->
         <receiver
             android:name=".service.StartupReceiver"
@@ -39,9 +50,8 @@
             </intent-filter>
         </receiver>
 
-        <service android:enabled="true" android:name=".service.TaskManager"/>
+        <service android:name=".service.TaskManager" />
 
-        <activity android:name=".app.MainMenuActivity"/>
     </application>
 
 </manifest>

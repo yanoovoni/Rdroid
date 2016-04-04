@@ -17,7 +17,6 @@ import static com.yanoonigmail.rdroid.R.string.user_data;
  * Created by Yaniv on 24-Feb-16.
  */
 public class TaskManager extends android.app.Service {
-    private static TaskManager ourInstance = new TaskManager();
     private Server mServer;
     private Thread mManageTasksThread;
     private ArrayList<String> mIDList = new ArrayList<>();
@@ -25,13 +24,6 @@ public class TaskManager extends android.app.Service {
     private final LocalBinder mBinder = new LocalBinder();
     // Random number generator
     private final Random mGenerator = new Random();
-
-    public static TaskManager getInstance() {
-        return ourInstance;
-    }
-
-    public TaskManager() {
-    }
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -41,9 +33,18 @@ public class TaskManager extends android.app.Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d("service init", "service is alive");
+        Log.d("service create", "service is alive");
         mServer = Server.getInstance();
         manageTasks();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
+        Log.d("service start", "service is alive");
+        mServer = Server.getInstance();
+        manageTasks();
+        return START_NOT_STICKY;
     }
 
     @Override
@@ -70,9 +71,15 @@ public class TaskManager extends android.app.Service {
                     success = true;
                     break;
                 case 2:
-                    boolean[] bool = new boolean[1];
-                    bool[0] = mServer.isLoggedIn();
-                    reply.writeBooleanArray(bool);
+                    boolean[] connectedBool = new boolean[1];
+                    connectedBool[0] = mServer.isConnected();
+                    reply.writeBooleanArray(connectedBool);
+                    success = true;
+                    break;
+                case 3:
+                    boolean[] loggedInBool = new boolean[1];
+                    loggedInBool[0] = mServer.isLoggedIn();
+                    reply.writeBooleanArray(loggedInBool);
                     success = true;
                     break;
             }
@@ -81,28 +88,31 @@ public class TaskManager extends android.app.Service {
     }
 
     private void manageTasks() {
-        mManageTasksThread = new Thread(new Runnable() {
-            public void run() {
-                while (true) {
-                    if (mServer.isLoggedIn()) {
-                        try {
-                            Task task = Protocol.taskRequest(mServer.recv());
-                            mIDList.add(task.getId());
-                        } catch (Exception e) {
-                            e.printStackTrace();
+        if (mManageTasksThread != null) {
+            if (!mManageTasksThread.isAlive()) {
+                mManageTasksThread = new Thread(new Runnable() {
+                    public void run() {
+                        while (true) {
+                            if (mServer.isLoggedIn()) {
+                                try {
+                                    Task task = Protocol.taskRequest(mServer.recv());
+                                    mIDList.add(task.getId());
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                try {
+                                    Thread.sleep(1000);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
                         }
                     }
-                    else {
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
+                });
+                mManageTasksThread.start();
             }
-        });
-        mManageTasksThread.start();
+        }
     }
 }
 

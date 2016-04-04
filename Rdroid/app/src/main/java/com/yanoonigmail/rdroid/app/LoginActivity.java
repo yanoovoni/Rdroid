@@ -34,42 +34,24 @@ public class LoginActivity extends ActionBarActivity {
     private Button mLoginButton;
     private TextView mStatusText;
     private Thread mTryLoginThread;
-    private Service mService = Service.getInstance();
+    private MyService mMyService = MyService.getInstance();
     private Context mApplicationContext = ApplicationContext.getContext();
     private LoginActivity mLoginActivity = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mService.assureServiceIsRunning();
-        Parcel input_parcel = Parcel.obtain();
-        Parcel output_parcel = Parcel.obtain();
-        try {
-            mService.getBinder().transact(2, input_parcel, output_parcel, 0);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-        SharedPreferences preferences = getSharedPreferences (getString(user_data), Context.MODE_PRIVATE);
-        boolean[] bool_array = new boolean[1];
-        output_parcel.readBooleanArray(bool_array);
-        if (bool_array[0]) {
-            Intent i = new Intent(mApplicationContext, MainMenuActivity.class);
-            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            mApplicationContext.startActivity(i);
-        }
-        else {
-            setContentView(activity_login);
-            mEmailEditText = (EditText) findViewById(email);
-            mPasswordEditText = (EditText) findViewById(password);
-            mLoginButton = (Button) findViewById(login_button);
-            mStatusText = (TextView) findViewById(status_text);
-        }
+        setContentView(activity_login);
+        mEmailEditText = (EditText) findViewById(email);
+        mPasswordEditText = (EditText) findViewById(password);
+        mLoginButton = (Button) findViewById(login_button);
+        mStatusText = (TextView) findViewById(status_text);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        mService.assureServiceIsRunning();
+        mMyService.assureServiceIsRunning();
     }
 
     public void tryLogin(View v) {
@@ -77,7 +59,7 @@ public class LoginActivity extends ActionBarActivity {
         try {
             Parcel input_parcel = Parcel.obtain();
             Parcel output_parcel = Parcel.obtain();
-            mService.getBinder().transact(2, input_parcel, output_parcel, 0);
+            mMyService.getBinder().transact(2, input_parcel, output_parcel, 0);
             boolean[] val = new boolean[1];
             output_parcel.readBooleanArray(val);
             if (!val[0]) {
@@ -123,15 +105,15 @@ public class LoginActivity extends ActionBarActivity {
             if (strings.length != 2) {
                 throw new IllegalArgumentException("Method requires exactly 2 strings");
             }
-            if (!mService.isRunning()) {
-                throw new Error("Service is ded");
+            if (!mMyService.isRunning()) {
+                throw new Error("MyService is ded");
             }
             Parcel input_parcel = Parcel.obtain();
             input_parcel.writeStringArray(strings);
             Parcel output_parcel = Parcel.obtain();
             boolean login_successful = false;
             try {
-                mService.getBinder().transact(1, input_parcel, output_parcel, 0);
+                mMyService.getBinder().transact(1, input_parcel, output_parcel, 0);
                 boolean[] val = new boolean[1];
                 output_parcel.readBooleanArray(val);
                 login_successful = val[0];

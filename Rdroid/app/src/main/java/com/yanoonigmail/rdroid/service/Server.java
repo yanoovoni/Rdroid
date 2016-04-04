@@ -42,6 +42,7 @@ public class Server {
     protected String mEmail;
     protected String mPassword;
     protected static Resources resources = ApplicationContext.getContext().getResources();
+    protected boolean mFirstConnectTry = true;
 
     public static Server getInstance() {
         return ourInstance;
@@ -67,7 +68,6 @@ public class Server {
         Thread manageTasksThread = new Thread(new Runnable() {
             public void run() {
                 if (mConnectLock.tryLock()) {
-                    if (!mConnected) {
                         while (!mInitialized) {
                             try {
                                 Thread.sleep(10);
@@ -76,15 +76,16 @@ public class Server {
                             }
                         }
                         mLoggedIn = false;
-                        boolean connected = false;
-                        while (!connected) {
+                        while (!mConnected) {
                             try {
                                 mServerSocket = new Socket();
                                 mServerSocket.connect(mServerAddress, 5000);
-                                connected = true;
+                                mConnected = true;
+                                mFirstConnectTry = false;
                             } catch (IOException e) {
                                 e.printStackTrace();
                                 try {
+                                    mFirstConnectTry = false;
                                     Thread.sleep(5000);
                                 } catch (InterruptedException e2) {
                                     e2.printStackTrace();
@@ -101,7 +102,6 @@ public class Server {
                     mConnectLock.unlock();
                     passiveLogin();
                 }
-            }
         });
         manageTasksThread.start();
     }
@@ -221,6 +221,17 @@ public class Server {
     }
 
     public boolean isLoggedIn() {
+        waitForFirstLogin();
         return mLoggedIn;
+    }
+
+    protected void waitForFirstLogin() {
+        while (mFirstConnectTry) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

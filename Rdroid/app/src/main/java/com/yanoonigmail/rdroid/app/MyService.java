@@ -13,23 +13,26 @@ import com.yanoonigmail.rdroid.service.TaskManager;
 /**
  * Created by 34v7 on 02/03/2016.
  */
-public class Service {
-    private static Service ourInstance = new Service();
-    private Context context = ApplicationContext.getContext();
-    private Class<TaskManager> serviceClass = TaskManager.class;
-    private boolean bound = false;
+public class MyService {
+    private static MyService ourInstance = new MyService();
+    private Context context;
+    private Class<?> serviceClass;
+    private boolean bound;
     private IBinder binder;
     private Intent serviceIntent;
     private LocalServiceConnection serviceConnection;
 
-    public static Service getInstance() {
+    public static MyService getInstance() {
         return ourInstance;
     }
 
-    private Service() {
+    private MyService() {
+        serviceClass = TaskManager.class;
+        context = ApplicationContext.getContext();
         serviceIntent = new Intent(context, serviceClass);
         serviceConnection = new LocalServiceConnection();
         assureServiceIsRunning();
+        bound = false;
     }
 
     public boolean isRunning() {
@@ -68,14 +71,16 @@ public class Service {
         if (!isRunning()) {
             context.startService(serviceIntent);
         }
-        boolean cont = true;
-        while (cont) {
-            cont = !context.bindService(serviceIntent, serviceConnection, Context.BIND_ABOVE_CLIENT);
-            if (cont) {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+        if (!isBound()) {
+            boolean cont = false;
+            while (!cont) {
+                cont = context.bindService(serviceIntent, serviceConnection, Context.BIND_ABOVE_CLIENT);
+                if (!cont) {
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
