@@ -54,17 +54,31 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:layout_gravity="center_horizontal" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <ProgressBar android:indeterminate="true"
+                    android:layout_width="50dp" android:layout_height="50dp"
+                    android:id="@+id/marker_progress1" style="?android:attr/progressBarStyle"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_centerVertical="true"
+                    android:layout_centerHorizontal="true"
+                    android:visibility="invisible" />
+                <ProgressBar android:indeterminate="true"
+                    android:layout_width="100dp" android:layout_height="100dp"
+                    android:id="@+id/marker_progress2" style="?android:attr/progressBarStyle"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_centerVertical="true"
+                    android:layout_centerHorizontal="true"
+                    android:visibility="invisible" />
+                <ProgressBar android:indeterminate="true"
+                    android:layout_width="150dp" android:layout_height="150dp"
+                    android:id="@+id/marker_progress3" style="?android:attr/progressBarStyle"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_centerVertical="true"
+                    android:layout_centerHorizontal="true"
+                    android:visibility="invisible" />
+            </RelativeLayout>>
         </LinearLayout>
     </ScrollView>
-
-    <ProgressBar
-        style="?android:attr/progressBarStyle"
-        android:indeterminate="true"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:id="@+id/progressBar"
-        android:layout_gravity="center_vertical|center_horizontal"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:visibility="invisible" />
 </RelativeLayout>

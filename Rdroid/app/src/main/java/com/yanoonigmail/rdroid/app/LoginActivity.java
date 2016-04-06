@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.os.Parcel;
 
@@ -19,6 +20,9 @@ import java.lang.Thread;
 
 import static com.yanoonigmail.rdroid.R.id.email;
 import static com.yanoonigmail.rdroid.R.id.login_button;
+import static com.yanoonigmail.rdroid.R.id.marker_progress1;
+import static com.yanoonigmail.rdroid.R.id.marker_progress2;
+import static com.yanoonigmail.rdroid.R.id.marker_progress3;
 import static com.yanoonigmail.rdroid.R.id.password;
 import static com.yanoonigmail.rdroid.R.id.status_text;
 import static com.yanoonigmail.rdroid.R.layout.activity_login;
@@ -33,6 +37,9 @@ public class LoginActivity extends ActionBarActivity {
     private EditText mPasswordEditText;
     private Button mLoginButton;
     private TextView mStatusText;
+    private ProgressBar mProgressBar1;
+    private ProgressBar mProgressBar2;
+    private ProgressBar mProgressBar3;
     private Thread mTryLoginThread;
     private MyService mMyService = MyService.getInstance();
     private Context mApplicationContext = ApplicationContext.getContext();
@@ -46,6 +53,9 @@ public class LoginActivity extends ActionBarActivity {
         mPasswordEditText = (EditText) findViewById(password);
         mLoginButton = (Button) findViewById(login_button);
         mStatusText = (TextView) findViewById(status_text);
+        mProgressBar1 = (ProgressBar) findViewById(marker_progress1);
+        mProgressBar2 = (ProgressBar) findViewById(marker_progress2);
+        mProgressBar3 = (ProgressBar) findViewById(marker_progress3);
     }
 
     @Override
@@ -54,8 +64,14 @@ public class LoginActivity extends ActionBarActivity {
         mMyService.assureServiceIsRunning();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mMyService.unbindService();
+    }
+
     public void tryLogin(View v) {
-        setLoginInProgress(false);
+        setLoginInProgress(true);
         try {
             Parcel input_parcel = Parcel.obtain();
             Parcel output_parcel = Parcel.obtain();
@@ -64,14 +80,14 @@ public class LoginActivity extends ActionBarActivity {
             output_parcel.readBooleanArray(val);
             if (!val[0]) {
                 mStatusText.setText(mApplicationContext.getString(status_login_not_connected));
-                setLoginInProgress(true);
+                setLoginInProgress(false);
             } else {
                 mStatusText.setText(mApplicationContext.getString(status_login_attempt));
                 String given_email = mEmailEditText.getText().toString();
                 String given_password = mPasswordEditText.getText().toString();
                 if (!isEmailValid(given_email) || !isPasswordValid(given_password)) {
                     mStatusText.setText(mApplicationContext.getString(status_login_bad_parameters));
-                    setLoginInProgress(true);
+                    setLoginInProgress(false);
                 } else {
                     try {
                         new AsyncLogin().execute(given_email, given_password);
@@ -82,7 +98,7 @@ public class LoginActivity extends ActionBarActivity {
             }
         } catch (RemoteException e) {
             e.printStackTrace();
-            setLoginInProgress(true);
+            setLoginInProgress(false);
         }
     }
 
@@ -97,6 +113,16 @@ public class LoginActivity extends ActionBarActivity {
 
     protected void setLoginInProgress(boolean inProgress) {
         mLoginButton.setEnabled(inProgress);
+        int visibility;
+        if (inProgress) {
+            visibility = View.INVISIBLE;
+        }
+        else {
+            visibility = View.VISIBLE;
+        }
+        mProgressBar1.setVisibility(visibility);
+        mProgressBar2.setVisibility(visibility);
+        mProgressBar3.setVisibility(visibility);
     }
 
     private class AsyncLogin extends AsyncTask<String, Void, Boolean> {
@@ -136,7 +162,7 @@ public class LoginActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(Boolean logged_in) {
-            setLoginInProgress(true);
+            setLoginInProgress(false);
             if (logged_in) {
                 Intent mainMenuIntent = new Intent(mLoginActivity, MainMenuActivity.class);
                 mainMenuIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

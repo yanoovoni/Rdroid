@@ -10,8 +10,20 @@
     tools:context="com.yanoonigmail.rdroid.app.LoadingActivity">
 
     <ProgressBar android:indeterminate="true"
+        android:layout_width="50dp" android:layout_height="50dp"
+        android:id="@+id/marker_progress1" style="?android:attr/progressBarStyle"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+    <ProgressBar android:indeterminate="true"
         android:layout_width="100dp" android:layout_height="100dp"
-        android:id="@+id/marker_progress" style="?android:attr/progressBarStyle"
+        android:id="@+id/marker_progress2" style="?android:attr/progressBarStyle"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+    <ProgressBar android:indeterminate="true"
+        android:layout_width="150dp" android:layout_height="150dp"
+        android:id="@+id/marker_progress3" style="?android:attr/progressBarStyle"
         android:layout_gravity="center_vertical|center_horizontal"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
