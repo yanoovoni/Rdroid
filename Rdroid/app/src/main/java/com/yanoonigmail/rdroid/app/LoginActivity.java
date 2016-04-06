@@ -55,7 +55,7 @@ public class LoginActivity extends ActionBarActivity {
     }
 
     public void tryLogin(View v) {
-        mLoginButton.setEnabled(false);
+        setLoginInProgress(false);
         try {
             Parcel input_parcel = Parcel.obtain();
             Parcel output_parcel = Parcel.obtain();
@@ -64,14 +64,14 @@ public class LoginActivity extends ActionBarActivity {
             output_parcel.readBooleanArray(val);
             if (!val[0]) {
                 mStatusText.setText(mApplicationContext.getString(status_login_not_connected));
-                mLoginButton.setEnabled(true);
+                setLoginInProgress(true);
             } else {
                 mStatusText.setText(mApplicationContext.getString(status_login_attempt));
                 String given_email = mEmailEditText.getText().toString();
                 String given_password = mPasswordEditText.getText().toString();
                 if (!isEmailValid(given_email) || !isPasswordValid(given_password)) {
                     mStatusText.setText(mApplicationContext.getString(status_login_bad_parameters));
-                    mLoginButton.setEnabled(true);
+                    setLoginInProgress(true);
                 } else {
                     try {
                         new AsyncLogin().execute(given_email, given_password);
@@ -82,7 +82,7 @@ public class LoginActivity extends ActionBarActivity {
             }
         } catch (RemoteException e) {
             e.printStackTrace();
-            mLoginButton.setEnabled(true);
+            setLoginInProgress(true);
         }
     }
 
@@ -93,6 +93,10 @@ public class LoginActivity extends ActionBarActivity {
 
     private boolean isPasswordValid(String password) {
         return (password.length() >= 4);
+    }
+
+    protected void setLoginInProgress(boolean inProgress) {
+        mLoginButton.setEnabled(inProgress);
     }
 
     private class AsyncLogin extends AsyncTask<String, Void, Boolean> {
@@ -132,7 +136,7 @@ public class LoginActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(Boolean logged_in) {
-            mLoginButton.setEnabled(true);
+            setLoginInProgress(true);
             if (logged_in) {
                 Intent mainMenuIntent = new Intent(mLoginActivity, MainMenuActivity.class);
                 mainMenuIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -143,6 +147,5 @@ public class LoginActivity extends ActionBarActivity {
                 mStatusText.setText(getString(status_login_wrong_parameters));
             }
         }
-
     }
 }
