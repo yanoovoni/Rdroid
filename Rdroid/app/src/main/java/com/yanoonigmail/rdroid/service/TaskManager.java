@@ -1,12 +1,22 @@
 package com.yanoonigmail.rdroid.service;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.os.Binder;
 import android.os.IBinder;
 import android.content.Context;
 import android.os.Parcel;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+
+import com.yanoonigmail.rdroid.ApplicationContext;
+import com.yanoonigmail.rdroid.R;
+import com.yanoonigmail.rdroid.app.LoadingActivity;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -24,6 +34,7 @@ public class TaskManager extends android.app.Service {
     private final LocalBinder mBinder = new LocalBinder();
     // Random number generator
     private final Random mGenerator = new Random();
+    private int mId = 9000;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -34,6 +45,7 @@ public class TaskManager extends android.app.Service {
     public void onCreate() {
         super.onCreate();
         Log.d("service create", "service is alive");
+        notifyUser();
         mServer = Server.getInstance();
         manageTasks();
     }
@@ -113,6 +125,32 @@ public class TaskManager extends android.app.Service {
                 mManageTasksThread.start();
             }
         }
+    }
+
+    private void notifyUser() {
+        Notification mNotification =
+                new Notification.Builder(ApplicationContext.getContext())
+                        .setContentTitle("RDroid is running")
+                        .setContentText("The RDroid service is running and might do actions in the background.")
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
+                        .build();
+        // Creates an explicit intent for an Activity in your app
+        Intent resultIntent = new Intent(this, LoadingActivity.class);
+
+        // The stack builder object will contain an artificial back stack for the
+        // started Activity.
+        // This ensures that navigating backward from the Activity leads out of
+        // your application to the Home screen.
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        // Adds the back stack for the Intent (but not the Intent itself)
+        stackBuilder.addParentStack(LoadingActivity.class);
+        // Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        // mId allows you to update the notification later on.
+        mNotificationManager.notify(mId, mNotification);
     }
 }
 
