@@ -331,7 +331,7 @@ public class UserService
     }
 
 
-    public void InsertContact(FriendDetails friendDetais)//הפעולה מאפשרת להוסיף מידע לתוך טבלת אנשי הקשר
+    public void InsertFriend(FriendDetails friendDetais)//הפעולה מאפשרת להוסיף מידע לתוך טבלת חברים
     {
         OleDbCommand myCmd = new OleDbCommand("InsertIntoFriends", myConnection);
         myCmd.CommandType = CommandType.StoredProcedure;

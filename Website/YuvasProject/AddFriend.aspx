@@ -18,6 +18,7 @@
         </Columns>
     </asp:GridView>
     <br />
+    <asp:Label ID="LabelMsg" runat="server" Text="Label"></asp:Label>
     <asp:Table ID="Table1" runat="server" Height="289px" Width="789px">
     </asp:Table>
     </center>
