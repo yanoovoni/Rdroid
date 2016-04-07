@@ -73,7 +73,10 @@ public sealed class Proxy
                     }
                     else
                     {
-                        //todo (yaniv)
+                        if (Purpose == "TASK_RESULTS")
+                        {
+
+                        }
                     }
                 }
             }
@@ -87,11 +90,40 @@ public sealed class Proxy
 
     private void Add_Phone_By_Email(string Id, string Email) // needs the phone to be in the Phone_By_Id_Dict.
     {
-        Phone Added_Phone;
-        if (Phone_By_Id_Dict.TryGetValue(Id, out Added_Phone))
+        Phone Added_Phone = Get_Phone_By_Id(Id);
+        if (Added_Phone != null)
         {
             Added_Phone.Set_Email(Email);
             Phone_By_Email_Dict.Add(Email, Added_Phone);
         }
+    }
+
+    public Phone Get_Phone_By_Id(string Id)
+    {
+        Phone Wanted_Phone;
+        if (Phone_By_Id_Dict.TryGetValue(Id, out Wanted_Phone))
+        {
+            return Wanted_Phone;
+        }
+        return null;
+    }
+
+    public Phone Get_Phone_By_Email(string Email)
+    {
+        Phone Wanted_Phone;
+        if (Phone_By_Email_Dict.TryGetValue(Email, out Wanted_Phone))
+        {
+            return Wanted_Phone;
+        }
+        return null;
+    }
+
+    public string Handle_Task(string Email, string Type, string[] Parameters)
+    {
+        Phone Tasked_Phone = Get_Phone_By_Email(Email);
+        string Task_Id = Tasked_Phone.Generate_Task_Id();
+        string Task_Message = Protocol.Get_Task_Message(Task_Id, Type, Parameters);
+        Proxy_Socket.Send(Task_Message);
+        //todo get the output of the task
     }
 }

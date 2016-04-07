@@ -10,6 +10,7 @@ public class Phone
 {
     private string Id;
     private string User_Email = "";
+    private int Task_Id_Generator_Number = 0;
 
     public Phone(string Id)
     {
@@ -39,5 +40,11 @@ public class Phone
     public void Send(string message)
     {
         ProxySocketInterface.Get_Instance().Send(message);
+    }
+
+    public string Generate_Task_Id()
+    {
+        Task_Id_Generator_Number++;
+        return Task_Id_Generator_Number.ToString();
     }
 }

@@ -15,7 +15,7 @@ public static class Protocol
 
     public static bool Is_Phone_Message(string Message)
     {
-        return Message.Split(':')[1].StartsWith("Rdroid CLIENT");
+        return Message.Split(':')[1].StartsWith("Rdroid CLIENT\n");
     }
 
     /**
@@ -42,5 +42,18 @@ public static class Protocol
             Parameter_Dict.Add(Split_Parameter[0], Split_Parameter[1]);
         }
         return Parameter_Dict;
+    }
+
+    public static string Get_Task_Message(string Id, string Type, string[] Parameters)
+    {
+        string Message = "Rdroid SERVER\nTASK\n";
+        Message += "id:" + Id + "\n";
+        Message += "type:" + Type + "\n";
+        foreach (string Parameter in Parameters)
+        {
+            Message += "parameter:" + Parameter + "\n";
+        }
+        Message = Message.Substring(0, Message.LastIndexOf("\n"));
+        return Message;
     }
 }

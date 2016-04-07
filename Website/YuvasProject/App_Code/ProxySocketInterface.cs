@@ -69,9 +69,9 @@ public sealed class ProxySocketInterface
             try
             {
                 string recieved_message = Encoding.ASCII.GetString(this.buffer, 0, 4096); // Decoding the message.
-                if (!recieved_message.Equals(" "))
+                if (!recieved_message.Equals(""))
                 {
-                    this.input_queue.Enqueue(recieved_message); // Returns the string.
+                    this.input_queue.Enqueue(Base64Decode(recieved_message)); // Returns the string.
                 }
             }
             catch (SocketException e)
@@ -87,7 +87,7 @@ public sealed class ProxySocketInterface
         {
             try
             {
-                clientsocket.Send(Encode(this.output_queue.First())); // Sends an encoded message.
+                clientsocket.Send(Encode(Base64Encode(this.output_queue.First()))); // Sends an encoded message.
             }
             catch (SocketException e)
             {
@@ -98,6 +98,18 @@ public sealed class ProxySocketInterface
                 this.output_queue.Dequeue();
             }
         }
+    }
+
+    private static string Base64Encode(string plainText)
+    {
+            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+            return System.Convert.ToBase64String(plainTextBytes);
+    }
+
+    private static string Base64Decode(string base64EncodedData)
+    {
+            var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
+            return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
     }
 
     public String Recv()

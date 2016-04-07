@@ -87,7 +87,10 @@ public class MyService {
     }
 
     public void unbindService() {
-        ApplicationContext.getContext().unbindService(serviceConnection);
+        if (isBound()) {
+            setBound(false);
+            ApplicationContext.getContext().unbindService(serviceConnection);
+        }
     }
 
     private class LocalServiceConnection implements ServiceConnection {
