@@ -96,8 +96,11 @@ public sealed class Proxy
         }
     }
 
-    private bool Is_Valid_Login(UserDetails userDetails)
+    private bool Is_Valid_Login(string Email, string Password)
     {
+        UserDetails userDetails = new UserDetails();
+        userDetails.email = Email;
+        userDetails.password = Password;
         OleDbCommand myCmd = new OleDbCommand("CheckIfUserExistsByEmailAndPassword", myConnection);
         myCmd.CommandType = CommandType.StoredProcedure;
         OleDbDataAdapter adapter = new OleDbDataAdapter();
