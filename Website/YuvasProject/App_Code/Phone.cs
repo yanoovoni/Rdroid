@@ -11,6 +11,7 @@ public class Phone
     private string Id;
     private string User_Email = "";
     private int Task_Id_Generator_Number = 0;
+    private Dictionary<string, string> Recieved_Tasks_Dict = new Dictionary<string, string>();
 
     public Phone(string Id)
     {
@@ -46,5 +47,20 @@ public class Phone
     {
         Task_Id_Generator_Number++;
         return Task_Id_Generator_Number.ToString();
+    }
+
+    public void Add_Recieved_Task(string Task_Id, string Task_Output)
+    {
+        Recieved_Tasks_Dict.Add(Task_Id, Task_Output);
+    }
+
+    public string Get_Recieved_Task_Output(string Task_Id)
+    {
+        string Recieved_Task;
+        if (Recieved_Tasks_Dict.TryGetValue(Id, out Recieved_Task))
+        {
+            return Recieved_Task;
+        }
+        return null;
     }
 }

@@ -44,7 +44,7 @@ public static class Protocol
         return Parameter_Dict;
     }
 
-    public static string Get_Task_Message(string Id, string Type, string[] Parameters)
+    public static string Create_Task_Message(string Id, string Type, string[] Parameters)
     {
         string Message = "Rdroid SERVER\nTASK\n";
         Message += "id:" + Id + "\n";
