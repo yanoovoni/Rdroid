@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Threading;
+using System.Data.OleDb;
+using System.Data;
 
 /// <summary>
 /// Summary description for PhoneManager
@@ -14,6 +16,7 @@ public sealed class Proxy
     private Dictionary<string, Phone> Phone_By_Id_Dict;
     private Dictionary<string, Phone> Phone_By_Email_Dict;
     private Queue<string> Input_Queue;
+    protected OleDbConnection myConnection;
 
     public static Proxy Get_Instance()
     {
@@ -26,6 +29,8 @@ public sealed class Proxy
         Phone_By_Id_Dict = new Dictionary<string, Phone>();
         Phone_By_Email_Dict = new Dictionary<string, Phone>();
         Input_Queue = new Queue<string>();
+        string connectionString = Connect.getConnectionString();
+        myConnection = new OleDbConnection(connectionString);
     }
 
     private void Proxy_Manager_Thread_Method()
@@ -91,9 +96,39 @@ public sealed class Proxy
         }
     }
 
-    private bool Is_Valid_Login(string Email, string Password)
+    private bool Is_Valid_Login(UserDetails userDetails)
     {
-        //todo (yuval)
+        OleDbCommand myCmd = new OleDbCommand("CheckIfUserExistsByEmailAndPassword", myConnection);
+        myCmd.CommandType = CommandType.StoredProcedure;
+        OleDbDataAdapter adapter = new OleDbDataAdapter();
+        DataSet dataset = new DataSet();
+        OleDbParameter objParam;
+
+        objParam = myCmd.Parameters.Add("@Email", OleDbType.BSTR);
+        objParam.Direction = ParameterDirection.Input;
+        objParam.Value = userDetails.email;
+
+        objParam = myCmd.Parameters.Add("@Password", OleDbType.BSTR);
+        objParam.Direction = ParameterDirection.Input;
+        objParam.Value = userDetails.password;
+
+        int x = 0;
+        try
+        {
+            myConnection.Open();
+            adapter.Fill(dataset, "users");
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            myConnection.Close();
+        }
+        if (dataset.ToString() == null)
+        return false;
+        return true;
     }
 
     private void Add_Phone_By_Id(string Id)
