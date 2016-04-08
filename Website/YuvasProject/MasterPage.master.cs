@@ -7,9 +7,10 @@ using System.Web.UI.WebControls;
 
 public partial class MasterPage : System.Web.UI.MasterPage
 {
+    Proxy proxy = Proxy.Get_Instance();
+
     protected void Page_Load(object sender, EventArgs e)
     {
-        Proxy.Get_Instance();
         if (!Page.IsPostBack)
         {
             CreateSiteMenu();

@@ -36,7 +36,7 @@ public sealed class ProxySocketInterface
     {
         lock (this)
         {
-            if (!this.clientsocket.Connected)
+            if (this.clientsocket == null || !this.clientsocket.Connected)
             {
                 TcpListener serverSocket = new TcpListener(IPAddress.Parse("0.0.0.0"), 9001);
                 TcpClient clientSocket = default(TcpClient);
@@ -68,8 +68,8 @@ public sealed class ProxySocketInterface
         {
             try
             {
-                string recieved_message = Encoding.ASCII.GetString(this.buffer, 0, 4096); // Decoding the message.
-                if (!recieved_message.Equals(""))
+                string recieved_message = Encoding.ASCII.GetString(this.buffer, 0, 4096).Trim('\0'); // Decoding the message.
+                if (!String.IsNullOrEmpty(recieved_message))
                 {
                     this.input_queue.Enqueue(Base64Decode(recieved_message)); // Returns the string.
                 }
@@ -87,29 +87,47 @@ public sealed class ProxySocketInterface
         {
             try
             {
-                clientsocket.Send(Encode(Base64Encode(this.output_queue.First()))); // Sends an encoded message.
+                if (this.output_queue.Count > 0)
+                {
+                    clientsocket.Send(Encode(Base64Encode(this.output_queue.First()))); // Sends an encoded message.
+                    this.output_queue.Dequeue();
+                }
+                else
+                {
+                    Thread.Sleep(100);
+                }
             }
             catch (SocketException e)
             {
                 Connect();
-            }
-            finally
-            {
-                this.output_queue.Dequeue();
             }
         }
     }
 
     private static string Base64Encode(string plainText)
     {
+        try
+        {
             var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
             return System.Convert.ToBase64String(plainTextBytes);
+        }
+        catch (Exception e)
+        {
+            return plainText;
+        }
     }
 
     private static string Base64Decode(string base64EncodedData)
     {
+        try
+        {
             var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
             return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
+        }
+        catch (Exception e)
+        {
+            return base64EncodedData;
+        }
     }
 
     public String Recv()

@@ -44,6 +44,22 @@ public static class Protocol
         return Parameter_Dict;
     }
 
+    public static string Create_Login_Result_Message(string Id, bool Successful)
+    {
+        string Result_String;
+        if (Successful)
+        {
+            Result_String = "success";
+        }
+        else
+        {
+            Result_String = "failure";
+        }
+        string Message = "Rdroid SERVER\nLOGIN\n";
+        Message += "result:" + Result_String + "\n";
+        return Message;
+    }
+
     public static string Create_Task_Message(string Id, string Type, string[] Parameters)
     {
         string Message = "Rdroid SERVER\nTASK\n";
