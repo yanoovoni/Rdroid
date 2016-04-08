@@ -24,12 +24,6 @@ public class LoadingActivity extends ActionBarActivity {
         load();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mMyService.unbindService();
-    }
-
     protected void load() {
         Thread loadingThread = new Thread(new Runnable() {
             public void run() {
