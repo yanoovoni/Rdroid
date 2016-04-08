@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Threading;
 
 /// <summary>
 /// Summary description for PhoneManager
@@ -58,6 +59,7 @@ public sealed class Proxy
                 if (Protocol.Is_Phone_Message(Message))
                 {
                     //todo do stuff with the phone message
+                    string Phone_Id = Protocol.Get_Sender_Id(Message);
                     string Purpose = Protocol.Get_Message_Purpose(Message);
                     if (Purpose == "LOGIN")
                     {
@@ -65,9 +67,9 @@ public sealed class Proxy
                         string Password;
                         if (Protocol.Get_Message_Parameters(Message).TryGetValue("email", out Email) && Protocol.Get_Message_Parameters(Message).TryGetValue("password", out Password))
                         {
-                            if (Email and password are correct) //todo (yuval)
+                            if (Is_Valid_Login(Email, Password))
                                 {
-                                Add_Phone_By_Email(Protocol.Get_Sender_Id(Message), Email);
+                                Add_Phone_By_Email(Phone_Id, Email);
                             }
                         }
                     }
@@ -75,12 +77,23 @@ public sealed class Proxy
                     {
                         if (Purpose == "TASK_RESULTS")
                         {
-
+                            Dictionary<string, string> Task_Parameters_Dict = Protocol.Get_Message_Parameters(Message);
+                            string Task_Id;
+                            string Task_Output;
+                            if (Task_Parameters_Dict.TryGetValue("task_id", out Task_Id) && Task_Parameters_Dict.TryGetValue("output", out Task_Output))
+                            {
+                                Get_Phone_By_Id(Phone_Id).Add_Recieved_Task(Task_Id, Task_Output);
+                            }
                         }
                     }
                 }
             }
         }
+    }
+
+    private bool Is_Valid_Login(string Email, string Password)
+    {
+        //todo (yuval)
     }
 
     private void Add_Phone_By_Id(string Id)
@@ -122,8 +135,22 @@ public sealed class Proxy
     {
         Phone Tasked_Phone = Get_Phone_By_Email(Email);
         string Task_Id = Tasked_Phone.Generate_Task_Id();
-        string Task_Message = Protocol.Get_Task_Message(Task_Id, Type, Parameters);
+        string Task_Message = Protocol.Create_Task_Message(Task_Id, Type, Parameters);
         Proxy_Socket.Send(Task_Message);
-        //todo get the output of the task
+        string Task_Output = null;
+        bool Got_Output = false;
+        while (!Got_Output)
+        {
+            Task_Output = Tasked_Phone.Get_Recieved_Task_Output(Task_Id);
+            if (Task_Output != null)
+            {
+                Got_Output = true;
+            }
+            else
+            {
+                Thread.Sleep(100);
+            }
+        }
+        return Task_Output;
     }
 }
