@@ -27,8 +27,7 @@ public class EncryptorFactory {
         }
 
     public Encryptor createEncryptor() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, IOException {
-        String raw_message = server.unencryptedRecv();
-        byte[] keyBytes = Base64.decode(raw_message, Base64.DEFAULT);
+        byte[] keyBytes = server.unencryptedRecv();
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
         PublicKey key = KeyFactory.getInstance("RSA").generatePublic(keySpec);
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
@@ -36,7 +35,7 @@ public class EncryptorFactory {
         KeyGenerator keyGen = KeyGenerator.getInstance("AES");
         keyGen.init(256);
         SecretKey secretKey = keyGen.generateKey();
-        server.unencryptedSend(Arrays.toString(cipher.doFinal(secretKey.getEncoded())));
+        server.unencryptedSend(cipher.doFinal(secretKey.getEncoded()));
         return new Encryptor(secretKey.getEncoded());
     }
 }

@@ -12,6 +12,7 @@ from Encryptor import *
 from Filter import *
 from Server import *
 import socket
+import base64
 #endregion -----------------Imports-----------------
 
 #region -----------------Class-----------------
@@ -31,7 +32,6 @@ class Phone(object):
     __close = False # Specifies whether the thread that this object runs should close.
     buffer_size = int(Settings().getSetting('buffer_size'))
 
-
     def __init__(self, phone_socket, phone_ip_address, phone_id, phone_manager):
         self.__socket = phone_socket
         self.__ip_address = phone_ip_address
@@ -49,8 +49,9 @@ class Phone(object):
 
     def raw_send(self, message):
         # Sends a message to the phone.
-        message = base64.b64encode(message) + '\n'
-        message = str(len(message)) + '\n' + message
+        message = base64.b64encode(message)
+        message = str(len(message)) + ':' + message + '\n'
+        print 'sent: ' + message
         self.getSocket().send(message)
 
     def raw_recv(self):
@@ -58,8 +59,8 @@ class Phone(object):
         message = ''
         try:
             message = self.getSocket().recv(self.buffer_size)
-            message_len = int(message.split('\n', 1)[0])
-            message = message.split('\n', 1)[1]
+            message_len = int(message.split(':', 1)[0])
+            message = message.split(':', 1)[1]
             while len(message) < message_len:
                 message += self.getSocket().recv(self.buffer_size)
             if message == '':
@@ -70,7 +71,7 @@ class Phone(object):
             return None
         except ValueError:
             return None
-        return base64.b64decode(message)
+        return base64.b64decode(message[:-1])
 
     def send(self, message):
         # encrypts and then sends a message to the phone.

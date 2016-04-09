@@ -32,11 +32,12 @@ public class Protocol {
     private static Resources resources = ApplicationContext.getContext().getResources();
 
     public static String[] cutMessageLen(String message){
-        return message.split(line_separator, 2);
+        return message.split(resources.getString(protocol_parameter_separator), 2);
     }
 
     public static String addMessageLen(String message) {
-        return String.valueOf(message.length()) + line_separator + message;
+        return String.valueOf(message.length()) + resources.getString(protocol_parameter_separator)
+                + message;
     }
 
     public static boolean isServerMessage(String message) {

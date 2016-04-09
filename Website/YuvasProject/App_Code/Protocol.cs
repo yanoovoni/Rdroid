@@ -10,13 +10,13 @@ public static class Protocol
 {
     public static string Cut_Len_From_Message(string Message, out int Len)
     {
-        Len = int.Parse(Message.Split('\n')[0]);
-        return Message.Split('\n').Skip(1).ToString();
+        Len = int.Parse(Message.Split(':')[0]);
+        return string.Join("", Message.Split(':').Skip(1));
     }
 
     public static string Add_Len_To_Message(string Message)
     {
-        return Message.Length.ToString() + "\n" + Message;
+        return (Message.Length - 1).ToString() + ":" + Message;
     }
 
     public static bool Is_Proxy_Message(string Message)
@@ -26,7 +26,14 @@ public static class Protocol
 
     public static bool Is_Phone_Message(string Message)
     {
-        return Message.Split(':')[1].StartsWith("Rdroid CLIENT\n");
+        try
+        {
+            return Message.Split(':')[1].StartsWith("Rdroid CLIENT\n");
+        }
+        catch (IndexOutOfRangeException e)
+        {
+            return false;
+        }
     }
 
     /**
@@ -50,7 +57,10 @@ public static class Protocol
         foreach (string Parameter in Parameter_Lines)
         {
             string[] Split_Parameter = Parameter.Split(':');
-            Parameter_Dict.Add(Split_Parameter[0], Split_Parameter[1]);
+            if (Split_Parameter.Length == 2)
+            {
+                Parameter_Dict.Add(Split_Parameter[0], Split_Parameter[1]);
+            }
         }
         return Parameter_Dict;
     }

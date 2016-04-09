@@ -147,9 +147,9 @@ public class Server {
         return true;
     }
 
-    public boolean unencryptedSend(String message){
+    public boolean unencryptedSend(byte[] message_bytes){
         try {
-            message = Base64.encodeToString(message.getBytes(), Base64.DEFAULT);
+            String message = Base64.encodeToString(message_bytes, Base64.DEFAULT);
             message = Protocol.addMessageLen(message);
             rawSend(message);
         } catch (Exception e) {
@@ -195,7 +195,7 @@ public class Server {
         try {
             encrypted_message = rawRecv();
             String[] lenAndMessageArray = Protocol.cutMessageLen(encrypted_message);
-            int len = Integer.getInteger(lenAndMessageArray[0]);
+            int len = Integer.parseInt(lenAndMessageArray[0]);
             encrypted_message = lenAndMessageArray[1];
             while (encrypted_message.length() < len) {
                 encrypted_message += rawRecv();
@@ -214,22 +214,21 @@ public class Server {
         }
     }
 
-    public String unencryptedRecv() {
+    public byte[] unencryptedRecv() {
         try {
             String message = rawRecv();
             String[] lenAndMessageArray = Protocol.cutMessageLen(message);
-            int len = Integer.getInteger(lenAndMessageArray[0]);
+            int len = Integer.parseInt(lenAndMessageArray[0]);
             message = lenAndMessageArray[1];
             while (message.length() < len) {
                 message += rawRecv();
             }
-            message = Arrays.toString(Base64.decode(message, Base64.DEFAULT));
-            return message;
+            return Base64.decode(message, Base64.DEFAULT);
         } catch (IOException e) {
             mConnected = false;
             connect();
             e.printStackTrace();
-            return "";
+            return null;
         }
     }
 
@@ -242,7 +241,10 @@ public class Server {
         mLoginLock.lock();
         mEmail = email;
         mPassword = password;
-        if (isConnected() && !isLoggedIn()) {
+        if (!isConnected()) {
+            connect();
+        }
+        if (isConnected() && !isLoggedIn() && !mEmail.equals("") && !mPassword.equals("")) {
             String login_request = Protocol.loginRequest(mEmail, mPassword);
             boolean sent = send(login_request);
             if (!sent) {

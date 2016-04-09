@@ -63,7 +63,6 @@ class Server(object):
 
     def __serverReceiverThread(self):
         # A method that is supposed to run on a thread that receives messages from the server and adds them to the input queue.
-
         while not self.__close:
             try:
                 self.__addInput(self.__recv())
@@ -72,8 +71,8 @@ class Server(object):
 
     def __recv(self):
         message = self.__server_socket.recv(self.buffer_size)
-        message_len = int(message.split('\n', 1)[0])
-        message = message.split('\n', 1)[1]
+        message_len = int(message.split(':', 1)[0])
+        message = message.split(':', 1)[1]
         while len(message) < message_len:
             message += self.__server_socket.recv(self.buffer_size)
         return base64.b64decode(message)
@@ -83,8 +82,7 @@ class Server(object):
         while not self.__close:
             try:
                 message = self.__output_queue.get()
-                message = message
-                self.__send()
+                self.__send(message)
             except socket.error:
                 self.__connectToServer()
 
@@ -94,8 +92,10 @@ class Server(object):
 
     def __send(self, message):
         # sends a message to the server.
+        print 'to server: ' + message
         message = base64.b64encode(message)
-        message = str(len(message)) + '\n' + message
+        message = str(len(message) - 1) + ':' + message
+        print 'to server encoded: ' + message
         self.__server_socket.send(message)
 
     def __connectToServer(self):
