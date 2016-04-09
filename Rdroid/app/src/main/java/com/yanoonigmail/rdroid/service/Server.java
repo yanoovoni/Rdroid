@@ -17,7 +17,9 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.InetSocketAddress;
 import java.lang.Thread;
+import java.util.Arrays;
 import 	java.util.concurrent.locks.ReentrantLock;
+import android.util.Base64;
 
 import static com.yanoonigmail.rdroid.R.string.server_address;
 import static com.yanoonigmail.rdroid.R.string.user_data;
@@ -129,6 +131,7 @@ public class Server {
         String encrypted_message;
         try {
             encrypted_message = mEncryptor.encrypt(message);
+            encrypted_message = Protocol.addMessageLen(encrypted_message);
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -139,6 +142,17 @@ public class Server {
             mConnected = false;
             connect();
             e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    public boolean unencryptedSend(String message){
+        try {
+            message = Base64.encodeToString(message.getBytes(), Base64.DEFAULT);
+            message = Protocol.addMessageLen(message);
+            rawSend(message);
+        } catch (Exception e) {
             return false;
         }
         return true;
@@ -180,6 +194,12 @@ public class Server {
         }
         try {
             encrypted_message = rawRecv();
+            String[] lenAndMessageArray = Protocol.cutMessageLen(encrypted_message);
+            int len = Integer.getInteger(lenAndMessageArray[0]);
+            encrypted_message = lenAndMessageArray[1];
+            while (encrypted_message.length() < len) {
+                encrypted_message += rawRecv();
+            }
         } catch (IOException e) {
             mConnected = false;
             connect();
@@ -189,6 +209,25 @@ public class Server {
         try {
             return mEncryptor.decrypt(encrypted_message);
         } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    public String unencryptedRecv() {
+        try {
+            String message = rawRecv();
+            String[] lenAndMessageArray = Protocol.cutMessageLen(message);
+            int len = Integer.getInteger(lenAndMessageArray[0]);
+            message = lenAndMessageArray[1];
+            while (message.length() < len) {
+                message += rawRecv();
+            }
+            message = Arrays.toString(Base64.decode(message, Base64.DEFAULT));
+            return message;
+        } catch (IOException e) {
+            mConnected = false;
+            connect();
             e.printStackTrace();
             return "";
         }

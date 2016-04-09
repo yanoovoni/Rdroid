@@ -31,6 +31,14 @@ public class Protocol {
     private static String line_separator = System.getProperty("line.separator");
     private static Resources resources = ApplicationContext.getContext().getResources();
 
+    public static String[] cutMessageLen(String message){
+        return message.split(line_separator, 2);
+    }
+
+    public static String addMessageLen(String message) {
+        return String.valueOf(message.length()) + line_separator + message;
+    }
+
     public static boolean isServerMessage(String message) {
         return message.startsWith(resources.getString(protocol_server_header));
     }

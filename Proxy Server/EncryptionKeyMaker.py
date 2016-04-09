@@ -32,17 +32,17 @@ class EncryptionKeyMaker(object):
         self.__encryption_key = PKCS1_v1_5.new(self.__pure_encryption_key)
         self.printer.printMessage(self.__class__.__name__, 'RSA key generated.')
 
-    def createEncryptor(self, phone_socket):
+    def createEncryptor(self, phone):
         # Communicates with the given socket and creates a symmetric key that is used by both sides.
         errors_param = None
         public_key = self.__pure_encryption_key.publickey().exportKey(format='DER')
-        print public_key
-        phone_socket.send(base64.b64encode(public_key) + '\n')
-        encrypted_key = base64.b64decode(phone_socket.recv(int(self.settings.getSetting('buffer_size'))))
+        print 'public key: ' + public_key
+        phone.raw_send(public_key)
+        encrypted_key = phone.raw_recv()
         print 'key: ' + encrypted_key
         print 'key len: ' + str(len(encrypted_key))
         phone_key = self.__encryption_key.decrypt(encrypted_key, errors_param)
-        print phone_key
+        print 'phone key: ' + phone_key
         return Encryptor(AES.new(phone_key))
 
 

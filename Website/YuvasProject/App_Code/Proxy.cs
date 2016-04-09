@@ -17,6 +17,7 @@ public sealed class Proxy
     private Dictionary<string, Phone> Phone_By_Email_Dict;
     private Queue<string> Input_Queue;
     protected OleDbConnection myConnection;
+    private Thread Proxy_Manager_Thread;
 
     public static Proxy Get_Instance()
     {
@@ -31,6 +32,8 @@ public sealed class Proxy
         Input_Queue = new Queue<string>();
         string connectionString = Connect.getConnectionString();
         myConnection = new OleDbConnection(connectionString);
+        this.Proxy_Manager_Thread = new Thread(new ThreadStart(this.Proxy_Manager_Thread_Method));
+        Proxy_Manager_Thread.Start();
     }
 
     private void Proxy_Manager_Thread_Method()

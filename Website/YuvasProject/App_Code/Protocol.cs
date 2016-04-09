@@ -8,6 +8,17 @@ using System.Web;
 /// </summary>
 public static class Protocol
 {
+    public static string Cut_Len_From_Message(string Message, out int Len)
+    {
+        Len = int.Parse(Message.Split('\n')[0]);
+        return Message.Split('\n').Skip(1).ToString();
+    }
+
+    public static string Add_Len_To_Message(string Message)
+    {
+        return Message.Length.ToString() + "\n" + Message;
+    }
+
     public static bool Is_Proxy_Message(string Message)
     {
         return Message.StartsWith("Rdroid PROXY\n");

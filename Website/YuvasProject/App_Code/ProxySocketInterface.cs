@@ -14,7 +14,7 @@ public sealed class ProxySocketInterface
 {
     private static readonly ProxySocketInterface our_instance = new ProxySocketInterface();
     private Socket clientsocket;
-    private byte[] buffer = new byte[4096]; // The amount of data
+    private byte[] buffer = new byte[8192]; // The amount of data
     private Queue<string> input_queue = new Queue<string>();
     private Queue<string> output_queue = new Queue<string>();
     private Thread Recv_Thread;
@@ -68,9 +68,17 @@ public sealed class ProxySocketInterface
         {
             try
             {
-                string recieved_message = Encoding.ASCII.GetString(this.buffer, 0, 4096).Trim('\0'); // Decoding the message.
+                clientsocket.Receive(buffer);
+                string recieved_message = Encoding.ASCII.GetString(buffer, 0, buffer.Length).TrimEnd('\0'); // Decoding the message.
                 if (!String.IsNullOrEmpty(recieved_message))
                 {
+                    int Len;
+                    recieved_message = Protocol.Cut_Len_From_Message(recieved_message, out Len);
+                    while (recieved_message.Length < Len)
+                    {
+                        clientsocket.Receive(buffer);
+                        recieved_message += Encoding.ASCII.GetString(buffer, 0, buffer.Length).TrimEnd('\0');
+                    }
                     this.input_queue.Enqueue(Base64Decode(recieved_message)); // Returns the string.
                 }
             }
@@ -89,7 +97,9 @@ public sealed class ProxySocketInterface
             {
                 if (this.output_queue.Count > 0)
                 {
-                    clientsocket.Send(Encode(Base64Encode(this.output_queue.First()))); // Sends an encoded message.
+                    string Message = Base64Encode(this.output_queue.First());
+                    Message = Protocol.Add_Len_To_Message(Message);
+                    clientsocket.Send(Encode(Message)); // Sends an encoded message.
                     this.output_queue.Dequeue();
                 }
                 else
@@ -132,13 +142,16 @@ public sealed class ProxySocketInterface
 
     public String Recv()
     {
-        if (this.input_queue.Count != 0)
+        while (true)
         {
-            return input_queue.Dequeue();
-        }
-        else
-        {
-            return "";
+            if (this.input_queue.Count != 0)
+            {
+                return input_queue.Dequeue();
+            }
+            else
+            {
+                Thread.Sleep(100);
+            }
         }
     }
 

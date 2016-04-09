@@ -29,6 +29,7 @@ class Phone(object):
     __number = '' # The phone number of the connected phone (might be empty / useless).
     __encryptor = None # The encryptor that is used for communication with the phone.
     __close = False # Specifies whether the thread that this object runs should close.
+    buffer_size = int(Settings().getSetting('buffer_size'))
 
 
     def __init__(self, phone_socket, phone_ip_address, phone_id, phone_manager):
@@ -46,22 +47,30 @@ class Phone(object):
                 message = '%s:%s' % (self.getID(), message)
                 self.server.send(message)
 
-    def rawSend(self, message):
+    def raw_send(self, message):
         # Sends a message to the phone.
-        phone_socket = self.getSocket()
-        phone_socket.send(message)
+        message = base64.b64encode(message) + '\n'
+        message = str(len(message)) + '\n' + message
+        self.getSocket().send(message)
 
-    def rawRecv(self):
+    def raw_recv(self):
         # Receives a message from the phone.
-        phone_socket = self.getSocket()
         message = ''
         try:
-            message = phone_socket.recv(int(self.settings.getSetting('buffer_size')))
+            message = self.getSocket().recv(self.buffer_size)
+            message_len = int(message.split('\n', 1)[0])
+            message = message.split('\n', 1)[1]
+            while len(message) < message_len:
+                message += self.getSocket().recv(self.buffer_size)
             if message == '':
                 self.closeObject()
         except socket.error:
             self.closeObject()
-        return message
+        except IndexError:
+            return None
+        except ValueError:
+            return None
+        return base64.b64decode(message)
 
     def send(self, message):
         # encrypts and then sends a message to the phone.
@@ -70,12 +79,12 @@ class Phone(object):
         encryptor = self.getEncryptor()
         encrypted_message = encryptor.encrypt(message) + '\n'
         self.printer.printMessage(self.__class__.__name__, 'after encryption to phone: ' + encrypted_message)
-        self.rawSend(encrypted_message)
+        self.raw_send(encrypted_message)
 
     def recv(self):
         # Receives a message from the phone and decrypts it.
         encryptor = self.getEncryptor()
-        message = encryptor.decrypt(self.rawRecv())
+        message = encryptor.decrypt(self.raw_recv())
         return message
 
     def establishConnection(self):
@@ -130,7 +139,7 @@ class Phone(object):
 
     def __setEncryptor(self):
         # Sets an encryptor object for this object.
-        self.__encryptor = self.encryption_key_maker.createEncryptor(self.getSocket())
+        self.__encryptor = self.encryption_key_maker.createEncryptor(self)
 
 
 #endregion -----------------Class-----------------

@@ -28,6 +28,7 @@ class Server(object):
     __output_queue = Queue() # A queue that holds the messages that are going to be sent to the server.
     __connect_lock = Lock() # A lock used to make sure that this object will not try to reconnect to the server twice at the same time.
     __close = False # Specifies whether the thread that this object runs should close.
+    buffer_size = int(Settings().getSetting('buffer_size'))
 
     def __init__(self):
         self.__connectToServer()
@@ -62,20 +63,28 @@ class Server(object):
 
     def __serverReceiverThread(self):
         # A method that is supposed to run on a thread that receives messages from the server and adds them to the input queue.
-        buffer_size = int(self.settings.getSetting('buffer_size'))
+
         while not self.__close:
             try:
-                message = self.__server_socket.recv(buffer_size)
-                message = base64.b64decode(message)
-                self.__addInput(message)
+                self.__addInput(self.__recv())
             except socket.error:
                 self.__connectToServer()
+
+    def __recv(self):
+        message = self.__server_socket.recv(self.buffer_size)
+        message_len = int(message.split('\n', 1)[0])
+        message = message.split('\n', 1)[1]
+        while len(message) < message_len:
+            message += self.__server_socket.recv(self.buffer_size)
+        return base64.b64decode(message)
 
     def __outputSenderThread(self):
         # A method that is supposed to run on a thread that sends messages from the output queue to the server.
         while not self.__close:
             try:
-                self.__send(self.__output_queue.get())
+                message = self.__output_queue.get()
+                message = message
+                self.__send()
             except socket.error:
                 self.__connectToServer()
 
@@ -86,27 +95,25 @@ class Server(object):
     def __send(self, message):
         # sends a message to the server.
         message = base64.b64encode(message)
+        message = str(len(message)) + '\n' + message
         self.__server_socket.send(message)
 
     def __connectToServer(self):
         # connects to the server.
         acquired = self.__connect_lock.acquire()
         if acquired:
-            try:
-                self.__send('blah')
-            except socket.error:
-                self.printer.printMessage(self.__class__.__name__, 'Connecting to server')
-                self.__server_socket = socket.socket()
-                ip = self.settings.getSetting('main_server_ip')
-                port = int(self.settings.getSetting('main_server_port'))
-                connected = False
-                while not connected:
-                    connected = True
-                    try:
-                        self.__server_socket.connect((ip, port))
-                    except socket.error:
-                        connected = False
-                self.printer.printMessage(self.__class__.__name__, 'Connected to server')
+            self.printer.printMessage(self.__class__.__name__, 'Connecting to server')
+            self.__server_socket = socket.socket()
+            ip = self.settings.getSetting('main_server_ip')
+            port = int(self.settings.getSetting('main_server_port'))
+            connected = False
+            while not connected:
+                connected = True
+                try:
+                    self.__server_socket.connect((ip, port))
+                except socket.error:
+                    connected = False
+            self.printer.printMessage(self.__class__.__name__, 'Connected to server')
             self.__connect_lock.release()
 
 
