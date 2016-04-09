@@ -76,15 +76,15 @@ public static class Protocol
         {
             Result_String = "failure";
         }
-        string Message = "Rdroid SERVER\nLOGIN\n";
+        string Message = Id + ":Rdroid SERVER\nLOGIN\n";
         Message += "result:" + Result_String + "\n";
         return Message;
     }
 
-    public static string Create_Task_Message(string Id, string Type, string[] Parameters)
+    public static string Create_Task_Message(string Phone_Id, string Task_Id, string Type, string[] Parameters)
     {
-        string Message = "Rdroid SERVER\nTASK\n";
-        Message += "id:" + Id + "\n";
+        string Message = Phone_Id + ":Rdroid SERVER\nTASK\n";
+        Message += "id:" + Task_Id + "\n";
         Message += "type:" + Type + "\n";
         foreach (string Parameter in Parameters)
         {

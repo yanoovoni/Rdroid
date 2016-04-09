@@ -176,8 +176,9 @@ public sealed class Proxy
     public string Handle_Task(string Email, string Type, string[] Parameters)
     {
         Phone Tasked_Phone = Get_Phone_By_Email(Email);
+        string Phone_Id = Tasked_Phone.Get_Id();
         string Task_Id = Tasked_Phone.Generate_Task_Id();
-        string Task_Message = Protocol.Create_Task_Message(Task_Id, Type, Parameters);
+        string Task_Message = Protocol.Create_Task_Message(Phone_Id, Task_Id, Type, Parameters);
         Proxy_Socket.Send(Task_Message);
         string Task_Output = null;
         bool Got_Output = false;
