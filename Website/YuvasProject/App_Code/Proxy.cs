@@ -134,11 +134,14 @@ public sealed class Proxy
             {
                 userDetails.firstName = reader["FirstName"].ToString();
             }
-            
         }
         catch (Exception ex)
         {
             throw ex;
+        }
+        finally
+        {
+            myConnection.Close();
         }
         if (userDetails.firstName == null)
         {
