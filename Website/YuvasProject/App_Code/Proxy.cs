@@ -17,7 +17,6 @@ public sealed class Proxy
     private Dictionary<string, Phone> Phone_By_Email_Dict;
     private Queue<string> Input_Queue;
     protected OleDbConnection myConnection;
-    private Thread Proxy_Manager_Thread;
 
     public static Proxy Get_Instance()
     {
@@ -32,8 +31,6 @@ public sealed class Proxy
         Input_Queue = new Queue<string>();
         string connectionString = Connect.getConnectionString();
         myConnection = new OleDbConnection(connectionString);
-        this.Proxy_Manager_Thread = new Thread(new ThreadStart(this.Proxy_Manager_Thread_Method));
-        Proxy_Manager_Thread.Start();
     }
 
     private void Proxy_Manager_Thread_Method()
@@ -76,13 +73,8 @@ public sealed class Proxy
                         if (Protocol.Get_Message_Parameters(Message).TryGetValue("email", out Email) && Protocol.Get_Message_Parameters(Message).TryGetValue("password", out Password))
                         {
                             if (Is_Valid_Login(Email, Password))
-                            {
+                                {
                                 Add_Phone_By_Email(Phone_Id, Email);
-                                Proxy_Socket.Send(Protocol.Create_Login_Result_Message(Phone_Id, true));
-                            }
-                            else
-                            {
-                                Proxy_Socket.Send(Protocol.Create_Login_Result_Message(Phone_Id, false));
                             }
                         }
                     }
@@ -123,6 +115,7 @@ public sealed class Proxy
         objParam.Direction = ParameterDirection.Input;
         objParam.Value = userDetails.password;
 
+        int x = 0;
         try
         {
             myConnection.Open();
