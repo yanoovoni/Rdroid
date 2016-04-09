@@ -125,17 +125,15 @@ public sealed class Proxy
 
         try
         {
-            myConnection.Open();
+            
             adapter.Fill(dataset, "users");
+            dataset.Tables["Users"].PrimaryKey = new DataColumn[] { dataset.Tables["Users"].Columns["UserID"] };
         }
         catch (Exception ex)
         {
             throw ex;
         }
-        finally
-        {
-            myConnection.Close();
-        }
+        
         if (dataset.ToString() == null)
         return false;
         return true;
