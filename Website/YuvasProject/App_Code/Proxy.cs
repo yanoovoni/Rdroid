@@ -115,22 +115,23 @@ public sealed class Proxy
         adapter.SelectCommand = myCmd;
         DataSet dataset = new DataSet();
         OleDbParameter objParam;
+
         objParam = myCmd.Parameters.Add("@Email", OleDbType.BSTR);
         objParam.Direction = ParameterDirection.Input;
         objParam.Value = userDetails.email;
+
         objParam = myCmd.Parameters.Add("@Password", OleDbType.BSTR);
         objParam.Direction = ParameterDirection.Input;
         objParam.Value = userDetails.password;
         try
         {
             adapter.Fill(dataset, "Users");
-            dataset.Tables["Users"].PrimaryKey = new DataColumn[] {dataset.Tables["Users"].Columns["Email"]};
         }
         catch (Exception ex)
         {
             throw ex;
         }
-        if (dataset.ToString() == null)
+        if (dataset == null)
         {
             return false;
         }
