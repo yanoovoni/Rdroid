@@ -112,6 +112,7 @@ public sealed class Proxy
         OleDbCommand myCmd = new OleDbCommand("CheckIfUserExistsByEmailAndPassword", myConnection);
         myCmd.CommandType = CommandType.StoredProcedure;
         OleDbDataAdapter adapter = new OleDbDataAdapter();
+        adapter.SelectCommand = myCmd;
         DataSet dataset = new DataSet();
         OleDbParameter objParam;
         objParam = myCmd.Parameters.Add("@Email", OleDbType.BSTR);
@@ -122,8 +123,8 @@ public sealed class Proxy
         objParam.Value = userDetails.password;
         try
         {
-            adapter.Fill(dataset, "users");
-            dataset.Tables["Users"].PrimaryKey = new DataColumn[] { dataset.Tables["Users"].Columns["UserID"] };
+            adapter.Fill(dataset, "Users");
+            dataset.Tables["Users"].PrimaryKey = new DataColumn[] {dataset.Tables["Users"].Columns["Email"]};
         }
         catch (Exception ex)
         {
