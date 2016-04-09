@@ -140,7 +140,7 @@ public sealed class Proxy
         {
             throw ex;
         }
-        if (userDetails.firstName == "")
+        if (userDetails.firstName == null)
         {
             return false;
         }
