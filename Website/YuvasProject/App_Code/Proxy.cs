@@ -106,6 +106,7 @@ public sealed class Proxy
 
     private bool Is_Valid_Login(string Email, string Password)
     {
+        OleDbDataReader reader;
         UserDetails userDetails = new UserDetails();
         userDetails.email = Email;
         userDetails.password = Password;
@@ -125,13 +126,21 @@ public sealed class Proxy
         objParam.Value = userDetails.password;
         try
         {
-            adapter.Fill(dataset, "Users");
+            myConnection.Open();
+            reader = myCmd.ExecuteReader();
+
+
+            while (reader.Read())
+            {
+                userDetails.firstName = reader["FirstName"].ToString();
+            }
+            
         }
         catch (Exception ex)
         {
             throw ex;
         }
-        if (dataset == null)
+        if (userDetails.firstName == "")
         {
             return false;
         }
