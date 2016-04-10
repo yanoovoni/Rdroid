@@ -57,7 +57,7 @@ public class UserService
         }
     }
 
-    public int EnterToSite(UserDetails userDetails)
+    public int EnterToSite(UserDetails userDetails)//בודק על פי האימייל והסיסמא האם המשתשמש שמנסה להיכנס לאתר קיים או לא
     {
         OleDbCommand myCmd = new OleDbCommand("CheckIfUserExist", myConnection);
         myCmd.CommandType = CommandType.StoredProcedure;
@@ -90,54 +90,54 @@ public class UserService
 
     }
 
-    public DataSet GetFriends(UserDetails user)
-    {
-        OleDbCommand myCmd = new OleDbCommand("ShowFriends", myConnection);
-        myCmd.CommandType = CommandType.StoredProcedure;
-        OleDbDataAdapter adapter = new OleDbDataAdapter(myCmd);
-        DataSet dataset = new DataSet();
+    //public DataSet GetFriends(UserDetails user)
+    //{
+    //    OleDbCommand myCmd = new OleDbCommand("ShowFriends", myConnection);
+    //    myCmd.CommandType = CommandType.StoredProcedure;
+    //    OleDbDataAdapter adapter = new OleDbDataAdapter(myCmd);
+    //    DataSet dataset = new DataSet();
 
-        OleDbParameter parameter;
-        parameter = myCmd.Parameters.Add("@UserID", OleDbType.BSTR);
-        parameter.Direction = ParameterDirection.Input;
-        parameter.Value = user.phoneNumber;
+    //    OleDbParameter parameter;
+    //    parameter = myCmd.Parameters.Add("@UserID", OleDbType.BSTR);
+    //    parameter.Direction = ParameterDirection.Input;
+    //    parameter.Value = user.phoneNumber;
 
-        try
-        {
-            adapter.Fill(dataset, "Users");
-            dataset.Tables["Users"].PrimaryKey = new DataColumn[] { dataset.Tables["Users"].Columns["UserID"] };
-        }
-        catch (Exception ex)
-        {
-            throw ex;
-        }
-        return dataset;
+    //    try
+    //    {
+    //        adapter.Fill(dataset, "Users");
+    //        dataset.Tables["Users"].PrimaryKey = new DataColumn[] { dataset.Tables["Users"].Columns["UserID"] };
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        throw ex;
+    //    }
+    //    return dataset;
 
-    }
+    //}
 
-    public DataSet GetContacts(UserDetails user)
-    {
-        OleDbCommand myCmd = new OleDbCommand("ShowContacts", myConnection);
-        myCmd.CommandType = CommandType.StoredProcedure;
-        OleDbDataAdapter adapter = new OleDbDataAdapter(myCmd);
-        DataSet dataset = new DataSet();
+    //public DataSet GetContacts(UserDetails user)
+    //{
+    //    OleDbCommand myCmd = new OleDbCommand("ShowContacts", myConnection);
+    //    myCmd.CommandType = CommandType.StoredProcedure;
+    //    OleDbDataAdapter adapter = new OleDbDataAdapter(myCmd);
+    //    DataSet dataset = new DataSet();
 
-        OleDbParameter parameter;
-        parameter = myCmd.Parameters.Add("@UserPhone", OleDbType.BSTR);
-        parameter.Direction = ParameterDirection.Input;
-        parameter.Value = user.phoneNumber;
+    //    OleDbParameter parameter;
+    //    parameter = myCmd.Parameters.Add("@UserPhone", OleDbType.BSTR);
+    //    parameter.Direction = ParameterDirection.Input;
+    //    parameter.Value = user.phoneNumber;
 
-        try
-        {
-            adapter.Fill(dataset, "Contacts");
-            dataset.Tables["Contacts"].PrimaryKey = new DataColumn[] { dataset.Tables["Contacts"].Columns["UserIDBelong"] };
-        }
-        catch (Exception ex)
-        {
-            throw ex;
-        }
-        return dataset;
-    }
+    //    try
+    //    {
+    //        adapter.Fill(dataset, "Contacts");
+    //        dataset.Tables["Contacts"].PrimaryKey = new DataColumn[] { dataset.Tables["Contacts"].Columns["UserIDBelong"] };
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        throw ex;
+    //    }
+    //    return dataset;
+    //}
     public DataSet GetFriendsAndContacts(UserDetails user)// הפעולה מחזירה "דטה סט" בו נמצאים גם החברים וגם אנשי הקשר
     {
         OleDbParameter parameter;
