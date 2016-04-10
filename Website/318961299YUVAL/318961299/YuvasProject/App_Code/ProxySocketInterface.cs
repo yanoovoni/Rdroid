@@ -17,6 +17,7 @@ public sealed class ProxySocketInterface
     private byte[] buffer = new byte[8192]; // The amount of data
     private Queue<string> input_queue = new Queue<string>();
     private Queue<string> output_queue = new Queue<string>();
+    private Thread Start_Thread;
     private Thread Recv_Thread;
     private Thread Send_Thread;
     private Mutex Connect_Mutex = new Mutex();
@@ -27,6 +28,13 @@ public sealed class ProxySocketInterface
     }
 
     private ProxySocketInterface()
+    {
+        this.Start_Thread = new Thread(new ThreadStart(this.Start_Thread_Method));
+        Start_Thread.IsBackground = true;
+        Start_Thread.Start();
+    }
+
+    private void Start_Thread_Method()
     {
         Connect();
         Run_Threads();
