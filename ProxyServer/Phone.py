@@ -78,7 +78,7 @@ class Phone(object):
         message = message.replace(self.settings.getSetting('new_line'), '\n')
         self.printer.printMessage(self.__class__.__name__, 'after edit to phone: ' + message)
         encryptor = self.getEncryptor()
-        encrypted_message = encryptor.encrypt(message) + '\n'
+        encrypted_message = encryptor.encrypt(message)
         self.printer.printMessage(self.__class__.__name__, 'after encryption to phone: ' + encrypted_message)
         self.raw_send(encrypted_message)
 
