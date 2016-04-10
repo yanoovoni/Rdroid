@@ -1,11 +1,14 @@
 <resources>
     <string name="app_name">Rdroid</string>
-    <string name="label_activity_loading">Loading Screen</string>
+    <string name="label_activity_loading">Rdroid</string>
     <string name="label_activity_login">Sign in</string>
     <string name="label_activity_main_menu">Main Menu</string>
     <string name="user_data">user_data</string>
 
-    <!-- Strings related to login Activity -->
+    <!-- Strings related to loading activity -->
+    <string name="loading_text_view_text">Connecting to the server</string>
+
+    <!-- Strings related to login activity -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in</string>
@@ -39,4 +42,7 @@
     <string name="protocol_client_task_results_id">id</string>
     <string name="protocol_client_task_results_output">output</string>
     <string name="protocol_client_task_results_output_separator">,</string>
+    <string name="log_out_button_text">Log Out</string>
+    <string name="close_application_button_text">Close Application</string>
+
 </resources>
