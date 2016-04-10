@@ -16,12 +16,13 @@ public class WebService : System.Web.Services.WebService {
 
     public WebService () {
 
-        //Uncomment the following line if using designed components 
-        //InitializeComponent(); 
+        //Uncomment the following line if using designed components
+        //InitializeComponent();
     }
 
     [WebMethod]
-    public string HelloWorld() {
+    public string HelloWorld()
+    {
         return "Hello World";
     }
 
@@ -82,12 +83,6 @@ public class WebService : System.Web.Services.WebService {
         service.IfContactExist(contactDetais);
     }
 
-    [WebMethod]
-    public ContactDetails GetContactsByID(int IDmy)//הפעולה מחזירה פרטי איש קשר על פי מספרו בטבלה
-    {
-        UserService service = new UserService();
-        return service.GetContactsByID(IDmy);
-    }
 
     [WebMethod]
     public DataSet FindFriends(string firstName, string lastName)//הפעולה מחזירה משתמש על פי שם מלא
@@ -103,12 +98,7 @@ public class WebService : System.Web.Services.WebService {
         service.InsertFriend(friendDetais);
     }
 
-    [WebMethod]
-    public void InsertFriend(FriendDetails friendDetais)//הפעולה מאפשרת להוסיף מידע לתוך טבלת חברים
-    {
-        UserService service = new UserService();
-        service.InsertFriend(friendDetais);
-    }
+
 
 
 }
