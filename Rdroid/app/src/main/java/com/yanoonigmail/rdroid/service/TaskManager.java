@@ -90,7 +90,7 @@ public class TaskManager extends android.app.Service {
                     break;
                 case 3:
                     boolean[] loggedInBool = new boolean[1];
-                    loggedInBool[0] = mServer.isLoggedIn();
+                    loggedInBool[0] = mServer.isLoggedInAfterFirstTry();
                     reply.writeBooleanArray(loggedInBool);
                     success = true;
                     break;

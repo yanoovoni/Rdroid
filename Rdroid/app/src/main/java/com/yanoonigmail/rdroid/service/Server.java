@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.content.res.Resources;
 
-import com.yanoonigmail.rdroid.R;
 import com.yanoonigmail.rdroid.ApplicationContext;
 
 import java.io.BufferedReader;
@@ -17,7 +16,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.InetSocketAddress;
 import java.lang.Thread;
-import java.util.Arrays;
 import 	java.util.concurrent.locks.ReentrantLock;
 import android.util.Base64;
 
@@ -44,7 +42,7 @@ public class Server {
     protected String mEmail;
     protected String mPassword;
     protected static Resources resources = ApplicationContext.getContext().getResources();
-    protected boolean mFirstConnectTry = true;
+    protected boolean mFirstLoginTry = true;
 
     public static Server getInstance() {
         return ourInstance;
@@ -83,11 +81,9 @@ public class Server {
                                 mServerSocket = new Socket();
                                 mServerSocket.connect(mServerAddress, 5000);
                                 mConnected = true;
-                                mFirstConnectTry = false;
                             } catch (IOException e) {
                                 e.printStackTrace();
                                 try {
-                                    mFirstConnectTry = false;
                                     Thread.sleep(5000);
                                 } catch (InterruptedException e2) {
                                     e2.printStackTrace();
@@ -116,6 +112,7 @@ public class Server {
                 mPassword = preferences.getString("password", "");
                 tryLogin(mEmail, mPassword);
             } else {
+                mFirstLoginTry = false;
                 SharedPreferences.OnSharedPreferenceChangeListener changeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
                     @Override
                     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -248,11 +245,13 @@ public class Server {
             String login_request = Protocol.loginRequest(mEmail, mPassword);
             boolean sent = send(login_request);
             if (!sent) {
+                mFirstLoginTry = false;
                 return false;
             }
             String login_response = recv();
             mLoggedIn = Protocol.loginResponseBool(login_response);
         }
+        mFirstLoginTry = false;
         mLoginLock.unlock();
         return mLoggedIn;
     }
@@ -262,12 +261,16 @@ public class Server {
     }
 
     public boolean isLoggedIn() {
-        waitForFirstLogin();
         return mLoggedIn;
     }
 
+    public boolean isLoggedInAfterFirstTry() {
+        waitForFirstLogin();
+        return isLoggedIn();
+    }
+
     protected void waitForFirstLogin() {
-        while (mFirstConnectTry) {
+        while (mFirstLoginTry) {
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
