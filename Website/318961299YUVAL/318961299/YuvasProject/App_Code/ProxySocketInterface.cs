@@ -51,8 +51,10 @@ public sealed class ProxySocketInterface
     private void Run_Threads()
     {
         this.Recv_Thread = new Thread(new ThreadStart(this.Recv_Thread_Method));
+        Recv_Thread.IsBackground = true;
         Recv_Thread.Start();
         this.Send_Thread = new Thread(new ThreadStart(this.Send_Thread_Method));
+        Send_Thread.IsBackground = true;
         Send_Thread.Start();
     }
 

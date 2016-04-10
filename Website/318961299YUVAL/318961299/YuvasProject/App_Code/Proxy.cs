@@ -33,6 +33,7 @@ public sealed class Proxy
         string connectionString = Connect.getConnectionString();
         myConnection = new OleDbConnection(connectionString);
         this.Proxy_Manager_Thread = new Thread(new ThreadStart(this.Proxy_Manager_Thread_Method));
+        Proxy_Manager_Thread.IsBackground = true;
         Proxy_Manager_Thread.Start();
     }
 
