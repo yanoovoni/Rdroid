@@ -158,7 +158,7 @@ public sealed class Proxy
     private void Add_Phone_By_Email(string Id, string Email) // needs the phone to be in the Phone_By_Id_Dict.
     {
         Phone Added_Phone = Get_Phone_By_Id(Id);
-        if (Added_Phone != null && Added_Phone.Get_Email().Equals(""))
+        if (Added_Phone != null && Get_Phone_By_Email(Email) == null)
         {
             Added_Phone.Set_Email(Email);
                 Phone_By_Email_Dict.Add(Email, Added_Phone);
