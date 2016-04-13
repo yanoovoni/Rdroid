@@ -28,7 +28,7 @@ public partial class AddFriend : System.Web.UI.Page
     }
     protected void ButtonFindFriends_Click(object sender, EventArgs e)
     {
-        UserService userService = new UserService();
+        localhostWebService.WebService service = new localhostWebService.WebService();
         DataSet dataset = new DataSet();
         string FullName = TextBoxSearchFriend.Text;
         int x = 0;
@@ -45,7 +45,7 @@ public partial class AddFriend : System.Web.UI.Page
         
         FullName = FullName.Substring(0, x-1);
 
-        dataset = userService.FindFriends(FullName, LastName);
+        dataset = service.FindFriends(FullName, LastName);
 
         GridViewFriends.DataSource = dataset;
         Session["DataSetFriends"] = dataset;
@@ -53,7 +53,8 @@ public partial class AddFriend : System.Web.UI.Page
     }
     protected void GridViewFriends_RowCommand(object sender, GridViewCommandEventArgs e)
     {
-        FriendDetails friend = new FriendDetails();
+        localhostWebService.WebService service = new localhostWebService.WebService();
+        localhostWebService.FriendDetails friend = new localhostWebService.FriendDetails();
         DataSet dataset=(DataSet)Session["DataSetFriends"];
         UserService userService = new UserService();
         if (e.CommandName == "chck")
@@ -64,7 +65,7 @@ public partial class AddFriend : System.Web.UI.Page
             friend.phoneIDAccepting = dataset.Tables[0].Rows[index]["PhoneNumber"].ToString();
             friend.dateOfFriendship = DateTime.Now;
             friend.status = false;
-            userService.InsertFriend(friend);
+            service.InsertFriend(friend);
             LabelMsg.Text = "הוסף בהתחלה";
         }
 
