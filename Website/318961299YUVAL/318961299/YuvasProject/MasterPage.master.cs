@@ -24,6 +24,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
 
             Item = new MenuItem("העברת אנשי קשר אל חברים", "ShareContactsWithFriends.aspx");
             this.SiteMenu.Items.Add(Item);
+
         }
      protected void SiteMenu_MenuItemClick(object sender, MenuEventArgs e)
      {

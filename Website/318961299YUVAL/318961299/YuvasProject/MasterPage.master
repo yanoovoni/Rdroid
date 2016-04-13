@@ -14,8 +14,9 @@
     <div>
     
    
-        <asp:Menu ID="SiteMenu" runat="server" onmenuitemclick="SiteMenu_MenuItemClick">
-        </asp:Menu>
+       <center><asp:Menu ID="SiteMenu" runat="server" 
+               onmenuitemclick="SiteMenu_MenuItemClick" Orientation="Horizontal">
+        </asp:Menu></center> 
 
         <asp:ContentPlaceHolder id="ContentPlaceHolder1" runat="server">
         

@@ -5,8 +5,14 @@
 
 <asp:Content ID="Content2" runat="server" 
     contentplaceholderid="ContentPlaceHolder1">
-    <asp:Menu ID="Menu1" runat="server">
+    <asp:Menu ID="MenuInfo" runat="server">
     </asp:Menu>
+    <br />
+    <center>
+    <asp:GridView ID="GridViewInfo" runat="server">
+    </asp:GridView></center>
+    <br />
+    <br />
     <asp:Table ID="Table1" runat="server" Height="310px" Width="865px">
     </asp:Table>
 </asp:Content>

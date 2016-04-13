@@ -55,12 +55,12 @@ public class WebService : System.Web.Services.WebService {
     //    return service.GetFriends(user);
     //}
 
-    //[WebMethod]
-    //public DataSet GetContacts(UserDetails user)
-    //{
-    //    UserService service = new UserService();
-    //    return service.GetFriends(user);
-    //}
+    [WebMethod]
+    public DataSet GetContacts(UserDetails user)
+    {
+        UserService service = new UserService();
+        return service.GetContacts(user);
+    }
 
     [WebMethod]
     public DataSet GetFriendsAndContacts(UserDetails user)// הפעולה מחזירה "דטה סט" בו נמצאים גם החברים וגם אנשי הקשר

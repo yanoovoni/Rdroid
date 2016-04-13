@@ -70,6 +70,27 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="GetContacts">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="user" type="tns:UserDetails" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetContactsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetContactsResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="GetFriendsAndContacts">
         <s:complexType>
           <s:sequence>
@@ -181,6 +202,12 @@
   <wsdl:message name="EnterToSiteSoapOut">
     <wsdl:part name="parameters" element="tns:EnterToSiteResponse" />
   </wsdl:message>
+  <wsdl:message name="GetContactsSoapIn">
+    <wsdl:part name="parameters" element="tns:GetContacts" />
+  </wsdl:message>
+  <wsdl:message name="GetContactsSoapOut">
+    <wsdl:part name="parameters" element="tns:GetContactsResponse" />
+  </wsdl:message>
   <wsdl:message name="GetFriendsAndContactsSoapIn">
     <wsdl:part name="parameters" element="tns:GetFriendsAndContacts" />
   </wsdl:message>
@@ -227,6 +254,10 @@
     <wsdl:operation name="EnterToSite">
       <wsdl:input message="tns:EnterToSiteSoapIn" />
       <wsdl:output message="tns:EnterToSiteSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetContacts">
+      <wsdl:input message="tns:GetContactsSoapIn" />
+      <wsdl:output message="tns:GetContactsSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetFriendsAndContacts">
       <wsdl:input message="tns:GetFriendsAndContactsSoapIn" />
@@ -280,6 +311,15 @@
     </wsdl:operation>
     <wsdl:operation name="EnterToSite">
       <soap:operation soapAction="http://tempuri.org/EnterToSite" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetContacts">
+      <soap:operation soapAction="http://tempuri.org/GetContacts" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -364,6 +404,15 @@
     </wsdl:operation>
     <wsdl:operation name="EnterToSite">
       <soap12:operation soapAction="http://tempuri.org/EnterToSite" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetContacts">
+      <soap12:operation soapAction="http://tempuri.org/GetContacts" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
