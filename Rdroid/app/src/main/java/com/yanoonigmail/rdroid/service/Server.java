@@ -68,44 +68,44 @@ public class Server {
         Thread manageTasksThread = new Thread(new Runnable() {
             public void run() {
                 if (mConnectLock.tryLock()) {
-                        while (!mInitialized) {
-                            try {
-                                Thread.sleep(10);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        mLoggedIn = false;
-                        while (!mConnected) {
-                            try {
-                                mServerSocket = new Socket();
-                                mServerSocket.connect(mServerAddress, 5000);
-                                mConnected = true;
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                                try {
-                                    Thread.sleep(5000);
-                                } catch (InterruptedException e2) {
-                                    e2.printStackTrace();
-                                }
-                            }
-                        }
+                    while (!mInitialized) {
                         try {
-                            mEncryptor = mEncryptorFactory.createEncryptor();
-                        } catch (Exception e) {
+                            Thread.sleep(10);
+                        } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        mConnected = true;
                     }
+                    mLoggedIn = false;
+                    while (!mConnected) {
+                        try {
+                            mServerSocket = new Socket();
+                            mServerSocket.connect(mServerAddress, 5000);
+                            mConnected = true;
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            try {
+                                Thread.sleep(5000);
+                            } catch (InterruptedException e2) {
+                                e2.printStackTrace();
+                            }
+                        }
+                    }
+                    try {
+                        mEncryptor = mEncryptorFactory.createEncryptor();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    mConnected = true;
                     mConnectLock.unlock();
                     passiveLogin();
                 }
+            }
         });
         manageTasksThread.start();
     }
 
     protected void passiveLogin() {
-        if (!isLoggedIn()) {
+        if (!isLoggedIn() && isConnected()) {
             SharedPreferences preferences = context.getSharedPreferences(context.getString(user_data), Context.MODE_PRIVATE);
             if (preferences.contains("email") && preferences.contains("password")) {
                 mEmail = preferences.getString("email", "");
@@ -276,6 +276,20 @@ public class Server {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public boolean disconnect() {
+        try {
+            mServerSocket.close();
+            mConnected = false;
+            mLoggedIn = false;
+            mFirstLoginTry = true;
+            connect();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }

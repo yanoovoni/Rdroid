@@ -10,8 +10,10 @@ import android.os.Bundle;
 
 import com.yanoonigmail.rdroid.ApplicationContext;
 import com.yanoonigmail.rdroid.R;
+import com.yanoonigmail.rdroid.service.TaskManager;
 
 import static com.yanoonigmail.rdroid.R.string.user_data;
+import static com.yanoonigmail.rdroid.service.TaskManager.IS_LOGGED_IN;
 
 public class LoadingActivity extends ActionBarActivity {
     private MyService mMyService = MyService.getInstance();
@@ -31,12 +33,13 @@ public class LoadingActivity extends ActionBarActivity {
                 Parcel input_parcel = Parcel.obtain();
                 Parcel output_parcel = Parcel.obtain();
                 try {
-                    mMyService.getBinder().transact(3, input_parcel, output_parcel, 0);
+                    mMyService.getBinder().transact(IS_LOGGED_IN, input_parcel, output_parcel, 0);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
                 boolean[] bool_array = new boolean[1];
                 output_parcel.readBooleanArray(bool_array);
+                output_parcel.recycle();
                 Intent i;
                 if (bool_array[0]) {
                     i = new Intent(mApplicationContext, MainMenuActivity.class);

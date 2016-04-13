@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.os.Parcel;
 
 import com.yanoonigmail.rdroid.ApplicationContext;
+import com.yanoonigmail.rdroid.service.TaskManager;
 
 import java.lang.Thread;
 
@@ -31,6 +32,8 @@ import static com.yanoonigmail.rdroid.R.string.status_login_bad_parameters;
 import static com.yanoonigmail.rdroid.R.string.status_login_not_connected;
 import static com.yanoonigmail.rdroid.R.string.status_login_wrong_parameters;
 import static com.yanoonigmail.rdroid.R.string.user_data;
+import static com.yanoonigmail.rdroid.service.TaskManager.IS_CONNECTED;
+import static com.yanoonigmail.rdroid.service.TaskManager.TRY_LOGIN;
 
 public class LoginActivity extends ActionBarActivity {
     private EditText mEmailEditText;
@@ -72,12 +75,13 @@ public class LoginActivity extends ActionBarActivity {
 
     public void tryLogin(View v) {
         setLoginInProgress(true);
+        Parcel input_parcel = Parcel.obtain();
+        Parcel output_parcel = Parcel.obtain();
         try {
-            Parcel input_parcel = Parcel.obtain();
-            Parcel output_parcel = Parcel.obtain();
-            mMyService.getBinder().transact(2, input_parcel, output_parcel, 0);
+            mMyService.getBinder().transact(IS_CONNECTED, input_parcel, output_parcel, 0);
             boolean[] val = new boolean[1];
             output_parcel.readBooleanArray(val);
+            output_parcel.recycle();
             if (!val[0]) {
                 mStatusText.setText(mApplicationContext.getString(status_login_not_connected));
                 setLoginInProgress(false);
@@ -99,6 +103,7 @@ public class LoginActivity extends ActionBarActivity {
         } catch (RemoteException e) {
             e.printStackTrace();
             setLoginInProgress(false);
+            output_parcel.recycle();
         }
     }
 
@@ -108,7 +113,7 @@ public class LoginActivity extends ActionBarActivity {
     }
 
     private boolean isPasswordValid(String password) {
-        return (password.length() >= 4);
+        return (password.length() >= 1);
     }
 
     protected void setLoginInProgress(boolean inProgress) {
@@ -143,7 +148,7 @@ public class LoginActivity extends ActionBarActivity {
             Parcel output_parcel = Parcel.obtain();
             boolean login_successful = false;
             try {
-                mMyService.getBinder().transact(1, input_parcel, output_parcel, 0);
+                mMyService.getBinder().transact(TRY_LOGIN, input_parcel, output_parcel, 0);
                 boolean[] val = new boolean[1];
                 output_parcel.readBooleanArray(val);
                 login_successful = val[0];
@@ -157,6 +162,7 @@ public class LoginActivity extends ActionBarActivity {
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+            output_parcel.recycle();
             return login_successful;
         }
 

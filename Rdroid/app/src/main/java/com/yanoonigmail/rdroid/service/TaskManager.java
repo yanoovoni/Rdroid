@@ -27,6 +27,10 @@ import static com.yanoonigmail.rdroid.R.string.user_data;
  * Created by Yaniv on 24-Feb-16.
  */
 public class TaskManager extends android.app.Service {
+    public static final int TRY_LOGIN = 1;
+    public static final int IS_CONNECTED = 2;
+    public static final int IS_LOGGED_IN = 3;
+    public static final int LOGOUT = 4;
     private Server mServer;
     private Thread mManageTasksThread;
     private ArrayList<String> mIDList = new ArrayList<>();
@@ -45,7 +49,7 @@ public class TaskManager extends android.app.Service {
     public void onCreate() {
         super.onCreate();
         Log.d("service create", "service is alive");
-        notifyUser();
+        setForeground();
         mServer = Server.getInstance();
         manageTasks();
     }
@@ -74,7 +78,7 @@ public class TaskManager extends android.app.Service {
                                      int flags) {
             boolean success = false;
             switch (code) {
-                case 1:
+                case TRY_LOGIN:
                     String[] inputStrings = new String[2];
                     data.readStringArray(inputStrings);
                     boolean[] outputBoolean = new boolean[1];
@@ -82,19 +86,33 @@ public class TaskManager extends android.app.Service {
                     reply.writeBooleanArray(outputBoolean);
                     success = true;
                     break;
-                case 2:
+                case IS_CONNECTED:
                     boolean[] connectedBool = new boolean[1];
                     connectedBool[0] = mServer.isConnected();
                     reply.writeBooleanArray(connectedBool);
                     success = true;
                     break;
-                case 3:
+                case IS_LOGGED_IN:
                     boolean[] loggedInBool = new boolean[1];
                     loggedInBool[0] = mServer.isLoggedInAfterFirstTry();
                     reply.writeBooleanArray(loggedInBool);
                     success = true;
                     break;
+                case LOGOUT:
+                    boolean disconnected = mServer.disconnect();
+                    if (disconnected) {
+                        SharedPreferences preferences = getSharedPreferences(getString(user_data), Context.MODE_PRIVATE);
+                        SharedPreferences.Editor preferences_editor = preferences.edit();
+                        preferences_editor.remove("email");
+                        preferences_editor.remove("password");
+                        preferences_editor.apply();
+                        mServer.connect();
+                    }
+                    boolean[] output_bool_array = new boolean[1];
+                    output_bool_array[0] = disconnected;
+                    reply.writeBooleanArray(output_bool_array);
             }
+            data.recycle();
             return success;
         }
     }
@@ -131,7 +149,7 @@ public class TaskManager extends android.app.Service {
         Notification mNotification =
                 new Notification.Builder(ApplicationContext.getContext())
                         .setContentTitle("RDroid is running")
-                        .setContentText("The RDroid service is running and might do actions in the background.")
+                        .setContentText("The RDroid service is running.")
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
                         .build();
@@ -151,6 +169,18 @@ public class TaskManager extends android.app.Service {
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         // mId allows you to update the notification later on.
         mNotificationManager.notify(mId, mNotification);
+    }
+
+    private void setForeground() {
+        Notification mNotification =
+                new Notification.Builder(ApplicationContext.getContext())
+                        .setContentTitle("RDroid is running")
+                        .setContentText("The RDroid service is running")
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
+                        .setOngoing(true)
+                        .build();
+        startForeground(mId, mNotification);
     }
 }
 
