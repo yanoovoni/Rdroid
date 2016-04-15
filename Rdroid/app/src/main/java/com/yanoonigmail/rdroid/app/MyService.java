@@ -88,7 +88,6 @@ public class MyService {
 
     public void unbindService() {
         if (isBound()) {
-            setBound(false);
             ApplicationContext.getContext().unbindService(serviceConnection);
         }
     }

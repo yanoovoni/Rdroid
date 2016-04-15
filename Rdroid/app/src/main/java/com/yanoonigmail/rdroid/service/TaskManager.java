@@ -106,7 +106,6 @@ public class TaskManager extends android.app.Service {
                         preferences_editor.remove("email");
                         preferences_editor.remove("password");
                         preferences_editor.apply();
-                        mServer.connect();
                     }
                     boolean[] output_bool_array = new boolean[1];
                     output_bool_array[0] = disconnected;

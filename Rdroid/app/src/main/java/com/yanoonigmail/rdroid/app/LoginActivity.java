@@ -70,7 +70,6 @@ public class LoginActivity extends ActionBarActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mMyService.unbindService();
     }
 
     public void tryLogin(View v) {

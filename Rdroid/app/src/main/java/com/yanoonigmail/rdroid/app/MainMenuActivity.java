@@ -28,7 +28,6 @@ public class MainMenuActivity extends ActionBarActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mMyService.unbindService();
     }
 
     protected void logout(View view) {
