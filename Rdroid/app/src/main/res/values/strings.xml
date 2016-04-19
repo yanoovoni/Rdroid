@@ -19,6 +19,10 @@
     <string name="status_login_bad_parameters">Invalid email or password</string>
     <string name="status_login_successful">Login successful</string>
 
+    <!-- Strings related to main menu activity -->
+    <string name="log_out_button_text">Log Out</string>
+    <string name="close_application_button_text">Close Application</string>
+
     <!-- Strings related to protocol -->
     <string name="server_address">109.64.69.125</string>
     <string name="protocol_client_header">Rdroid CLIENT</string>
@@ -42,7 +46,5 @@
     <string name="protocol_client_task_results_id">id</string>
     <string name="protocol_client_task_results_output">output</string>
     <string name="protocol_client_task_results_output_separator">,</string>
-    <string name="log_out_button_text">Log Out</string>
-    <string name="close_application_button_text">Close Application</string>
 
 </resources>
