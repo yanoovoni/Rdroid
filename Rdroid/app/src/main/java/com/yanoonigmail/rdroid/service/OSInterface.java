@@ -217,12 +217,12 @@ public class OSInterface {
                             while (pCur.moveToNext()) {
                                 String phoneNo = pCur.getString(pCur.getColumnIndex(
                                         ContactsContract.CommonDataKinds.Phone.NUMBER));
-                                Toast.makeText(NativeContentProvider.this, "Name: " + name
+                                Toast.makeText(ApplicationContext.getContext(), "Name: " + name
                                         + ", Phone No: " + phoneNo, Toast.LENGTH_SHORT).show();
+                                // todo
                             }
                             pCur.close();
                         }
-
                     }
                 }
             }
