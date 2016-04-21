@@ -32,12 +32,12 @@ public sealed class Proxy
         Input_Queue = new Queue<string>();
         string connectionString = Connect.getConnectionString();
         myConnection = new OleDbConnection(connectionString);
-        this.Proxy_Manager_Thread = new Thread(new ThreadStart(this.Proxy_Manager_Thread_Method));
+        this.Proxy_Manager_Thread = new Thread(new ThreadStart(this.ProxyManagerThreadMethod));
         Proxy_Manager_Thread.IsBackground = true;
         Proxy_Manager_Thread.Start();
     }
 
-    private void Proxy_Manager_Thread_Method()
+    private void ProxyManagerThreadMethod()
     {
         while (true)
         {
@@ -51,7 +51,7 @@ public sealed class Proxy
                         string Connected_Id;
                         if (Protocol.Get_Message_Parameters(Message).TryGetValue("session_id", out Connected_Id))
                         {
-                            Add_Phone_By_Id(Connected_Id);
+                            AddPhoneById(Connected_Id);
                         }
                         break;
                     case "NOTIFY_SESSION_DISCONNECT":
@@ -65,7 +65,7 @@ public sealed class Proxy
             }
             else
             {
-                if (Protocol.Is_Phone_Message(Message))
+                if (Protocol.IsPhoneMessage(Message))
                 {
                     //todo do stuff with the phone message
                     string Phone_Id = Protocol.Get_Sender_Id(Message);
@@ -76,9 +76,9 @@ public sealed class Proxy
                         string Password;
                         if (Protocol.Get_Message_Parameters(Message).TryGetValue("email", out Email) && Protocol.Get_Message_Parameters(Message).TryGetValue("password", out Password))
                         {
-                            if (Is_Valid_Login(Email, Password))
+                            if (IsValidLogin(Email, Password))
                             {
-                                Add_Phone_By_Email(Phone_Id, Email);
+                                AddPhoneByEmail(Phone_Id, Email);
                                 Proxy_Socket.Send(Protocol.Create_Login_Result_Message(Phone_Id, true));
                             }
                             else
@@ -96,7 +96,7 @@ public sealed class Proxy
                             string Task_Output;
                             if (Task_Parameters_Dict.TryGetValue("task_id", out Task_Id) && Task_Parameters_Dict.TryGetValue("output", out Task_Output))
                             {
-                                Get_Phone_By_Id(Phone_Id).Add_Recieved_Task(Task_Id, Task_Output);
+                                GetPhoneById(Phone_Id).AddRecievedTask(Task_Id, Task_Output);
                             }
                         }
                     }
@@ -105,7 +105,7 @@ public sealed class Proxy
         }
     }
 
-    private bool Is_Valid_Login(string Email, string Password)
+    private bool IsValidLogin(string Email, string Password)
     {
         OleDbDataReader reader;
         UserDetails userDetails = new UserDetails();
@@ -151,22 +151,22 @@ public sealed class Proxy
         return true;
     }
 
-    private void Add_Phone_By_Id(string Id)
+    private void AddPhoneById(string Id)
     {
         Phone_By_Id_Dict.Add(Id, new Phone(Id));
     }
 
-    private void Add_Phone_By_Email(string Id, string Email) // needs the phone to be in the Phone_By_Id_Dict.
+    private void AddPhoneByEmail(string Id, string Email) // needs the phone to be in the Phone_By_Id_Dict.
     {
-        Phone Added_Phone = Get_Phone_By_Id(Id);
-        if (Added_Phone != null && Get_Phone_By_Email(Email) == null)
+        Phone Added_Phone = GetPhoneById(Id);
+        if (Added_Phone != null && GetPhoneByEmail(Email) == null)
         {
-            Added_Phone.Set_Email(Email);
+            Added_Phone.SetEmail(Email);
                 Phone_By_Email_Dict.Add(Email, Added_Phone);
         }
     }
 
-    public Phone Get_Phone_By_Id(string Id)
+    public Phone GetPhoneById(string Id)
     {
         Phone Wanted_Phone;
         if (Phone_By_Id_Dict.TryGetValue(Id, out Wanted_Phone))
@@ -176,7 +176,7 @@ public sealed class Proxy
         return null;
     }
 
-    public Phone Get_Phone_By_Email(string Email)
+    public Phone GetPhoneByEmail(string Email)
     {
         Phone Wanted_Phone;
         if (Phone_By_Email_Dict.TryGetValue(Email, out Wanted_Phone))
@@ -186,18 +186,18 @@ public sealed class Proxy
         return null;
     }
 
-    public string Handle_Task(string Email, string Type, string[] Parameters)
+    public string HandleTask(string Email, string Type, string[] Parameters)
     {
-        Phone Tasked_Phone = Get_Phone_By_Email(Email);
-        string Phone_Id = Tasked_Phone.Get_Id();
-        string Task_Id = Tasked_Phone.Generate_Task_Id();
+        Phone Tasked_Phone = GetPhoneByEmail(Email);
+        string Phone_Id = Tasked_Phone.GetId();
+        string Task_Id = Tasked_Phone.GenerateTaskId();
         string Task_Message = Protocol.Create_Task_Message(Phone_Id, Task_Id, Type, Parameters);
         Proxy_Socket.Send(Task_Message);
         string Task_Output = null;
         bool Got_Output = false;
         while (!Got_Output)
         {
-            Task_Output = Tasked_Phone.Get_Recieved_Task_Output(Task_Id);
+            Task_Output = Tasked_Phone.GetRecievedTaskOutput(Task_Id);
             if (Task_Output != null)
             {
                 Got_Output = true;

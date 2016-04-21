@@ -24,7 +24,7 @@ public static class Protocol
         return Message.StartsWith("Rdroid PROXY\n");
     }
 
-    public static bool Is_Phone_Message(string Message)
+    public static bool IsPhoneMessage(string Message)
     {
         try
         {

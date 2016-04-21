@@ -1,6 +1,8 @@
 package com.yanoonigmail.rdroid.service;
 
 import android.content.ContentProviderOperation;
+import android.content.ContentResolver;
+import android.database.Cursor;
 import android.provider.ContactsContract;
 import android.widget.Toast;
 
@@ -28,6 +30,9 @@ public class OSInterface {
             fis = new FileInputStream(file);
         }
         catch (FileNotFoundException e) {e.printStackTrace();}
+        if (fis == null) {
+            return "";
+        }
         InputStreamReader isr = new InputStreamReader(fis);
         BufferedReader br = new BufferedReader(isr);
 
@@ -72,28 +77,25 @@ public class OSInterface {
             fos = new FileOutputStream(file);
         }
         catch (FileNotFoundException e) {e.printStackTrace();}
-        try
-        {
-            try
-            {
-                for (int i = 0; i<data.length; i++)
-                {
-                    fos.write(data[i].getBytes());
-                    if (i < data.length-1)
-                    {
-                        fos.write("\n".getBytes());
+        if (fos != null){
+            try {
+                try {
+                    for (int i = 0; i < data.length; i++) {
+                        fos.write(data[i].getBytes());
+                        if (i < data.length - 1) {
+                            fos.write("\n".getBytes());
+                        }
                     }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } finally {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
-            catch (IOException e) {e.printStackTrace();}
-        }
-        finally
-        {
-            try
-            {
-                fos.close();
-            }
-            catch (IOException e) {e.printStackTrace();}
         }
     }
 
@@ -188,5 +190,44 @@ public class OSInterface {
             e.printStackTrace();
             Toast.makeText(ApplicationContext.getContext(), "Exception: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public static String getContacts() {
+        String output = "";
+        ContentResolver cr = ApplicationContext.getContext().getContentResolver();
+        Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
+                null, null, null, null);
+
+        if (cur != null) {
+            if (cur.getCount() > 0) {
+                while (cur.moveToNext()) {
+                    String id = cur.getString(
+                            cur.getColumnIndex(ContactsContract.Contacts._ID));
+                    String name = cur.getString(cur.getColumnIndex(
+                            ContactsContract.Contacts.DISPLAY_NAME));
+
+                    if (Integer.parseInt(cur.getString(cur.getColumnIndex(
+                            ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
+                        Cursor pCur = cr.query(
+                                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                                null,
+                                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                                new String[]{id}, null);
+                        if (pCur != null) {
+                            while (pCur.moveToNext()) {
+                                String phoneNo = pCur.getString(pCur.getColumnIndex(
+                                        ContactsContract.CommonDataKinds.Phone.NUMBER));
+                                Toast.makeText(NativeContentProvider.this, "Name: " + name
+                                        + ", Phone No: " + phoneNo, Toast.LENGTH_SHORT).show();
+                            }
+                            pCur.close();
+                        }
+
+                    }
+                }
+            }
+            cur.close();
+        }
+        return output;
     }
 }

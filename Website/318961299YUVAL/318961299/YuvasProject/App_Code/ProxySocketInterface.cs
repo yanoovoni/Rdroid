@@ -29,15 +29,15 @@ public sealed class ProxySocketInterface
 
     private ProxySocketInterface()
     {
-        this.Start_Thread = new Thread(new ThreadStart(this.Start_Thread_Method));
+        this.Start_Thread = new Thread(new ThreadStart(this.StartThreadMethod));
         Start_Thread.IsBackground = true;
         Start_Thread.Start();
     }
 
-    private void Start_Thread_Method()
+    private void StartThreadMethod()
     {
         Connect();
-        Run_Threads();
+        RunThreads();
     }
 
     private void Connect()
@@ -56,12 +56,12 @@ public sealed class ProxySocketInterface
         }
     }
 
-    private void Run_Threads()
+    private void RunThreads()
     {
-        this.Recv_Thread = new Thread(new ThreadStart(this.Recv_Thread_Method));
+        this.Recv_Thread = new Thread(new ThreadStart(this.RecvThreadMethod));
         Recv_Thread.IsBackground = true;
         Recv_Thread.Start();
-        this.Send_Thread = new Thread(new ThreadStart(this.Send_Thread_Method));
+        this.Send_Thread = new Thread(new ThreadStart(this.SendThreadMethod));
         Send_Thread.IsBackground = true;
         Send_Thread.Start();
     }
@@ -72,7 +72,7 @@ public sealed class ProxySocketInterface
         return encoded_message; // Returns the byte array.
     }
 
-    private void Recv_Thread_Method() // Decodes the incoming message from byte[] to string.
+    private void RecvThreadMethod() // Decodes the incoming message from byte[] to string.
     {
         while (true)
         {
@@ -99,7 +99,7 @@ public sealed class ProxySocketInterface
         }
     }
 
-    private void Send_Thread_Method() // Sends the message.
+    private void SendThreadMethod() // Sends the message.
     {
         while (true)
         {

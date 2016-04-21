@@ -18,22 +18,22 @@ public class Phone
         this.Id = Id;
     }
 
-    public bool Logged_in()
+    public bool IsLoggedIn()
     {
         return User_Email != "";
     }
 
-    public string Get_Id()
+    public string GetId()
     {
         return Id;
     }
 
-    public string Get_Email()
+    public string GetEmail()
     {
         return User_Email;
     }
 
-    public void Set_Email(string email)
+    public void SetEmail(string email)
     {
         User_Email = email;
     }
@@ -43,18 +43,18 @@ public class Phone
         ProxySocketInterface.Get_Instance().Send(message);
     }
 
-    public string Generate_Task_Id()
+    public string GenerateTaskId()
     {
         Task_Id_Generator_Number++;
         return Task_Id_Generator_Number.ToString();
     }
 
-    public void Add_Recieved_Task(string Task_Id, string Task_Output)
+    public void AddRecievedTask(string Task_Id, string Task_Output)
     {
         Recieved_Tasks_Dict.Add(Task_Id, Task_Output);
     }
 
-    public string Get_Recieved_Task_Output(string Task_Id)
+    public string GetRecievedTaskOutput(string Task_Id)
     {
         string Recieved_Task;
         if (Recieved_Tasks_Dict.TryGetValue(Id, out Recieved_Task))
