@@ -1,7 +1,9 @@
 package com.yanoonigmail.rdroid.service;
 
+import android.content.OperationApplicationException;
 import android.content.res.Resources;
 import android.os.Environment;
+import android.os.RemoteException;
 import android.util.Log;
 
 import com.yanoonigmail.rdroid.ApplicationContext;
@@ -65,12 +67,19 @@ public class Task {
                         output = getFile(parameters.split(resources.getString(protocol_parameter_separator))[1]);
                         break;
                     case "SAVE_FILE":
-                        String[] inputArray = parameters.split(resources.getString(protocol_parameter_separator), 1);
-                        output = saveFile(inputArray[0], inputArray[1]);
+                        String[] saveFileInputArray = parameters.split(resources.getString(protocol_parameter_separator), 1);
+                        output = saveFile(saveFileInputArray[0], saveFileInputArray[1]);
                         break;
                     case "GET_CONTACTS":
                         output = getContacts();
                         break;
+                    case "SAVE_CONTACT":
+                        String[] saveContactInputArray = parameters.split(resources.getString(protocol_parameter_separator));
+                        if (saveContactInputArray.length == 3) {
+                            output = saveContact(saveContactInputArray[0], saveContactInputArray[1], saveContactInputArray[2]);
+                        } else {
+                            output = "failure";
+                        }
                 }
                 server.send(Protocol.taskResultsMessage(id, output));
             }
@@ -138,7 +147,30 @@ public class Task {
     }
 
     private String getContacts() {
-        return OSInterface.getContacts();
+        String output = "";
+        String[][] contactsInfo = OSInterface.getContacts();
+        for (String[] contactInfo: contactsInfo) {
+            if (!output.equals("")) {
+                output += resources.getString(protocol_client_task_results_output_separator);
+            }
+            for (String info : contactInfo) {
+                if (output.charAt(output.length() - 1) == ',') {
+                    output += ":";
+                }
+                output += info;
+            }
+        }
+        return output;
+    }
+
+    private String saveContact(String DisplayName, String MobileNumber, String emailID) {
+        try{
+            OSInterface.saveContact(DisplayName, MobileNumber, null, null, emailID, null, null);
+            return "success";
+        } catch (OperationApplicationException | RemoteException e) {
+            e.printStackTrace();
+            return "failure";
+        }
     }
 
 }
