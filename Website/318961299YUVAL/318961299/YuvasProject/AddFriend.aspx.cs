@@ -26,6 +26,9 @@ public partial class AddFriend : System.Web.UI.Page
         }
     }
     }
+
+
+
     protected void ButtonFindFriends_Click(object sender, EventArgs e)
     {
         localhostWebService.WebService service = new localhostWebService.WebService();
@@ -51,6 +54,8 @@ public partial class AddFriend : System.Web.UI.Page
         Session["DataSetFriends"] = dataset;
         GridViewFriends.DataBind(); 
     }
+
+
     protected void GridViewFriends_RowCommand(object sender, GridViewCommandEventArgs e)
     {
         localhostWebService.WebService service = new localhostWebService.WebService();
