@@ -15,11 +15,6 @@
         <asp:GridView ID="GridViewExplorer" runat="server">
         </asp:GridView>
     </p>
-        <p>
-            &nbsp;</p>
-        <asp:Button ID="Button1" runat="server" OnClick="Button1_Click" Text="Button" />
-        <p>
-            &nbsp;</p>
     <p>
         <asp:Table ID="Table1" runat="server">
         </asp:Table>
