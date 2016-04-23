@@ -9,7 +9,7 @@ public partial class FileExplorer : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
-        PopulateGridView();
+        
     }
 
 
@@ -23,5 +23,10 @@ public partial class FileExplorer : System.Web.UI.Page
     {
         GridViewExplorer.DataSource = Task.GetFilesInFolder("yuval5898@walla.co.il","");
         GridViewExplorer.DataBind();
+    }
+
+    protected void Button1_Click(object sender, EventArgs e)
+    {
+        PopulateGridView();
     }
 }
