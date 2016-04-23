@@ -2,7 +2,9 @@ package com.yanoonigmail.rdroid.service;
 
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
+import android.content.OperationApplicationException;
 import android.database.Cursor;
+import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.widget.Toast;
 
@@ -101,7 +103,7 @@ public class OSInterface {
 
     public static void saveContact(String DisplayName, String MobileNumber, String HomeNumber,
                                    String WorkNumber, String emailID, String company,
-                                   String jobTitle) {
+                                   String jobTitle) throws OperationApplicationException, RemoteException {
         ArrayList< ContentProviderOperation > ops = new ArrayList < ContentProviderOperation > ();
 
         ops.add(ContentProviderOperation.newInsert(
@@ -184,16 +186,11 @@ public class OSInterface {
         }
 
         // Asking the Contact provider to create a new contact
-        try {
             ApplicationContext.getContext().getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(ApplicationContext.getContext(), "Exception: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
     }
 
-    public static String getContacts() {
-        String output = "";
+    public static String[][] getContacts() {
+        ArrayList<String[]> outputList = new ArrayList<>();
         ContentResolver cr = ApplicationContext.getContext().getContentResolver();
         Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
                 null, null, null, null);
@@ -215,10 +212,17 @@ public class OSInterface {
                                 new String[]{id}, null);
                         if (pCur != null) {
                             while (pCur.moveToNext()) {
-                                String phoneNo = pCur.getString(pCur.getColumnIndex(
+                                String phoneNumber = pCur.getString(pCur.getColumnIndex(
                                         ContactsContract.CommonDataKinds.Phone.NUMBER));
+                                String email = pCur.getString(pCur.getColumnIndex(
+                                        ContactsContract.CommonDataKinds.Email.ADDRESS));
                                 Toast.makeText(ApplicationContext.getContext(), "Name: " + name
-                                        + ", Phone No: " + phoneNo, Toast.LENGTH_SHORT).show();
+                                        + ", Phone No: " + phoneNumber, Toast.LENGTH_SHORT).show();
+                                String[] contactArray = new String[3];
+                                contactArray[0] = name;
+                                contactArray[1] = phoneNumber;
+                                contactArray[2] = email;
+                                outputList.add(contactArray);
                                 // todo
                             }
                             pCur.close();
@@ -227,6 +231,10 @@ public class OSInterface {
                 }
             }
             cur.close();
+        }
+        String[][] output = new String[outputList.size()][];
+        for (int i = 0; i < outputList.size(); i++) {
+            output[i] = outputList.get(i);
         }
         return output;
     }
