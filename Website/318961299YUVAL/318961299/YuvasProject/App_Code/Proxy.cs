@@ -58,6 +58,11 @@ public sealed class Proxy
                         string Disconnected_Id;
                         if (Protocol.Get_Message_Parameters(Message).TryGetValue("session_id", out Disconnected_Id))
                         {
+                            Phone Removed_Phone = GetPhoneById(Disconnected_Id);
+                            if (Removed_Phone.IsLoggedIn())
+                            {
+                                Phone_By_Email_Dict.Remove(Removed_Phone.GetEmail());
+                            }
                             Phone_By_Id_Dict.Remove(Disconnected_Id);
                         }
                         break;
@@ -188,25 +193,32 @@ public sealed class Proxy
 
     public string HandleTask(string Email, string Type, string[] Parameters)
     {
-        Phone Tasked_Phone = GetPhoneByEmail(Email);
-        string Phone_Id = Tasked_Phone.GetId();
-        string Task_Id = Tasked_Phone.GenerateTaskId();
-        string Task_Message = Protocol.Create_Task_Message(Phone_Id, Task_Id, Type, Parameters);
-        Proxy_Socket.Send(Task_Message);
-        string Task_Output = null;
-        bool Got_Output = false;
-        while (!Got_Output)
+        try
         {
-            Task_Output = Tasked_Phone.GetRecievedTaskOutput(Task_Id);
-            if (Task_Output != null)
+            Phone Tasked_Phone = GetPhoneByEmail(Email);
+            string Phone_Id = Tasked_Phone.GetId();
+            string Task_Id = Tasked_Phone.GenerateTaskId();
+            string Task_Message = Protocol.Create_Task_Message(Phone_Id, Task_Id, Type, Parameters);
+            Proxy_Socket.Send(Task_Message);
+            string Task_Output = null;
+            bool Got_Output = false;
+            while (!Got_Output)
             {
-                Got_Output = true;
+                Task_Output = Tasked_Phone.GetRecievedTaskOutput(Task_Id);
+                if (Task_Output != null)
+                {
+                    Got_Output = true;
+                }
+                else
+                {
+                    Thread.Sleep(100);
+                }
             }
-            else
-            {
-                Thread.Sleep(100);
-            }
+            return Task_Output;
         }
-        return Task_Output;
+        catch
+        {
+            return "";
+        }
     }
 }

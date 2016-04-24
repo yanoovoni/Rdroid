@@ -46,11 +46,6 @@ public static class Task
         throw new Exception();
     }
 
-    public static string[,] GetContacts()
-    {
-
-
-    }
 
     public static bool SaveContact(string email, string DisplayName, string MobileNumber, string emailID)
     {

@@ -117,30 +117,28 @@ public class TaskManager extends android.app.Service {
     }
 
     private void manageTasks() {
-        if (mManageTasksThread != null) {
-            if (!mManageTasksThread.isAlive()) {
-                mManageTasksThread = new Thread(new Runnable() {
-                    public void run() {
-                        while (true) {
-                            if (mServer.isLoggedIn()) {
-                                try {
-                                    Task task = Protocol.taskRequest(mServer.recv());
-                                    mIDList.add(task.getId());
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            } else {
-                                try {
-                                    Thread.sleep(1000);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
+        if (mManageTasksThread == null) {
+            mManageTasksThread = new Thread(new Runnable() {
+                public void run() {
+                    while (true) {
+                        if (mServer.isLoggedIn()) {
+                            try {
+                                Task task = Protocol.taskRequest(mServer.recv());
+                                mIDList.add(task.getId());
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
                             }
                         }
                     }
-                });
-                mManageTasksThread.start();
-            }
+                }
+            });
+            mManageTasksThread.start();
         }
     }
 
