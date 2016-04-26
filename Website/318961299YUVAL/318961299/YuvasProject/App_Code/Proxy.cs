@@ -158,7 +158,12 @@ public sealed class Proxy
 
     private void AddPhoneById(string Id)
     {
-        Phone_By_Id_Dict.Add(Id, new Phone(Id));
+        try
+        {
+            Phone_By_Id_Dict.Add(Id, new Phone(Id));
+        }
+        catch (Exception e)
+        { }
     }
 
     private void AddPhoneByEmail(string Id, string Email) // needs the phone to be in the Phone_By_Id_Dict.
@@ -167,7 +172,12 @@ public sealed class Proxy
         if (Added_Phone != null && GetPhoneByEmail(Email) == null)
         {
             Added_Phone.SetEmail(Email);
+            try
+            {
                 Phone_By_Email_Dict.Add(Email, Added_Phone);
+            }
+            catch (Exception e)
+            { }
         }
     }
 

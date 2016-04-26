@@ -14,7 +14,7 @@ public sealed class ProxySocketInterface
 {
     private static readonly ProxySocketInterface our_instance = new ProxySocketInterface();
     private Socket clientsocket;
-    private byte[] buffer = new byte[8192]; // The amount of data
+    private int BufferSize = 8192; // The amount of data
     private Queue<string> input_queue = new Queue<string>();
     private Queue<string> output_queue = new Queue<string>();
     private Thread Start_Thread;
@@ -74,23 +74,45 @@ public sealed class ProxySocketInterface
 
     private void RecvThreadMethod() // Decodes the incoming message from byte[] to string.
     {
+        byte[] OneLetterBuffer = new byte[1];
         while (true)
         {
             try
             {
-                clientsocket.Receive(buffer);
-                string recieved_message = Encoding.ASCII.GetString(buffer, 0, buffer.Length).TrimEnd('\0'); // Decoding the message.
-                if (!String.IsNullOrEmpty(recieved_message))
+                int MessageLen = 0;
+                string MessageLenString = "";
+                while (!MessageLenString.EndsWith(":"))
                 {
-                    int Len;
-                    recieved_message = Protocol.Cut_Len_From_Message(recieved_message, out Len);
-                    while (recieved_message.Length < Len)
-                    {
-                        clientsocket.Receive(buffer);
-                        recieved_message += Encoding.ASCII.GetString(buffer, 0, buffer.Length).TrimEnd('\0');
-                    }
-                    this.input_queue.Enqueue(Base64Decode(recieved_message.TrimEnd('\n'))); // Returns the string.
+                    clientsocket.Receive(OneLetterBuffer);
+                    MessageLenString += Encoding.ASCII.GetString(OneLetterBuffer, 0, OneLetterBuffer.Length).TrimEnd('\0');
                 }
+                char[] MessageLenFlippedCharArray = MessageLenString.Trim(':').Reverse().ToArray();
+                for (int i = 0; i < MessageLenFlippedCharArray.Length; i++)
+                {
+                    char ShouldBeNumberChar = MessageLenFlippedCharArray[i];
+                    int RecievedNumber;
+                    if (int.TryParse(ShouldBeNumberChar.ToString(), out RecievedNumber))
+                    {
+                        MessageLen += Convert.ToInt32(RecievedNumber * Math.Pow(10, Convert.ToDouble(i)));
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                string RecievedMessage = "";
+                while (RecievedMessage.Length < MessageLen)
+                {
+                    int NextBufferSize = MessageLen - RecievedMessage.Length;
+                    if (NextBufferSize > this.BufferSize)
+                    {
+                        NextBufferSize = this.BufferSize;
+                    }
+                    byte[] Buffer = new byte[NextBufferSize];
+                    clientsocket.Receive(Buffer);
+                    RecievedMessage += Encoding.ASCII.GetString(Buffer, 0, Buffer.Length).TrimEnd('\0');
+                }
+                this.input_queue.Enqueue(Base64Decode(RecievedMessage.TrimEnd('\n'))); // Returns the string.
             }
             catch (SocketException e)
             {

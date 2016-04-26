@@ -61,10 +61,10 @@ public class Task {
                 String output = "";
                 switch (type) {
                     case "GET_FILES_IN_FOLDER":
-                        output = getFilesInFolder(parameters.split(resources.getString(protocol_parameter_separator))[1]);
+                        output = getFilesInFolder(parameters);
                         break;
                     case "GET_FILE":
-                        output = getFile(parameters.split(resources.getString(protocol_parameter_separator))[1]);
+                        output = getFile(parameters);
                         break;
                     case "SAVE_FILE":
                         String[] saveFileInputArray = parameters.split(resources.getString(protocol_parameter_separator), 1);

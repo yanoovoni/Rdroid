@@ -94,7 +94,7 @@ class Server(object):
         # sends a message to the server.
         print 'to server: ' + message
         message = base64.b64encode(message)
-        message = str(len(message) - 1) + ':' + message
+        message = str(len(message)) + ':' + message
         print 'to server encoded: ' + message
         self.__server_socket.send(message)
 
