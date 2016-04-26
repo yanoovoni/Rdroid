@@ -118,7 +118,7 @@ public class Protocol {
                     parameters = paramDetailsCouple[1];
             }
         }
-        if (id.equals("") || type.equals("") || parameters.equals("")) {
+        if (id.equals("") || type.equals("")) {
             throw new BadInputException("Missing task parameters.");
         }
         return new Task(id, type, parameters);

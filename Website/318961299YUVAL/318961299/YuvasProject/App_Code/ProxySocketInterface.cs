@@ -89,7 +89,7 @@ public sealed class ProxySocketInterface
                         clientsocket.Receive(buffer);
                         recieved_message += Encoding.ASCII.GetString(buffer, 0, buffer.Length).TrimEnd('\0');
                     }
-                    this.input_queue.Enqueue(Base64Decode(recieved_message)); // Returns the string.
+                    this.input_queue.Enqueue(Base64Decode(recieved_message.TrimEnd('\n'))); // Returns the string.
                 }
             }
             catch (SocketException e)
