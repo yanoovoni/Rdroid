@@ -99,7 +99,7 @@ public sealed class Proxy
                             Dictionary<string, string> Task_Parameters_Dict = Protocol.Get_Message_Parameters(Message);
                             string Task_Id;
                             string Task_Output;
-                            if (Task_Parameters_Dict.TryGetValue("task_id", out Task_Id) && Task_Parameters_Dict.TryGetValue("output", out Task_Output))
+                            if (Task_Parameters_Dict.TryGetValue("id", out Task_Id) && Task_Parameters_Dict.TryGetValue("output", out Task_Output))
                             {
                                 GetPhoneById(Phone_Id).AddRecievedTask(Task_Id, Task_Output);
                             }
@@ -169,8 +169,12 @@ public sealed class Proxy
     private void AddPhoneByEmail(string Id, string Email) // needs the phone to be in the Phone_By_Id_Dict.
     {
         Phone Added_Phone = GetPhoneById(Id);
-        if (Added_Phone != null && GetPhoneByEmail(Email) == null)
+        if (Added_Phone != null)
         {
+            if (GetPhoneByEmail(Email) != null)
+            {
+                Phone_By_Email_Dict.Remove(Email);
+            }
             Added_Phone.SetEmail(Email);
             try
             {

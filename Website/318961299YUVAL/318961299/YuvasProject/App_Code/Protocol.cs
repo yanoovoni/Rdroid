@@ -56,7 +56,7 @@ public static class Protocol
         string[] Parameter_Lines = Message.Split('\n').Skip(2).ToArray<string>();
         foreach (string Parameter in Parameter_Lines)
         {
-            string[] Split_Parameter = Parameter.Split(':');
+            string[] Split_Parameter = Parameter.Split(new char[] { ':' }, 2);
             if (Split_Parameter.Length == 2)
             {
                 Parameter_Dict.Add(Split_Parameter[0], Split_Parameter[1]);
