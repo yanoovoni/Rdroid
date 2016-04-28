@@ -7,12 +7,12 @@ using System.Web.UI.WebControls;
 
 public partial class FileExplorer : System.Web.UI.Page
 {
+    private string Folder = "";
+    private string[] FilesInFolder;
     protected void Page_Load(object sender, EventArgs e)
     {
-        
+        Folder = "";
     }
-
-
 
     protected void DropDownList1_SelectedIndexChanged(object sender, EventArgs e)
     {
@@ -21,12 +21,14 @@ public partial class FileExplorer : System.Web.UI.Page
 
     public void PopulateGridView()
     {
-        GridViewExplorer.DataSource = Task.GetFilesInFolder("yuval5898@walla.co.il","");
+        FilesInFolder = Task.GetFilesInFolder("yuval5898@walla.co.il", Folder);
+        GridViewExplorer.DataSource = FilesInFolder;
         GridViewExplorer.DataBind();
     }
 
     protected void Button1_Click(object sender, EventArgs e)
     {
+        Folder = "";
         PopulateGridView();
     }
 
@@ -38,8 +40,18 @@ public partial class FileExplorer : System.Web.UI.Page
         if (e.CommandName == "chck")
         {
             int index = Convert.ToInt32(e.CommandArgument);
-            GridViewExplorer.DataSource = Task.GetFilesInFolder("yuval5898@walla.co.il", );
-            GridViewExplorer.DataBind();
+            Folder += "\\" + FilesInFolder[index];
+            PopulateGridView();
+        }
+    }
+
+    protected void ToPreviousFolder()
+    {
+        int index = Folder.LastIndexOf("\\");
+        if (index > 0)
+        {
+            Folder = Folder.Substring(0, index);
+            PopulateGridView();
         }
     }
 }
