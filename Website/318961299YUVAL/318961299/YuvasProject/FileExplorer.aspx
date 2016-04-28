@@ -12,7 +12,10 @@
     </p>
         <p>
         <br />
-        <asp:GridView ID="GridViewExplorer" runat="server">
+        <asp:GridView ID="GridViewExplorer" runat="server" OnRowCommand="GridViewExplorer_RowCommand">
+            <Columns>
+                <asp:ButtonField ButtonType="Button" CommandName="chck" Text="click here to open folder" />
+            </Columns>
         </asp:GridView>
     </p>
         <p>

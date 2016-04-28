@@ -29,4 +29,17 @@ public partial class FileExplorer : System.Web.UI.Page
     {
         PopulateGridView();
     }
+
+    protected void GridViewExplorer_RowCommand(object sender, GridViewCommandEventArgs e)
+    {
+        GridViewExplorer.DataSource = null;
+        GridViewExplorer.DataBind();
+
+        if (e.CommandName == "chck")
+        {
+            int index = Convert.ToInt32(e.CommandArgument);
+            GridViewExplorer.DataSource = Task.GetFilesInFolder("yuval5898@walla.co.il", );
+            GridViewExplorer.DataBind();
+        }
+    }
 }
