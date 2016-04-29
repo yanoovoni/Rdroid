@@ -7,14 +7,12 @@
 
     <center>
     <p>
-        <asp:DropDownList ID="DropDownList1" runat="server" OnSelectedIndexChanged="DropDownList1_SelectedIndexChanged">
-        </asp:DropDownList>
-    </p>
+        &nbsp;</p>
         <p>
         <br />
         <asp:GridView ID="GridViewExplorer" runat="server" OnRowCommand="GridViewExplorer_RowCommand">
             <Columns>
-                <asp:ButtonField ButtonType="Button" CommandName="chck" Text="click here to open folder" />
+                <asp:ButtonField ButtonType="Button" CommandName="ReturnItem" Text="Open Folder / Download File" />
             </Columns>
         </asp:GridView>
     </p>

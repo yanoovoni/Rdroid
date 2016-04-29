@@ -45,7 +45,7 @@ public partial class FileExplorer : System.Web.UI.Page
         GridViewExplorer.DataSource = null;
         GridViewExplorer.DataBind();
 
-        if (e.CommandName == "openfolder")
+        if (e.CommandName == "ReturnItem")
         {
             int index = Convert.ToInt32(e.CommandArgument);
             string FileName = this.FilesInFolder[index];
