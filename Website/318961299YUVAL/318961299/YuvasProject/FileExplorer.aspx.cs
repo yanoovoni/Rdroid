@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.IO;
 
 public partial class FileExplorer : System.Web.UI.Page
 {
@@ -65,8 +66,7 @@ public partial class FileExplorer : System.Web.UI.Page
             }
             else
             {
-                Task.GetFile("yuval5898@walla.co.il", this.Folder + "/" + FileName);
-                //todo send the output of this task back to the client.
+                DownloadFile(FileName, GetBytes(Task.GetFile("yuval5898@walla.co.il", this.Folder + "/" + FileName)));
             }
         }
     }
@@ -79,5 +79,25 @@ public partial class FileExplorer : System.Web.UI.Page
             Folder = Folder.Substring(0, index);
             PopulateGridView();
         }
+    }
+
+    protected void DownloadFile(string filename, byte[] filedata)
+    {
+        Response.Clear();
+        Response.ClearHeaders();
+        Response.ClearContent();
+        Response.AddHeader("Content-Disposition", "attachment; filename=" + filename);
+        Response.AddHeader("Content-Length", filedata.Length.ToString());
+        Response.ContentType = "text/plain";
+        Response.Flush();
+        Response.BinaryWrite(filedata);
+        Response.End();
+    }
+
+    static protected byte[] GetBytes(string str)
+    {
+        byte[] bytes = new byte[str.Length * sizeof(char)];
+        System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
+        return bytes;
     }
 }
