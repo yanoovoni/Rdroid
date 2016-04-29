@@ -45,7 +45,7 @@ public partial class FileExplorer : System.Web.UI.Page
         GridViewExplorer.DataSource = null;
         GridViewExplorer.DataBind();
 
-        if (e.CommandName == "chck")
+        if (e.CommandName == "openfolder")
         {
             int index = Convert.ToInt32(e.CommandArgument);
             string FileName = this.FilesInFolder[index];
@@ -65,7 +65,8 @@ public partial class FileExplorer : System.Web.UI.Page
             }
             else
             {
-                Task.GetFile("yuval5898@walla.co.il", this.Folder += "/" + FileName);
+                if (e.CommandName == "download")
+                Task.GetFile("yuval5898@walla.co.il", this.Folder + "/" + FileName);
                 //todo send the output of this task back to the client.
             }
         }
