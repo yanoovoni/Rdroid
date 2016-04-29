@@ -86,11 +86,12 @@ public static class Protocol
         string Message = Phone_Id + ":Rdroid SERVER\nTASK\n";
         Message += "id:" + Task_Id + "\n";
         Message += "type:" + Type + "\n";
+        Message += "parameters:";
         foreach (string Parameter in Parameters)
         {
-            Message += "parameter:" + Parameter + "\n";
+             Message += Parameter + ",";
         }
-        Message = Message.Substring(0, Message.LastIndexOf("\n"));
+        Message = Message.Substring(0, Message.Length - 1);
         return Message;
     }
 }

@@ -65,7 +65,6 @@ public partial class FileExplorer : System.Web.UI.Page
             }
             else
             {
-                if (e.CommandName == "download")
                 Task.GetFile("yuval5898@walla.co.il", this.Folder + "/" + FileName);
                 //todo send the output of this task back to the client.
             }
