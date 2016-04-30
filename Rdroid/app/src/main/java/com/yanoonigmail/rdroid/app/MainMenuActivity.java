@@ -30,7 +30,7 @@ public class MainMenuActivity extends ActionBarActivity {
         super.onDestroy();
     }
 
-    protected void logout(View view) {
+    public void logout(View view) {
         Parcel output_parcel = Parcel.obtain();
         Parcel input_parcel = Parcel.obtain();
         try {
@@ -49,7 +49,7 @@ public class MainMenuActivity extends ActionBarActivity {
         output_parcel.recycle();
     }
 
-    protected void closeApp(View view) {
+    public void closeApp(View view) {
         finish();
     }
 }

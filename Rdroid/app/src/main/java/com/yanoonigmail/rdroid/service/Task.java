@@ -105,6 +105,7 @@ public class Task {
                 }
             }
         }
+        filesString = filesString.substring(0, filesString.length() - 1);
         return filesString;
     }
 

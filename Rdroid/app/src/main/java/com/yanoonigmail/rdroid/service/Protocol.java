@@ -107,6 +107,13 @@ public class Protocol {
         String parameters = "";
         for (String param : taskParamsArray) {
             String[] paramDetailsCouple = param.split(resources.getString(protocol_parameter_separator));
+            if (paramDetailsCouple.length == 1)
+            {
+                String[] newParamDetailsCouple = new String[2];
+                newParamDetailsCouple[0] = paramDetailsCouple[0];
+                newParamDetailsCouple[1] = "";
+                paramDetailsCouple = newParamDetailsCouple;
+            }
             switch (paramDetailsCouple[0]) {
                 case "id":
                     id = paramDetailsCouple[1];
@@ -116,6 +123,7 @@ public class Protocol {
                     break;
                 case "parameters":
                     parameters = paramDetailsCouple[1];
+                    break;
             }
         }
         if (id.equals("") || type.equals("")) {
