@@ -19,8 +19,12 @@
         <p>
             &nbsp;</p>
         <asp:Button ID="Button1" runat="server" OnClick="Button1_Click" Text="Button" />
+        <br />
+        <br />
+        <br />
         <p>
-            &nbsp;</p>
+            <asp:Label ID="Label1" runat="server" Text="Label"></asp:Label>
+        </p>
     <p>
         <asp:Table ID="Table1" runat="server">
         </asp:Table>

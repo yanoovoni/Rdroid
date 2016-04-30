@@ -31,7 +31,15 @@ public partial class FileExplorer : System.Web.UI.Page
     public void PopulateGridView()
     {
         this.FilesInFolder = Task.GetFilesInFolder("yuval5898@walla.co.il", Folder);
-        GridViewExplorer.DataSource = FilesInFolder;
+        string[] TempFilesInFolder = (string[])FilesInFolder.Clone();
+        for (int i = 0; i < TempFilesInFolder.Length; i++)
+        {
+            if (TempFilesInFolder[i].EndsWith(":folder"))
+            {
+                TempFilesInFolder[i] = TempFilesInFolder[i].Substring(0, TempFilesInFolder[i].Length - ":folder".Length);
+            }
+        }
+        GridViewExplorer.DataSource = TempFilesInFolder;
         GridViewExplorer.DataBind();
     }
 
@@ -66,7 +74,20 @@ public partial class FileExplorer : System.Web.UI.Page
             }
             else
             {
-                DownloadFile(FileName, GetBytes(Task.GetFile("yuval5898@walla.co.il", this.Folder + "/" + FileName)));
+                byte[] Data;
+                bool GotFile = Task.GetFile("yuval5898@walla.co.il", this.Folder + "/" + FileName, out Data);
+                if (GotFile)
+                {
+                    int newLength = Data.Length - 2;
+                    byte[] TempData = new byte[newLength];
+                    Array.Copy(Data, 1, TempData, 0, newLength);
+                    Data = TempData;
+                    DownloadFile(FileName, Data);
+                }
+                else
+                {
+                    Label1.Text = System.Text.Encoding.UTF8.GetString(Data);
+                }
             }
         }
     }

@@ -57,8 +57,9 @@ public class Phone
     public string GetRecievedTaskOutput(string Task_Id)
     {
         string Recieved_Task;
-        if (Recieved_Tasks_Dict.TryGetValue(Id, out Recieved_Task))
+        if (Recieved_Tasks_Dict.TryGetValue(Task_Id, out Recieved_Task))
         {
+            Recieved_Tasks_Dict.Remove(Task_Id);
             return Recieved_Task;
         }
         return null;

@@ -22,11 +22,27 @@ public static class Task
         return output.Split(',');
     }
 
-    public static string GetFile(string email, string file_location)
+    public static bool GetFile(string email, string file_location, out byte[] Data)
     {
+        Data = null;
         string[] input = new string[1];
         input[0] = file_location;
-        return proxy.HandleTask(email, "GET_FILE", input);
+        string output = proxy.HandleTask(email, "GET_FILE", input);
+        if (output.StartsWith("success,"))
+        {
+            Data = GetBytes(output.Substring("success,".Length));
+            return true;
+        }
+        else
+        {
+            if (output.StartsWith("failure,"))
+            {
+                Data = GetBytes(output.Substring("failure,".Length));
+                return false;
+            }
+        }
+        return false;
+        
     }
 
     public static bool SaveFile(string email, string location, string file_data)
@@ -60,5 +76,12 @@ public static class Task
             return false;
         }
         throw new Exception();
+    }
+
+    public static byte[] GetBytes(string str)
+    {
+        byte[] bytes = new byte[str.Length * sizeof(char)];
+        System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
+        return bytes;
     }
 }
