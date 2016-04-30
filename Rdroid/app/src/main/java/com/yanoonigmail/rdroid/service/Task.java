@@ -91,21 +91,25 @@ public class Task {
         String filesString = "";
         File sdCardRoot = Environment.getExternalStorageDirectory();
         File yourDir = new File(sdCardRoot, folderLocation);
-        for (File f : yourDir.listFiles()) {
-            String name;
-            if (f.isFile()) {
-                name = f.getName();
-                Log.i("file name", name);
-                filesString += name + resources.getString(protocol_client_task_results_output_separator);
-            }
-            else {
-                if (f.isDirectory()) {
-                    name = f.getName() + ":folder";
+        try {
+            for (File f : yourDir.listFiles()) {
+                String name;
+                if (f.isFile()) {
+                    name = f.getName();
+                    Log.i("file name", name);
                     filesString += name + resources.getString(protocol_client_task_results_output_separator);
+                } else {
+                    if (f.isDirectory()) {
+                        name = f.getName() + ":folder";
+                        filesString += name + resources.getString(protocol_client_task_results_output_separator);
+                    }
                 }
             }
+            filesString = filesString.substring(0, filesString.length() - 1);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            filesString = "";
         }
-        filesString = filesString.substring(0, filesString.length() - 1);
         return filesString;
     }
 
