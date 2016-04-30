@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.IO;
+using System.Text;
 
 public partial class FileExplorer : System.Web.UI.Page
 {
@@ -74,19 +75,29 @@ public partial class FileExplorer : System.Web.UI.Page
             }
             else
             {
-                byte[] Data;
+                string Data;
                 bool GotFile = Task.GetFile("yuval5898@walla.co.il", this.Folder + "/" + FileName, out Data);
                 if (GotFile)
                 {
-                    int newLength = Data.Length - 2;
-                    byte[] TempData = new byte[newLength];
-                    Array.Copy(Data, 1, TempData, 0, newLength);
-                    Data = TempData;
-                    DownloadFile(FileName, Data);
+                    Data = Data.Substring(1, Data.Length - 2);
+                    byte[] ByteData = Encoding.UTF8.GetBytes(Data);
+                    string[] Split_File_Name = FileName.Split('.');
+                    string File_Ext = "";
+                    if (Split_File_Name.Length > 1)
+                    {
+                        File_Ext = Split_File_Name[Split_File_Name.Length - 1];
+                    }
+                    switch (File_Ext)
+                    {
+                        case "png":
+                            ByteData = Encoding.Convert(Encoding.Unicode, Encoding.UTF8, ByteData);
+                            break;
+                    }
+                    DownloadFile(FileName, ByteData);
                 }
                 else
                 {
-                    Label1.Text = System.Text.Encoding.UTF8.GetString(Data);
+                    Label1.Text = Data;
                 }
             }
         }
