@@ -2,15 +2,20 @@ package com.yanoonigmail.rdroid.service;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Base64OutputStream;
 import android.util.Log;
 import android.content.res.Resources;
 
 import com.yanoonigmail.rdroid.ApplicationContext;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -18,6 +23,9 @@ import java.net.InetSocketAddress;
 import java.lang.Thread;
 import 	java.util.concurrent.locks.ReentrantLock;
 import android.util.Base64;
+
+import javax.crypto.Cipher;
+import javax.crypto.CipherOutputStream;
 
 import static com.yanoonigmail.rdroid.R.string.server_address;
 import static com.yanoonigmail.rdroid.R.string.user_data;
@@ -232,6 +240,33 @@ public class Server {
     public String rawRecv() throws IOException {
         BufferedReader input_stream = new BufferedReader(new InputStreamReader(this.mServerSocket.getInputStream()));
         return (input_stream.readLine());
+    }
+
+    public void streamSend(InputStream stream, long streamLength, byte[] preStreamData) {
+        try {
+            OutputStream socketos = mServerSocket.getOutputStream();
+            Base64OutputStream b64os = new Base64OutputStream(socketos, 0);
+            CipherOutputStream cos = new CipherOutputStream(b64os, this.mEncryptor.getCipher(Cipher.ENCRYPT_MODE));
+            BufferedInputStream bis = new BufferedInputStream(stream);
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socketos));
+            bw.write(String.valueOf(streamLength + preStreamData.length) + ":");
+            mServerSocket.getOutputStream().write(preStreamData);
+            boolean again = true;
+            while (again) {
+                byte[] buffer = new byte[8192];
+                int readLen = bis.read(buffer);
+                if (readLen != -1) {
+
+                    cos.write(buffer, 0, readLen);
+                } else {
+                    again = false;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            mConnected = false;
+            connect();
+        }
     }
 
     public boolean tryLogin(String email, String password) {

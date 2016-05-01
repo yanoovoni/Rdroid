@@ -15,6 +15,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -59,12 +60,14 @@ public class Task {
         taskThread = new Thread(new Runnable() {
             public void run() {
                 String output = "";
+                boolean outputExists = true;
                 switch (type) {
                     case "GET_FILES_IN_FOLDER":
                         output = getFilesInFolder(parameters);
                         break;
                     case "GET_FILE":
-                        output = getFile(parameters);
+                        getFile(parameters);
+                        outputExists = false;
                         break;
                     case "SAVE_FILE":
                         String[] saveFileInputArray = parameters.split(resources.getString(protocol_parameter_separator), 1);
@@ -80,8 +83,11 @@ public class Task {
                         } else {
                             output = "failure";
                         }
+                        break;
                 }
-                server.send(Protocol.taskResultsMessage(id, output));
+                if (outputExists) {
+                    server.send(Protocol.taskResultsMessage(id, output));
+                }
             }
         });
         taskThread.start();
@@ -113,28 +119,34 @@ public class Task {
         return filesString;
     }
 
-    private String getFile(String location) {
-        String output;
-        File sdCardRoot = Environment.getExternalStorageDirectory();
-        File theFile = new File(sdCardRoot, location);
-        if (!theFile.isFile()) {
-            output = "failure"  +
-                    resources.getString(protocol_client_task_results_output_separator) +
-                    "File not found";
-        }
-        else {
-            if (!theFile.canRead()) {
-                output = "failure"  +
+    private void getFile(String location) {
+        try {
+            InputStream is;
+            String output;
+            File sdCardRoot = Environment.getExternalStorageDirectory();
+            File theFile = new File(sdCardRoot, location);
+            if (!theFile.isFile()) {
+                output = Protocol.taskResultsMessage(this.getId(), "failure" +
                         resources.getString(protocol_client_task_results_output_separator) +
-                        "Cannot read the file";
+                        "File not found");
+                server.send(output);
+            } else {
+                if (!theFile.canRead()) {
+                    output = Protocol.taskResultsMessage(this.getId(), "failure" +
+                            resources.getString(protocol_client_task_results_output_separator) +
+                            "Cannot read the file");
+                    server.send(output);
+                } else {
+                    output = Protocol.taskResultsMessage(this.getId(), "success" +
+                            resources.getString(protocol_client_task_results_output_separator));
+                    is = new FileInputStream(theFile);
+                    long fileSize = theFile.length();
+                    server.streamSend(is, fileSize, output.getBytes());
+                }
             }
-            else {
-                output = "success" +
-                        resources.getString(protocol_client_task_results_output_separator) +
-                        OSInterface.readFile(theFile);
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return output;
     }
 
     private String saveFile(String fileLocation, String fileData) {

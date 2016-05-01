@@ -35,7 +35,7 @@ public class OSInterface {
             DataInputStream dis = new DataInputStream(new FileInputStream(file));
             dis.readFully(fileData);
             dis.close();
-            return new String(fileData, StandardCharsets.US_ASCII);
+            return new String(fileData, StandardCharsets.UTF_8);
         } catch (IOException e) {
             e.printStackTrace();
             return "";

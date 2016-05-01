@@ -8,6 +8,7 @@ import javax.crypto.spec.SecretKeySpec;
 import android.util.Base64;
 import android.util.Log;
 
+import java.io.OutputStream;
 import java.security.NoSuchAlgorithmException;
 
 /**
@@ -38,7 +39,7 @@ public class Encryptor {
         return this.encryptionKey;
     }
 
-    private Cipher getCipher(int cipherMode) throws Exception {
+    public Cipher getCipher(int cipherMode) throws Exception {
         String encryptionAlgorithm = "AES";
         SecretKeySpec keySpecification = new SecretKeySpec(
                 encryptionKey, encryptionAlgorithm);
