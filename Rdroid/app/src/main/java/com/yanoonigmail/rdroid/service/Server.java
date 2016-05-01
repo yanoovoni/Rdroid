@@ -262,6 +262,9 @@ public class Server {
                     again = false;
                 }
             }
+            cos.flush();
+            b64os.flush();
+            socketos.flush();
         } catch (Exception e) {
             e.printStackTrace();
             mConnected = false;
