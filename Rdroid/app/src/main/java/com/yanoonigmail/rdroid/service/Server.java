@@ -250,7 +250,9 @@ public class Server {
             BufferedInputStream bis = new BufferedInputStream(stream);
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socketos));
             bw.write(String.valueOf(streamLength + preStreamData.length) + ":");
-            mServerSocket.getOutputStream().write(preStreamData);
+            bw.flush();
+            socketos.write(preStreamData);
+            socketos.flush();
             boolean again = true;
             while (again) {
                 byte[] buffer = new byte[8192];
@@ -258,13 +260,18 @@ public class Server {
                 if (readLen != -1) {
 
                     cos.write(buffer, 0, readLen);
+                    cos.flush();
+                    b64os.flush();
+                    socketos.flush();
                 } else {
                     again = false;
                 }
             }
-            cos.flush();
-            b64os.flush();
-            socketos.flush();
+            bw.close();
+            bis.close();
+            cos.close();
+            b64os.close();
+            socketos.close();
         } catch (Exception e) {
             e.printStackTrace();
             mConnected = false;
