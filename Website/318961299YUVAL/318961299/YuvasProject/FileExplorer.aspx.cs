@@ -79,20 +79,7 @@ public partial class FileExplorer : System.Web.UI.Page
                 bool GotFile = Task.GetFile("yuval5898@walla.co.il", this.Folder + "/" + FileName, out Data);
                 if (GotFile)
                 {
-                    Data = Data.Substring(1, Data.Length - 2);
                     byte[] ByteData = Encoding.UTF8.GetBytes(Data);
-                    string[] Split_File_Name = FileName.Split('.');
-                    string File_Ext = "";
-                    if (Split_File_Name.Length > 1)
-                    {
-                        File_Ext = Split_File_Name[Split_File_Name.Length - 1];
-                    }
-                    switch (File_Ext)
-                    {
-                        case "png":
-                            ByteData = Encoding.Convert(Encoding.Unicode, Encoding.UTF8, ByteData);
-                            break;
-                    }
                     DownloadFile(FileName, ByteData);
                 }
                 else
