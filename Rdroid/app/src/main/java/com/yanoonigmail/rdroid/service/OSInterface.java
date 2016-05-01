@@ -11,12 +11,14 @@ import android.widget.Toast;
 import com.yanoonigmail.rdroid.ApplicationContext;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -29,46 +31,15 @@ public class OSInterface {
         FileInputStream fis = null;
         try
         {
-            fis = new FileInputStream(file);
-        }
-        catch (FileNotFoundException e) {e.printStackTrace();}
-        if (fis == null) {
+            byte[] fileData = new byte[(int) file.length()];
+            DataInputStream dis = new DataInputStream(new FileInputStream(file));
+            dis.readFully(fileData);
+            dis.close();
+            return new String(fileData, StandardCharsets.US_ASCII);
+        } catch (IOException e) {
+            e.printStackTrace();
             return "";
         }
-        InputStreamReader isr = new InputStreamReader(fis);
-        BufferedReader br = new BufferedReader(isr);
-
-        String test;
-        int anzahl=0;
-        try
-        {
-            while ((test=br.readLine()) != null)
-            {
-                anzahl++;
-            }
-        }
-        catch (IOException e) {e.printStackTrace();}
-
-        try
-        {
-            fis.getChannel().position(0);
-        }
-        catch (IOException e) {e.printStackTrace();}
-
-        String[] array = new String[anzahl];
-
-        String line;
-        int i = 0;
-        try
-        {
-            while((line=br.readLine())!= null)
-            {
-                array[i] = line;
-                i++;
-            }
-        }
-        catch (IOException e) {e.printStackTrace();}
-        return Arrays.toString(array);
     }
 
     public static void saveFile(File file, String fileData) {
