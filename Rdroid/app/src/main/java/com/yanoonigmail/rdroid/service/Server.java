@@ -271,7 +271,6 @@ public class Server {
             bis.close();
             cos.close();
             b64os.close();
-            socketos.close();
         } catch (Exception e) {
             e.printStackTrace();
             mConnected = false;
