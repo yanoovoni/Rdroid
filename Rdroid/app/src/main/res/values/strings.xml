@@ -24,7 +24,7 @@
     <string name="close_application_button_text">Close Application</string>
 
     <!-- Strings related to protocol -->
-    <string name="server_address">79.183.64.24</string>
+    <string name="server_address">79.177.78.43</string>
     <string name="protocol_client_header">Rdroid CLIENT</string>
     <string name="protocol_server_header">Rdroid SERVER</string>
     <string name="protocol_parameter_separator">:</string>

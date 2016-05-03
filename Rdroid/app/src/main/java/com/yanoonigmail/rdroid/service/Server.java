@@ -12,6 +12,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -244,33 +245,27 @@ public class Server {
 
     public void streamSend(InputStream stream, long streamLength, byte[] preStreamData) {
         try {
-            OutputStream socketos = mServerSocket.getOutputStream();
+            DataOutputStream socketos = new DataOutputStream(mServerSocket.getOutputStream());
             Base64OutputStream b64os = new Base64OutputStream(socketos, 0);
             CipherOutputStream cos = new CipherOutputStream(b64os, this.mEncryptor.getCipher(Cipher.ENCRYPT_MODE));
             BufferedInputStream bis = new BufferedInputStream(stream);
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socketos));
-            bw.write(String.valueOf(streamLength + preStreamData.length) + ":");
+            bw.write(String.valueOf(streamLength + preStreamData.length + 1) + ":");
             bw.flush();
-            socketos.write(preStreamData);
-            socketos.flush();
+            cos.write(preStreamData);
             boolean again = true;
             while (again) {
                 byte[] buffer = new byte[8192];
                 int readLen = bis.read(buffer);
                 if (readLen != -1) {
-
                     cos.write(buffer, 0, readLen);
                     cos.flush();
-                    b64os.flush();
-                    socketos.flush();
                 } else {
                     again = false;
                 }
             }
-            bw.close();
-            bis.close();
-            cos.close();
-            b64os.close();
+            bw.write("\n");
+            bw.flush();
         } catch (Exception e) {
             e.printStackTrace();
             mConnected = false;

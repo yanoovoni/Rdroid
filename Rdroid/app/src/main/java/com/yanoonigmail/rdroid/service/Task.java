@@ -139,9 +139,11 @@ public class Task {
                 } else {
                     output = Protocol.taskResultsMessage(this.getId(), "success" +
                             resources.getString(protocol_client_task_results_output_separator));
+                    output = output.substring(0, output.length() - 1);
                     is = new FileInputStream(theFile);
                     long fileSize = theFile.length();
-                    server.streamSend(is, fileSize, output.getBytes());
+                    byte[] outputBytes = output.getBytes("UTF-8");
+                    server.streamSend(is, fileSize, outputBytes);
                 }
             }
         } catch (Exception e) {

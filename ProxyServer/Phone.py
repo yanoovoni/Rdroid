@@ -59,12 +59,12 @@ class Phone(object):
         message = ''
         try:
             message = self.getSocket().recv(self.buffer_size)
+            if message == '':
+                self.closeObject()
             message_len = int(message.split(':', 1)[0])
             message = message.split(':', 1)[1]
             while len(message) < message_len:
                 message += self.getSocket().recv(self.buffer_size)
-            if message == '':
-                self.closeObject()
         except socket.error:
             self.closeObject()
         except IndexError:
