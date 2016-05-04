@@ -252,6 +252,7 @@ public class Server {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socketos));
             long totalStreamLength = streamLength + preStreamData.length + 1; // pure.
             totalStreamLength = totalStreamLength + (16 - (totalStreamLength % 16)); // after AES.
+            totalStreamLength = (long)(4*Math.ceil(((double)totalStreamLength/3))); // after base64.
             bw.write(String.valueOf(totalStreamLength) + ":");
             bw.flush();
             cos.write(preStreamData);
