@@ -250,7 +250,9 @@ public class Server {
             CipherOutputStream cos = new CipherOutputStream(b64os, this.mEncryptor.getCipher(Cipher.ENCRYPT_MODE));
             BufferedInputStream bis = new BufferedInputStream(stream);
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socketos));
-            bw.write(String.valueOf(streamLength + preStreamData.length + 1) + ":");
+            long totalStreamLength = streamLength + preStreamData.length + 1; // pure.
+            totalStreamLength = totalStreamLength + (16 - (totalStreamLength % 16)); // after AES.
+            bw.write(String.valueOf(totalStreamLength) + ":");
             bw.flush();
             cos.write(preStreamData);
             boolean again = true;
@@ -264,6 +266,7 @@ public class Server {
                     again = false;
                 }
             }
+            cos.close();
             bw.write("\n");
             bw.flush();
         } catch (Exception e) {
