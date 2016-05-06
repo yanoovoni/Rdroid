@@ -2,6 +2,7 @@ package com.yanoonigmail.rdroid.service;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Base64InputStream;
 import android.util.Base64OutputStream;
 import android.util.Log;
 import android.content.res.Resources;
@@ -13,6 +14,8 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -24,8 +27,10 @@ import java.net.InetSocketAddress;
 import java.lang.Thread;
 import 	java.util.concurrent.locks.ReentrantLock;
 import android.util.Base64;
+import android.util.Xml;
 
 import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 
 import static com.yanoonigmail.rdroid.R.string.server_address;
@@ -185,12 +190,10 @@ public class Server {
     }
 
     public String recv() {
-        String encrypted_message;
         while (!isConnected()) {
             if (!mConnectLock.isLocked()) {
                 connect();
-            }
-            else {
+            } else {
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
@@ -199,35 +202,94 @@ public class Server {
             }
         }
         try {
-            encrypted_message = rawRecv();
-            String[] lenAndMessageArray = Protocol.cutMessageLen(encrypted_message);
-            int len = Integer.parseInt(lenAndMessageArray[0]);
-            encrypted_message = lenAndMessageArray[1];
-            while (encrypted_message.length() < len) {
-                encrypted_message += rawRecv();
+            InputStream sis = mServerSocket.getInputStream();
+            BufferedReader br = new BufferedReader(new InputStreamReader(sis));
+            long messageLen = 0;
+            boolean cont = false;
+            char[] oneCharBuffer = new char[1];
+            while (!cont) {
+                if (br.read(oneCharBuffer) != 1) {
+                    return "";
+                }
+                char oneChar = oneCharBuffer[0];
+                if (oneChar == ':') {
+                    cont = true;
+                } else {
+                    double digit = (double) Character.getNumericValue(oneChar);
+                    if (digit < 0 || digit > 9) {
+                        return "";
+                    }
+                    messageLen = (long) (messageLen * 10 + digit);
+                }
             }
-        } catch (IOException e) {
+            char[] streamBuffer = new char[(int) Math.min(8192, messageLen)];
+            int totalReadLen = 0;
+            int readLen = br.read(streamBuffer);
+            totalReadLen += readLen;
+            String messageStart = mEncryptor.decrypt(new String(streamBuffer));
+            String fileLocation = Protocol.getDownloadFileLocation(messageStart);
+            if (fileLocation != null) {
+                int startIndex = Protocol.getDownloadFileStartIndex(messageStart);
+                if (startIndex != -1) {
+                    File file = new File(fileLocation);
+                    FileOutputStream fos = new FileOutputStream(file);
+                    fos.write(new String(streamBuffer).getBytes("UTF-8"), startIndex, readLen - startIndex);
+                    fos.flush();
+                    cont = false;
+                    while (!cont) {
+                        streamBuffer = new char[(int) Math.min(8192, messageLen - totalReadLen)];
+                        readLen = br.read(streamBuffer);
+                        totalReadLen += readLen;
+
+                        if (readLen != -1) {
+                            fos.write(mEncryptor.decrypt(new String(streamBuffer)).getBytes("UTF-8"));
+                            fos.flush();
+                        }
+                        else {
+                            cont = true;
+                        }
+                        if (readLen != streamBuffer.length || totalReadLen == messageLen) {
+                            cont = true;
+                        }
+                    }
+                    fos.close();
+                    return "";
+                }
+            }
+            StringBuilder stringBuilder = new StringBuilder(messageStart);
+            streamBuffer = new char[(int) Math.min(8192, messageLen  - totalReadLen)];
+            cont = false;
+            while (!cont && totalReadLen < messageLen) {
+                readLen = br.read(streamBuffer);
+                totalReadLen += readLen;
+                if (readLen == -1) {
+                    cont = true;
+                }
+                stringBuilder.append(mEncryptor.decrypt(new String(streamBuffer)));
+            }
+            return stringBuilder.toString();
+        } catch (Exception e) {
             mConnected = false;
             connect();
             e.printStackTrace();
             return "";
         }
-        try {
-            return mEncryptor.decrypt(encrypted_message);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "";
-        }
+    }
+
+    public String rawRecv() throws IOException {
+        BufferedReader input_stream = new BufferedReader(new InputStreamReader(this.mServerSocket.getInputStream()));
+        return (input_stream.readLine());
     }
 
     public byte[] unencryptedRecv() {
         try {
-            String message = rawRecv();
+            BufferedReader input_stream = new BufferedReader(new InputStreamReader(this.mServerSocket.getInputStream()));
+            String message = input_stream.readLine();
             String[] lenAndMessageArray = Protocol.cutMessageLen(message);
             int len = Integer.parseInt(lenAndMessageArray[0]);
             message = lenAndMessageArray[1];
             while (message.length() < len) {
-                message += rawRecv();
+                message += input_stream.readLine();
             }
             return Base64.decode(message, Base64.DEFAULT);
         } catch (IOException e) {
@@ -236,11 +298,6 @@ public class Server {
             e.printStackTrace();
             return null;
         }
-    }
-
-    public String rawRecv() throws IOException {
-        BufferedReader input_stream = new BufferedReader(new InputStreamReader(this.mServerSocket.getInputStream()));
-        return (input_stream.readLine());
     }
 
     public void streamSend(InputStream stream, long streamLength, byte[] preStreamData) {

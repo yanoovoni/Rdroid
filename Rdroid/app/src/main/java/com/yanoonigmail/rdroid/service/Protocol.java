@@ -84,7 +84,7 @@ public class Protocol {
      */
     public static Task taskRequest(String message) throws BadInputException {
         if (isServerMessage(message)) {
-            String[] lineArray = message.split(line_separator);
+            String[] lineArray = message.split(line_separator, 4);
             if (lineArray[1].equals(resources.getString(protocol_server_task_request_announcement))) {
                 String[] parameterLineArray = Arrays.copyOfRange(lineArray, 2, lineArray.length);
                 if (parameterLineArray.length == 3) {
@@ -146,6 +146,39 @@ public class Protocol {
                 output +
                 line_separator;
         return outputString;
+    }
+
+    public static int getDownloadFileStartIndex(String message) {
+        if (isServerMessage(message)) {
+            String[] lineArray = message.split(line_separator, 4);
+            if (lineArray[1].equals(resources.getString(protocol_server_task_request_announcement))) {
+                String[] parameterLineArray = Arrays.copyOfRange(lineArray, 2, lineArray.length);
+                if (parameterLineArray.length == 3) {
+                    int startIndex = parameterLineArray[2].indexOf(",");
+                    if (startIndex == -1) {
+                        return -1;
+                    }
+                    else {
+                        return startIndex + 1;
+                    }
+                }
+            }
+        }
+        return -1; // -1 signals that the message is not a download task.
+    }
+
+    public static String getDownloadFileLocation(String message) {
+        if (isServerMessage(message)) {
+            String[] lineArray = message.split(line_separator, 4);
+            if (lineArray[1].equals(resources.getString(protocol_server_task_request_announcement))) {
+                String[] parameterLineArray = Arrays.copyOfRange(lineArray, 2, lineArray.length);
+                if (parameterLineArray.length == 3) {
+                    String parameters = parameterLineArray[2];
+                    return parameters.substring(parameters.indexOf(":"), parameters.indexOf(","));
+                }
+            }
+        }
+        return null;
     }
 
     static class BadInputException extends Exception {
