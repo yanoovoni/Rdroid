@@ -111,7 +111,9 @@ public class Task {
                     }
                 }
             }
-            filesString = filesString.substring(0, filesString.length() - 1);
+            if (!filesString.equals("")) {
+                filesString = filesString.substring(0, filesString.length() - 1);
+            }
         } catch (NullPointerException e) {
             e.printStackTrace();
             filesString = "";
