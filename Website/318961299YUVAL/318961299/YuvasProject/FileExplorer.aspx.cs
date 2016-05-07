@@ -90,16 +90,6 @@ public partial class FileExplorer : System.Web.UI.Page
         }
     }
 
-    protected void ToPreviousFolder()
-    {
-        int index = Folder.LastIndexOf("/");
-        if (index > 0)
-        {
-            Folder = Folder.Substring(0, index);
-            PopulateGridView();
-        }
-    }
-
     protected void DownloadFile(string filename, byte[] filedata)
     {
         Response.Clear();
@@ -118,5 +108,20 @@ public partial class FileExplorer : System.Web.UI.Page
         byte[] bytes = new byte[str.Length * sizeof(char)];
         System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
         return bytes;
+    }
+
+    protected void Upload_Click(object sender, EventArgs e)
+    {
+        Task.SaveFile("yuval5898@walla.co.il", Folder + "/" + FileUploadIntoPhone.FileName, System.Text.Encoding.UTF8.GetString(FileUploadIntoPhone.FileBytes));
+    }
+
+    protected void ToLastFolder_Click(object sender, EventArgs e)
+    {
+        int index = Folder.LastIndexOf("/");
+        if (index > 0)
+        {
+            Folder = Folder.Substring(0, index);
+            PopulateGridView();
+        }
     }
 }
