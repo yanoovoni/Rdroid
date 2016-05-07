@@ -319,7 +319,11 @@ public class Server {
                 int readLen = bis.read(buffer);
                 if (readLen != -1) {
                     cos.write(buffer, 0, readLen);
-                    cos.flush();
+                    if (readLen == buffer.length) {
+                        cos.flush();
+                    } else {
+                        again = false;
+                    }
                 } else {
                     again = false;
                 }
