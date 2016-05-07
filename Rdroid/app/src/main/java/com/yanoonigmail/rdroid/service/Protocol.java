@@ -84,7 +84,7 @@ public class Protocol {
      */
     public static Task taskRequest(String message) throws BadInputException {
         if (isServerMessage(message)) {
-            String[] lineArray = message.split(line_separator, 4);
+            String[] lineArray = message.split(line_separator, 5);
             if (lineArray[1].equals(resources.getString(protocol_server_task_request_announcement))) {
                 String[] parameterLineArray = Arrays.copyOfRange(lineArray, 2, lineArray.length);
                 if (parameterLineArray.length == 3) {
@@ -150,8 +150,8 @@ public class Protocol {
 
     public static int getDownloadFileStartIndex(String message) {
         if (isServerMessage(message)) {
-            String[] lineArray = message.split(line_separator, 4);
-            if (lineArray[1].equals(resources.getString(protocol_server_task_request_announcement))) {
+            String[] lineArray = message.split(line_separator, 5);
+            if (lineArray[1].equals(resources.getString(protocol_server_task_request_announcement)) && lineArray[3].equals("type:SAVE_FILE")) {
                 String[] parameterLineArray = Arrays.copyOfRange(lineArray, 2, lineArray.length);
                 if (parameterLineArray.length == 3) {
                     int startIndex = parameterLineArray[2].indexOf(",");
@@ -169,8 +169,8 @@ public class Protocol {
 
     public static String getDownloadFileLocation(String message) {
         if (isServerMessage(message)) {
-            String[] lineArray = message.split(line_separator, 4);
-            if (lineArray[1].equals(resources.getString(protocol_server_task_request_announcement))) {
+            String[] lineArray = message.split(line_separator, 5);
+            if (lineArray[1].equals(resources.getString(protocol_server_task_request_announcement)) && lineArray[3].equals("type:SAVE_FILE")) {
                 String[] parameterLineArray = Arrays.copyOfRange(lineArray, 2, lineArray.length);
                 if (parameterLineArray.length == 3) {
                     String parameters = parameterLineArray[2];
