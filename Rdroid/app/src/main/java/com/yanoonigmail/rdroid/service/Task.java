@@ -146,6 +146,7 @@ public class Task {
                     long fileSize = theFile.length();
                     byte[] outputBytes = output.getBytes("UTF-8");
                     server.streamSend(is, fileSize, outputBytes);
+                    is.close();
                 }
             }
         } catch (Exception e) {
