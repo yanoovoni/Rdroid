@@ -42,7 +42,7 @@ public class WebService : System.Web.Services.WebService {
     }
 
     [WebMethod]
-    public int EnterToSite(UserDetails userDetails)//נותן למשתשמש להתחבר לאתר על פי האימייל והסיסמא
+    public UserDetails EnterToSite(UserDetails userDetails)//נותן למשתשמש להתחבר לאתר על פי האימייל והסיסמא
     {
         UserService service = new UserService();
         return service.EnterToSite(userDetails);
@@ -54,6 +54,13 @@ public class WebService : System.Web.Services.WebService {
     //    UserService service = new UserService();
     //    return service.GetFriends(user);
     //}
+
+    [WebMethod]
+    public UserDetails userDetails()
+    {
+        UserDetails ud = new UserDetails();
+        return ud;
+    }
 
     [WebMethod]
     public DataSet GetContacts(UserDetails user)

@@ -57,7 +57,7 @@ public class UserService
         }
     }
 
-    public int EnterToSite(UserDetails userDetails)//בודק על פי האימייל והסיסמא האם המשתשמש שמנסה להיכנס לאתר קיים או לא
+    public UserDetails EnterToSite(UserDetails userDetails)//בודק על פי האימייל והסיסמא האם המשתשמש שמנסה להיכנס לאתר קיים או לא
     {
         OleDbCommand myCmd = new OleDbCommand("CheckIfUserExist", myConnection);
         myCmd.CommandType = CommandType.StoredProcedure;
@@ -72,11 +72,20 @@ public class UserService
         objParam.Direction = ParameterDirection.Input;
         objParam.Value = userDetails.password;
 
-        int x = 0;
+        UserDetails x = new UserDetails();
+        OleDbDataReader reader;
         try
         {
+
             myConnection.Open();
-            x = (int)myCmd.ExecuteScalar();
+            reader = myCmd.ExecuteReader();
+            while (reader.Read())
+            {
+                x.phoneNumber = reader["PhoneNumber"].ToString();
+                x.firstName = reader["FirstName"].ToString();
+                x.lastName = reader["LastName"].ToString();
+                x.email = reader["Email"].ToString();
+            }
         }
         catch (Exception ex)
         {

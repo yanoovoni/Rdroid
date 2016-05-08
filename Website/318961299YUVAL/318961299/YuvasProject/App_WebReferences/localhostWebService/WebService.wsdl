@@ -66,7 +66,17 @@
       <s:element name="EnterToSiteResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="EnterToSiteResult" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="EnterToSiteResult" type="tns:UserDetails" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="userDetails">
+        <s:complexType />
+      </s:element>
+      <s:element name="userDetailsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="userDetailsResult" type="tns:UserDetails" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -202,6 +212,12 @@
   <wsdl:message name="EnterToSiteSoapOut">
     <wsdl:part name="parameters" element="tns:EnterToSiteResponse" />
   </wsdl:message>
+  <wsdl:message name="userDetailsSoapIn">
+    <wsdl:part name="parameters" element="tns:userDetails" />
+  </wsdl:message>
+  <wsdl:message name="userDetailsSoapOut">
+    <wsdl:part name="parameters" element="tns:userDetailsResponse" />
+  </wsdl:message>
   <wsdl:message name="GetContactsSoapIn">
     <wsdl:part name="parameters" element="tns:GetContacts" />
   </wsdl:message>
@@ -254,6 +270,10 @@
     <wsdl:operation name="EnterToSite">
       <wsdl:input message="tns:EnterToSiteSoapIn" />
       <wsdl:output message="tns:EnterToSiteSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="userDetails">
+      <wsdl:input message="tns:userDetailsSoapIn" />
+      <wsdl:output message="tns:userDetailsSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetContacts">
       <wsdl:input message="tns:GetContactsSoapIn" />
@@ -311,6 +331,15 @@
     </wsdl:operation>
     <wsdl:operation name="EnterToSite">
       <soap:operation soapAction="http://tempuri.org/EnterToSite" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="userDetails">
+      <soap:operation soapAction="http://tempuri.org/userDetails" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -411,6 +440,15 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="userDetails">
+      <soap12:operation soapAction="http://tempuri.org/userDetails" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="GetContacts">
       <soap12:operation soapAction="http://tempuri.org/GetContacts" style="document" />
       <wsdl:input>
@@ -468,10 +506,10 @@
   </wsdl:binding>
   <wsdl:service name="WebService">
     <wsdl:port name="WebServiceSoap" binding="tns:WebServiceSoap">
-      <soap:address location="http://localhost:50137/webservice/WebService.asmx" />
+      <soap:address location="http://localhost:49323/webservice/WebService.asmx" />
     </wsdl:port>
     <wsdl:port name="WebServiceSoap12" binding="tns:WebServiceSoap12">
-      <soap12:address location="http://localhost:50137/webservice/WebService.asmx" />
+      <soap12:address location="http://localhost:49323/webservice/WebService.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
