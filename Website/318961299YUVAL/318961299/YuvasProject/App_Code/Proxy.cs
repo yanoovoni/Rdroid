@@ -55,16 +55,21 @@ public sealed class Proxy
                         }
                         break;
                     case "NOTIFY_SESSION_DISCONNECT":
-                        string Disconnected_Id;
-                        if (Protocol.Get_Message_Parameters(Message).TryGetValue("session_id", out Disconnected_Id))
+                        try
                         {
-                            Phone Removed_Phone = GetPhoneById(Disconnected_Id);
-                            if (Removed_Phone.IsLoggedIn())
+                            string Disconnected_Id;
+                            if (Protocol.Get_Message_Parameters(Message).TryGetValue("session_id", out Disconnected_Id))
                             {
-                                Phone_By_Email_Dict.Remove(Removed_Phone.GetEmail());
+                                Phone Removed_Phone = GetPhoneById(Disconnected_Id);
+                                if (Removed_Phone.IsLoggedIn())
+                                {
+                                    Phone_By_Email_Dict.Remove(Removed_Phone.GetEmail());
+                                }
+                                Phone_By_Id_Dict.Remove(Disconnected_Id);
                             }
-                            Phone_By_Id_Dict.Remove(Disconnected_Id);
                         }
+                        catch(NullReferenceException)
+                        { }
                         break;
                 }
             }
