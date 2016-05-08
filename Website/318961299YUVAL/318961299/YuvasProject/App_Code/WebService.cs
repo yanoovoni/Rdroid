@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Services;
 using System.Data;
+using localhostWebService;
 
 /// <summary>
 /// Summary description for WebService

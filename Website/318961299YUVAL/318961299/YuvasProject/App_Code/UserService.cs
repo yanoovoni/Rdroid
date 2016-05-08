@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Data;
 using System.Data.OleDb;
+using localhostWebService;
 
 /// <summary>
 /// Summary description for UserService
