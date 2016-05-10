@@ -26,7 +26,7 @@
         <asp:FileUpload ID="FileUploadIntoPhone" runat="server" />
         <br />
         <p>
-            <asp:Button ID="Upload" runat="server" OnClick="Upload_Click" Text="Click here to uploud the file" />
+            <asp:Button ID="Upload" runat="server" OnClick="Upload_Click" Text="Click here to upload the file" />
         </p>
         <p>
             &nbsp;</p>
