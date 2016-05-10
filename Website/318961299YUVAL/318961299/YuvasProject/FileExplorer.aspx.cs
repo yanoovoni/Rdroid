@@ -6,14 +6,18 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.IO;
 using System.Text;
+using localhostWebService;
 
 public partial class FileExplorer : System.Web.UI.Page
 {
     private string Folder = "";
     private string[] FilesInFolder;
+    UserDetails user; 
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        user=(UserDetails)Session["UserDetails"];
+        this.Label1.Text = user.phoneNumber.ToString();
         this.Folder = (string)Session["Folder"];
         this.FilesInFolder = (string[])Session["FilesInFolder"];
     }
@@ -31,7 +35,7 @@ public partial class FileExplorer : System.Web.UI.Page
 
     public void PopulateGridView()
     {
-        this.FilesInFolder = Task.GetFilesInFolder("yuval5898@walla.co.il", Folder);
+        this.FilesInFolder = Task.GetFilesInFolder(user.email, Folder);
         string[] TempFilesInFolder = (string[])FilesInFolder.Clone();
         for (int i = 0; i < TempFilesInFolder.Length; i++)
         {
@@ -46,6 +50,7 @@ public partial class FileExplorer : System.Web.UI.Page
 
     protected void Button1_Click(object sender, EventArgs e)
     {
+        ToLastFolder.Visible = true;
         Folder = "";
         PopulateGridView();
     }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using localhostWebService;
 
 public partial class SignIn : System.Web.UI.Page
 {
@@ -11,60 +12,24 @@ public partial class SignIn : System.Web.UI.Page
     {
 
     }
-    protected void Finnish_Click(object sender, EventArgs e)
+    protected void Button1_Click(object sender, EventArgs e)
     {
-        if (Page.IsValid)
+        localhostWebService.UserDetails ud = new localhostWebService.UserDetails();
+        localhostWebService.WebService service = new localhostWebService.WebService();
+        UserService userService = new UserService();
+        UserDetails userDetails = new UserDetails();
+        ud.email = TextBox1.Text;
+        ud.password = TextBox2.Text;
+        localhostWebService.UserDetails user = service.EnterToSite(ud);
+        if (user != null)
         {
-            UserDetails user = new UserDetails();
-            user.firstName = TextBox1.Text;
-            user.lastName = TextBox2.Text;
-            user.password = TextBox3.Text;
-            user.email = TextBox4.Text;
-
-
-            UserService userService = new UserService();
-            try
-            {
-                userService.InsertUser(user);
-            }
-            catch (Exception ex)
-            {
-                this.LabelMassege.Text = ex.Message;
-            }
+            Session["UserDetails"] = user;
+            Response.Redirect("FileExplorer.aspx");
+        }
+        else
+        {
+            Label1.Text = "Does Not Exist";
         }
 
     }
-
-    private void addYearsToDropDownList()
-    {
-        int startYear = DateTime.Now.Year;
-        int endYear = DateTime.Now.Year - 100;
-
-        for (int year = startYear; year > endYear; year--)
-        {
-            DropDownListBYears.Items.Add(year.ToString());
-        }
-    }
-
-    private void addDaysToDropDownList(int daysInMonth)
-    {
-        DropDownListBDay.Items.Clear();
-        for (int day = 1; day <= daysInMonth; day++)
-        {
-            DropDownListBDay.Items.Add(day.ToString());
-        }
-    }
-
-
-    protected void DropDownListBMonth_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        int month = int.Parse(DropDownListBMonth.SelectedValue);
-        int year = int.Parse(DropDownListBYears.SelectedValue);
-        int daysInMonth = DateTime.DaysInMonth(year, month);
-        addDaysToDropDownList(daysInMonth);
-    }
-
-    //ljgl;zjbklbm;zlkbj;lzjbl
-    //asg;kmjal;gjlkhljhlfjdlhakh
-    //a;kfjhal'hlak;fhldhmj
 }

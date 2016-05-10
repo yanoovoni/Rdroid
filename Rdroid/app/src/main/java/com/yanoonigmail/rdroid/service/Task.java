@@ -111,7 +111,9 @@ public class Task {
                     }
                 }
             }
-            filesString = filesString.substring(0, filesString.length() - 1);
+            if (!filesString.equals("")) {
+                filesString = filesString.substring(0, filesString.length() - 1);
+            }
         } catch (NullPointerException e) {
             e.printStackTrace();
             filesString = "";
@@ -144,6 +146,7 @@ public class Task {
                     long fileSize = theFile.length();
                     byte[] outputBytes = output.getBytes("UTF-8");
                     server.streamSend(is, fileSize, outputBytes);
+                    is.close();
                 }
             }
         } catch (Exception e) {

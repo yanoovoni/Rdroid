@@ -329,8 +329,6 @@ public class Server {
                 }
             }
             cos.close();
-            bw.write("\n");
-            bw.flush();
         } catch (Exception e) {
             e.printStackTrace();
             mConnected = false;

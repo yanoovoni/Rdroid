@@ -71,7 +71,9 @@ class Phone(object):
             return None
         except ValueError:
             return None
-        return base64.b64decode(message[:-1])
+        if message[:-1] == '\n':
+            return base64.b64decode(message[:-1])
+        return base64.b64decode(message)
 
     def send(self, message):
         # encrypts and then sends a message to the phone.
