@@ -64,7 +64,7 @@ class Phone(object):
             message_len = int(message.split(':', 1)[0])
             message = message.split(':', 1)[1]
             while len(message) < message_len:
-                message += self.getSocket().recv(self.buffer_size)
+                message += self.getSocket().recv(max(self.buffer_size, message_len - len(message)))
         except socket.error:
             self.closeObject()
         except IndexError:
