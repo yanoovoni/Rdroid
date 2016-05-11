@@ -45,7 +45,7 @@ class Phone(object):
             message = self.recv()
             if self.filter.filter(message):
                 message = '%s:%s' % (self.getID(), message)
-                self.server.sendall(message)
+                self.server.send(message)
 
     def raw_send(self, message):
         # Sends a message to the phone.
@@ -86,7 +86,8 @@ class Phone(object):
     def recv(self):
         # Receives a message from the phone and decrypts it.
         encryptor = self.getEncryptor()
-        message = encryptor.decrypt(self.raw_recv())
+        message = self.raw_recv()
+        message = encryptor.decrypt(message)
         return message
 
     def establishConnection(self):
@@ -133,7 +134,7 @@ class Phone(object):
         my_id = self.getID()
         notification_message = self.settings.getSetting('id_notification_message')
         notification_message += 'session_id:%s%s' % (my_id, new_line)
-        self.server.sendall(notification_message)
+        self.server.send(notification_message)
 
     def __closeThread(self):
         # Closes the thread that runs on this object.
