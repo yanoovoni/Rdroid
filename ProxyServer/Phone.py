@@ -45,14 +45,14 @@ class Phone(object):
             message = self.recv()
             if self.filter.filter(message):
                 message = '%s:%s' % (self.getID(), message)
-                self.server.send(message)
+                self.server.sendall(message)
 
     def raw_send(self, message):
         # Sends a message to the phone.
         message = base64.b64encode(message)
         message = str(len(message)) + ':' + message + '\n'
         print 'sent: ' + message
-        self.getSocket().send(message)
+        self.getSocket().sendall(message)
 
     def raw_recv(self):
         # Receives a message from the phone.
@@ -67,9 +67,8 @@ class Phone(object):
                 message += self.getSocket().recv(max(self.buffer_size, message_len - len(message)))
         except socket.error:
             self.closeObject()
-        except IndexError:
-            return None
-        except ValueError:
+        except (IndexError, ValueError) as e:
+            print str(e)
             return None
         if message[:-1] == '\n':
             return base64.b64decode(message[:-1])
@@ -134,7 +133,7 @@ class Phone(object):
         my_id = self.getID()
         notification_message = self.settings.getSetting('id_notification_message')
         notification_message += 'session_id:%s%s' % (my_id, new_line)
-        self.server.send(notification_message)
+        self.server.sendall(notification_message)
 
     def __closeThread(self):
         # Closes the thread that runs on this object.
