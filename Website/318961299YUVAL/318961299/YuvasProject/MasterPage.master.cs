@@ -22,7 +22,10 @@ public partial class MasterPage : System.Web.UI.MasterPage
             MenuItem Item;
             this.SiteMenu.Items.Clear();
 
-            Item = new MenuItem("העברת אנשי קשר אל חברים", "ShareContactsWithFriends.aspx");
+            Item = new MenuItem("    |    העברת אנשי קשר אל חברים", "ShareFilesWithFriends.aspx");
+            this.SiteMenu.Items.Add(Item);
+
+            Item = new MenuItem("  |  סייר קבצים", "FileExplorer.aspx");
             this.SiteMenu.Items.Add(Item);
 
         }
