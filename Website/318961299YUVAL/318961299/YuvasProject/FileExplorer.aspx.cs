@@ -17,7 +17,11 @@ public partial class FileExplorer : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
         user=(UserDetails)Session["UserDetails"];
-        this.Label1.Text = user.phoneNumber.ToString();
+        string UserPhoneNumber = user.phoneNumber.ToString();
+        if (UserPhoneNumber != null)
+        {
+            this.Label1.Text = UserPhoneNumber;
+        }
         this.Folder = (string)Session["Folder"];
         this.FilesInFolder = (string[])Session["FilesInFolder"];
     }

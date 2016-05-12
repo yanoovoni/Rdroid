@@ -66,7 +66,8 @@ class Server(object):
         while not self.__close:
             try:
                 self.__addInput(self.__recv())
-            except socket.error:
+            except socket.error as e:
+                print str(e)
                 self.__connectToServer()
 
     def __recv(self):
@@ -83,7 +84,8 @@ class Server(object):
             try:
                 message = self.__output_queue.get()
                 self.__send(message)
-            except socket.error:
+            except socket.error as e:
+                print str(e)
                 self.__connectToServer()
 
     def __addInput(self, input):

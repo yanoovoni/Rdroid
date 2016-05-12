@@ -35,11 +35,8 @@ class Encryptor(object):
             print 'after decryption: ' + padded_message
             unpadded_message = removePadding(padded_message)
             print 'after unpadding: ' + unpadded_message
-        except ValueError:
-            unpadded_message = message
-        except TypeError:
-            unpadded_message = message
-        except IndexError:
+        except (ValueError, TypeError, IndexError) as e:
+            print str(e)
             unpadded_message = message
         return unpadded_message
 
