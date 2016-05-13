@@ -60,7 +60,9 @@ class Phone(object):
         try:
             message = self.getSocket().recv(self.buffer_size)
             if message == '':
+                print 'got empty'
                 self.closeObject()
+                return None
             message_len = int(message.split(':', 1)[0])
             message = message.split(':', 1)[1]
             while len(message) < message_len:
@@ -68,6 +70,7 @@ class Phone(object):
         except socket.error as e:
             print str(e)
             self.closeObject()
+            return None
         except (IndexError, ValueError) as e:
             print str(e)
             return None

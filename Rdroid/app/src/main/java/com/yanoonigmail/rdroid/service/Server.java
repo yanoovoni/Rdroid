@@ -2,7 +2,6 @@ package com.yanoonigmail.rdroid.service;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Base64InputStream;
 import android.util.Base64OutputStream;
 import android.util.Log;
 import android.content.res.Resources;
@@ -10,7 +9,6 @@ import android.content.res.Resources;
 import com.yanoonigmail.rdroid.ApplicationContext;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataOutputStream;
@@ -19,7 +17,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -30,7 +27,6 @@ import android.util.Base64;
 import android.util.Xml;
 
 import javax.crypto.Cipher;
-import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 
 import static com.yanoonigmail.rdroid.R.string.server_address;
@@ -89,8 +85,17 @@ public class Server {
                             e.printStackTrace();
                         }
                     }
-                    mLoggedIn = false;
+                    if (!mConnected) {
+                        mLoggedIn = false;
+                    }
                     while (!mConnected) {
+                        try {
+                            if (mServerSocket != null) {
+                                mServerSocket.close();
+                            }
+                        } catch (IOException e2) {
+                            e2.printStackTrace();
+                        }
                         try {
                             mServerSocket = new Socket();
                             mServerSocket.connect(mServerAddress, 5000);
@@ -109,7 +114,6 @@ public class Server {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    mConnected = true;
                     mConnectLock.unlock();
                     passiveLogin();
                 }
@@ -141,7 +145,7 @@ public class Server {
     public boolean send(String message) {
         String encrypted_message;
         try {
-            encrypted_message = mEncryptor.encrypt(message);
+            encrypted_message = mEncryptor.encryptFinal(message);
             encrypted_message = Protocol.addMessageLen(encrypted_message);
         } catch (Exception e) {
             e.printStackTrace();
@@ -240,12 +244,10 @@ public class Server {
                         streamBuffer = new char[(int) Math.min(8192, messageLen - totalReadLen)];
                         readLen = br.read(streamBuffer);
                         totalReadLen += readLen;
-
                         if (readLen != -1) {
                             fos.write(mEncryptor.decrypt(new String(streamBuffer)).getBytes("UTF-8"));
                             fos.flush();
-                        }
-                        else {
+                        } else {
                             cont = true;
                         }
                         if (readLen != streamBuffer.length || totalReadLen == messageLen) {
@@ -302,33 +304,32 @@ public class Server {
 
     public void streamSend(InputStream stream, long streamLength, byte[] preStreamData) {
         try {
-            DataOutputStream socketos = new DataOutputStream(mServerSocket.getOutputStream());
-            Base64OutputStream b64os = new Base64OutputStream(socketos, 0);
-            CipherOutputStream cos = new CipherOutputStream(b64os, this.mEncryptor.getCipher(Cipher.ENCRYPT_MODE));
+            DataOutputStream dos = new DataOutputStream(mServerSocket.getOutputStream());
             BufferedInputStream bis = new BufferedInputStream(stream);
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socketos));
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(dos));
             long totalStreamLength = streamLength + preStreamData.length + 1; // pure.
             totalStreamLength = totalStreamLength + (16 - (totalStreamLength % 16)); // after AES.
-            totalStreamLength = (long)(4*Math.ceil(((double)totalStreamLength/3))); // after base64.
+            totalStreamLength = (long) (4 * Math.ceil(((double) totalStreamLength / 3))); // after base64.
             bw.write(String.valueOf(totalStreamLength) + ":");
             bw.flush();
-            cos.write(preStreamData);
+            dos.write(mEncryptor.encryptPart(new String(preStreamData)).getBytes());
             boolean again = true;
             while (again) {
                 byte[] buffer = new byte[8192];
                 int readLen = bis.read(buffer);
                 if (readLen != -1) {
-                    cos.write(buffer, 0, readLen);
                     if (readLen == buffer.length) {
-                        cos.flush();
-                    } else {
+                        dos.write(mEncryptor.encryptPart(new String(buffer)).getBytes(), 0, readLen);
+                        dos.flush();
+                    }
+                    if (readLen != buffer.length) {
+                        dos.write(mEncryptor.encryptFinal(new String(buffer)).getBytes(), 0, readLen);
                         again = false;
                     }
                 } else {
                     again = false;
                 }
             }
-            cos.close();
         } catch (Exception e) {
             e.printStackTrace();
             mConnected = false;
@@ -341,6 +342,7 @@ public class Server {
         mEmail = email;
         mPassword = password;
         if (!isConnected()) {
+            mConnected = false;
             connect();
         }
         if (isConnected() && !isLoggedIn() && !mEmail.equals("") && !mPassword.equals("")) {

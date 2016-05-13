@@ -29,6 +29,8 @@ class Encryptor(object):
 
     def decrypt(self, message):
         # Decrypts the message and removes the padding.
+        if message is None:
+            return None
         try:
             print 'after base64: ' + message
             padded_message = self.__encryption_key.decrypt(message)

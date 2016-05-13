@@ -22,7 +22,13 @@ public class Encryptor {
         this.encryptionKey = encryptionKey;
     }
 
-    public String encrypt(String plainText) throws Exception {
+    public String encryptPart(String plainText) throws Exception {
+        Cipher cipher = getCipher(Cipher.ENCRYPT_MODE);
+        byte[] encryptedBytes = cipher.update(plainText.getBytes());
+        return Base64.encodeToString(encryptedBytes, Base64.DEFAULT);
+    }
+
+    public String encryptFinal(String plainText) throws Exception {
         Cipher cipher = getCipher(Cipher.ENCRYPT_MODE);
         byte[] encryptedBytes = cipher.doFinal(plainText.getBytes());
         return Base64.encodeToString(encryptedBytes, Base64.DEFAULT);
