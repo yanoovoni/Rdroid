@@ -324,12 +324,15 @@ public class Server {
                     }
                     if (readLen != buffer.length) {
                         dos.write(mEncryptor.encryptFinal(new String(buffer)).getBytes(), 0, readLen);
+                        dos.flush();
                         again = false;
                     }
                 } else {
                     again = false;
                 }
             }
+            bw.newLine();
+            bw.flush();
         } catch (Exception e) {
             e.printStackTrace();
             mConnected = false;

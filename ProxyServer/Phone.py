@@ -58,15 +58,24 @@ class Phone(object):
         # Receives a message from the phone.
         message = ''
         try:
-            message = self.getSocket().recv(self.buffer_size)
-            if message == '':
-                print 'got empty'
-                self.closeObject()
-                return None
-            message_len = int(message.split(':', 1)[0])
-            message = message.split(':', 1)[1]
+            stay = True
+            message_len = 0
+            while stay:
+                one_char = self.getSocket().recv(1)
+                if one_char == '':
+                    print 'got empty'
+                    self.closeObject()
+                    return None
+                elif one_char == ':':
+                    stay = False
+                else:
+                    try:
+                        message_len = message_len * 10 + int(one_char)
+                    except ValueError:
+                        message_len = 0
+            message = ''
             while len(message) < message_len:
-                message += self.getSocket().recv(max(self.buffer_size, message_len - len(message)))
+                message += self.getSocket().recv(min(self.buffer_size, message_len - len(message)))
         except socket.error as e:
             print str(e)
             self.closeObject()
