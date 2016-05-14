@@ -313,6 +313,7 @@ public class Server {
             bw.write(String.valueOf(totalStreamLength) + ":");
             bw.flush();
             dos.write(mEncryptor.encryptPart(new String(preStreamData)).getBytes());
+            dos.flush();
             boolean again = true;
             while (again) {
                 byte[] buffer = new byte[8192];
