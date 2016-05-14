@@ -56,7 +56,6 @@ class Phone(object):
 
     def raw_recv(self):
         # Receives a message from the phone.
-        message = ''
         try:
             stay = True
             message_len = 0
