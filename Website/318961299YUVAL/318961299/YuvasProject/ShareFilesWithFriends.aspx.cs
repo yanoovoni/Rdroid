@@ -67,7 +67,7 @@ public partial class ShareFilesWithFriends : System.Web.UI.Page
         foreach (ListItem friend in CheckBoxListFriends.Items)
         {
             // רשימה של החברים שאיתם 
-            // מעוניינים לשתף חברים
+            // מעוניינים לשתף אנשי קשר
             if (friend.Selected)
             {
                 phoneFriendList.Add(friend.Value);
