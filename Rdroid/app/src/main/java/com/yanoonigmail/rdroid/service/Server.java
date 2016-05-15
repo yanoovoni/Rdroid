@@ -309,7 +309,7 @@ public class Server {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(dos));
             long totalStreamLength = streamLength + preStreamData.length + 1; // pure.
             totalStreamLength = totalStreamLength + (16 - (totalStreamLength % 16)); // after AES.
-            totalStreamLength = (long) (4 * Math.ceil(((double) totalStreamLength / 3))); // after base64.
+            totalStreamLength = (long) (4 * Math.ceil((double) totalStreamLength / 3)); // after base64.
             bw.write(String.valueOf(totalStreamLength) + ":");
             bw.flush();
             dos.write(mEncryptor.encryptPart(new String(preStreamData)).getBytes());
@@ -318,16 +318,17 @@ public class Server {
             while (again) {
                 byte[] buffer = new byte[8192];
                 int readLen = bis.read(buffer);
+                int writeLen = readLen + (16 - (readLen % 16));
+                writeLen = (int) (4 * Math.ceil((double) writeLen / 3));
                 if (readLen != -1) {
                     if (readLen == buffer.length) {
-                        dos.write(mEncryptor.encryptPart(new String(buffer)).getBytes(), 0, readLen);
-                        dos.flush();
+                        dos.write(mEncryptor.encryptPart(new String(buffer)).getBytes(), 0, writeLen);
                     }
                     if (readLen != buffer.length) {
-                        dos.write(mEncryptor.encryptFinal(new String(buffer)).getBytes(), 0, readLen);
-                        dos.flush();
+                        dos.write(mEncryptor.encryptFinal(new String(buffer)).getBytes(), 0, writeLen);
                         again = false;
                     }
+                    dos.flush();
                 } else {
                     again = false;
                 }

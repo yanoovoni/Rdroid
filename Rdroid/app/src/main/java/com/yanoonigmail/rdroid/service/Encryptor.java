@@ -25,7 +25,7 @@ public class Encryptor {
     public String encryptPart(String plainText) throws Exception {
         Cipher cipher = getCipher(Cipher.ENCRYPT_MODE);
         byte[] encryptedBytes = cipher.update(plainText.getBytes());
-        return Base64.encodeToString(encryptedBytes, Base64.DEFAULT);
+        return Base64.encodeToString(encryptedBytes, Base64.NO_PADDING);
     }
 
     public String encryptFinal(String plainText) throws Exception {
