@@ -80,15 +80,23 @@ public class WebService : System.Web.Services.WebService {
     public bool IfContactExist(ContactDetails contactDetais)//הפעולה בודקת האם איש הקשר כבר קיים
     {
         UserService service = new UserService();
-        return service.IfContactExist(contactDetais);
+        bool x = service.IfContactExist(contactDetais);
+        if (x)
+        {
+            service.InsertContact2(contactDetais);
+            return true;
+        }
+        return false;
+        
     }
 
-    [WebMethod]
-    public void InsertContact(ContactDetails contactDetais)//הפעולה מאפשרת להוסיף מידע לתוך טבלת אנשי הקשר
-    {
-        UserService service = new UserService();
-        service.IfContactExist(contactDetais);
-    }
+    //[WebMethod]
+    //public void InsertContact(ContactDetails contactDetais)//הפעולה מאפשרת להוסיף מידע לתוך טבלת אנשי הקשר
+    //{
+    //    UserService service = new UserService();
+       
+
+    //}
 
 
     [WebMethod]
@@ -105,7 +113,12 @@ public class WebService : System.Web.Services.WebService {
         service.InsertFriend(friendDetais);
     }
 
-
+    //[WebMethod]
+    //public DataSet FindFriends(string PoneIDAccepting)//הפעולה מחזירה את כל מי ששלח למשתמש הרשום הצעת חברות
+    //{
+    //    UserService service = new UserService();
+    //    return service.FindFriends(PoneIDAccepting);
+    //}
 
 
 }

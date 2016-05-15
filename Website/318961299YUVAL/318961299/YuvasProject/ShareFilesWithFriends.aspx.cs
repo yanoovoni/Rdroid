@@ -98,11 +98,12 @@ public partial class ShareFilesWithFriends : System.Web.UI.Page
         contact.status = "לאישור";
         try
         {
-            if (!service.IfContactExist(contact))  // מוסיפים איש קשר רק אם לא קיים
+            if (service.IfContactExist(contact))  // מוסיפים איש קשר רק אם לא קיים
             {
-                service.InsertContact(contact);
+                Label1.Text = "yaaay";
             }
-            Label1.Text = "yaaay";
+            else Label1.Text = "fuck";
+            
         }
         catch (Exception ex)
         {

@@ -6,9 +6,10 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Data;
 using System.Collections;
+using localhostWebService;
 public partial class ShareContactsWithFriends : System.Web.UI.Page
 {
-    localhostWebService.UserDetails user;
+   UserDetails user;
 ArrayList phoneFriendList;
 protected void Page_Load(object sender, EventArgs e)
 {
@@ -99,7 +100,7 @@ protected void Page_Load(object sender, EventArgs e)
         {
           if(!service.IfContactExist(contact))  // מוסיפים איש קשר רק אם לא קיים
           {
-              service.InsertContact(contact);
+             // service.InsertContact(contact);
           }
             Label1.Text = "yaaay";
         }

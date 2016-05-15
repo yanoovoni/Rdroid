@@ -192,7 +192,7 @@ public class UserService
 
     public bool IfContactExist(ContactDetails contactDetais)//הפעולה בודקת האם איש הקשר כבר קיים
     {
-        bool find = false;
+        //bool find = false;
         object obj = null;
         OleDbCommand myCmd = new OleDbCommand("checkIfContactExistsByUserPhoneBelong", myConnection);
         myCmd.CommandType = CommandType.StoredProcedure;
@@ -210,10 +210,10 @@ public class UserService
         {
             myConnection.Open();
             obj = myCmd.ExecuteScalar();
+
             if (obj == null)
-                return find;
-            find = true;
-            return find;
+                return false;
+            return true;
         }
         catch (Exception ex)
         {
@@ -227,12 +227,12 @@ public class UserService
        
     }
 
-    public void InsertContact( ContactDetails contactDetais)//הפעולה מאפשרת להוסיף מידע לתוך טבלת אנשי הקשר
+    public void InsertContact2( ContactDetails contactDetais)//הפעולה מאפשרת להוסיף מידע לתוך טבלת אנשי הקשר
     {
         OleDbCommand myCmd = new OleDbCommand("InsertIntoContacts", myConnection);
         myCmd.CommandType = CommandType.StoredProcedure;
-        //INSERT INTO Contacts ( UserIDBelong, PhoneNumber, FirstName, LastName, Email )
-       // VALUES(@UserIDBelong, @PhoneNumber, @FirstName, @LastName, @Email);
+//INSERT INTO Contacts ( UserPhoneBelong, PhoneNumber, FirstName, LastName, Email, Status )
+//VALUES (@UserPhoneBelong, @PhoneNumber, @FirstName, @LastName, @Emai, @Status);
 
         OleDbParameter objParam;
 
@@ -252,10 +252,10 @@ public class UserService
         objParam.Direction = ParameterDirection.Input;
         objParam.Value = contactDetais.lastName;
 
-        objParam = myCmd.Parameters.Add("@Email", OleDbType.BSTR);
+        objParam = myCmd.Parameters.Add("@Emai", OleDbType.BSTR);
         objParam.Direction = ParameterDirection.Input;
         objParam.Value = contactDetais.email;
-        objParam = myCmd.Parameters.Add("@Status", OleDbType.BSTR);
+        objParam = myCmd.Parameters.Add("@Status", OleDbType.Boolean);
         objParam.Direction = ParameterDirection.Input;
         objParam.Value = contactDetais.status;
         try
@@ -381,6 +381,34 @@ public class UserService
             myConnection.Close();
         }
     }
+
+    //public DataSet FindFriends(string phoneIDAccepting)//הפעולה מחזירה את כל מי ששלח למשתמש הרשום הצעת חברות
+    //{
+    //    OleDbCommand myCmd = new OleDbCommand("AcceptingFriendRequest", myConnection);
+    //    myCmd.CommandType = CommandType.StoredProcedure;
+    //    OleDbDataAdapter adapter = new OleDbDataAdapter(myCmd);
+
+    //    DataSet dataset = new DataSet();
+    //    UserDetails userDetails = new UserDetails();
+
+    //    OleDbParameter parameter;
+    //    parameter = myCmd.Parameters.Add("@PhoneIDAccepting", OleDbType.BSTR);
+    //    parameter.Direction = ParameterDirection.Input;
+    //    parameter.Value = phoneIDAccepting;
+
+      
+
+    //    try
+    //    {
+    //        adapter.Fill(dataset, "AcceptingTBL");
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        throw ex;
+    //    }
+
+    //    return dataset;
+    //}
     //public DataSet getUsersAndCities()
     //{
     //    OleDbCommand myCmd = new OleDbCommand("allFromUser&Cities", myConnection);
