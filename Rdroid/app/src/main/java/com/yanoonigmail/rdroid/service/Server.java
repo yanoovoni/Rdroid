@@ -307,7 +307,7 @@ public class Server {
             DataOutputStream dos = new DataOutputStream(mServerSocket.getOutputStream());
             BufferedInputStream bis = new BufferedInputStream(stream);
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(dos));
-            long totalStreamLength = streamLength + preStreamData.length + 1; // pure.
+            long totalStreamLength = streamLength + preStreamData.length; // pure.
             totalStreamLength = totalStreamLength + (16 - (totalStreamLength % 16)); // after AES.
             totalStreamLength = (long) (4 * Math.ceil((double) totalStreamLength / 3)); // after base64.
             bw.write(String.valueOf(totalStreamLength) + ":");
