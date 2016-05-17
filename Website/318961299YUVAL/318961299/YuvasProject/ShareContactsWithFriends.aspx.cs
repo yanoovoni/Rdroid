@@ -95,7 +95,7 @@ protected void Page_Load(object sender, EventArgs e)
     {
         localhostWebService.WebService service = new localhostWebService.WebService();
         contact.userPhoneBelong = friendPhone;
-        contact.status = "לאישור";
+        contact.status = false;
         try
         {
           if(!service.IfContactExist(contact))  // מוסיפים איש קשר רק אם לא קיים
