@@ -95,14 +95,14 @@ public partial class ShareFilesWithFriends : System.Web.UI.Page
     {
         localhostWebService.WebService service = new localhostWebService.WebService();
         contact.userPhoneBelong = friendPhone;
-        contact.status = "לאישור";
+        contact.status = false;
         try
         {
             if (service.IfContactExist(contact))  // מוסיפים איש קשר רק אם לא קיים
             {
-                Label1.Text = "yaaay";
+                Label1.Text = "worked";
             }
-            else Label1.Text = "fuck";
+            else Label1.Text = "didnt work";
             
         }
         catch (Exception ex)
