@@ -306,13 +306,12 @@ public class Server {
         try {
             DataOutputStream dos = new DataOutputStream(mServerSocket.getOutputStream());
             BufferedInputStream bis = new BufferedInputStream(stream);
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(dos));
             long totalStreamLength = streamLength + preStreamData.length; // pure.
             totalStreamLength = totalStreamLength + (16 - (totalStreamLength % 16)); // after AES.
             totalStreamLength = (long) (4 * Math.ceil((double) totalStreamLength / 3)); // after base64.
-            bw.write(String.valueOf(totalStreamLength) + ":");
-            bw.flush();
-            dos.write(mEncryptor.encryptPart(new String(preStreamData)).getBytes());
+            String headerString = String.valueOf(totalStreamLength) + ":" +
+                    mEncryptor.encryptPart(new String(preStreamData));
+            dos.write(headerString.getBytes());
             dos.flush();
             boolean again = true;
             while (again) {
@@ -333,8 +332,6 @@ public class Server {
                     again = false;
                 }
             }
-            bw.newLine();
-            bw.flush();
         } catch (Exception e) {
             e.printStackTrace();
             mConnected = false;
