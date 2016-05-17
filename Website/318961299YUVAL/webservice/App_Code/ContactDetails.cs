@@ -14,7 +14,7 @@ public class ContactDetails
     private string FirstName;
     private string LastName;
     private string Email;
-    private bool Status;
+    private string Status;
 	public ContactDetails()
 	{
 		
@@ -55,7 +55,7 @@ public class ContactDetails
         get { return Email; }
         set { Email = value; }
     }
-    public bool status
+    public string status
     {
         get { return Status; }
         set { Status = value; }

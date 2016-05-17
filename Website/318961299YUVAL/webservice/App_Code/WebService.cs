@@ -81,13 +81,13 @@ public class WebService : System.Web.Services.WebService {
     {
         UserService service = new UserService();
         bool x = service.IfContactExist(contactDetais);
-        if (x == false)
+        if (x)
         {
             service.InsertContact2(contactDetais);
             return true;
         }
         return false;
-
+        
     }
 
     //[WebMethod]
@@ -112,17 +112,7 @@ public class WebService : System.Web.Services.WebService {
         UserService service = new UserService();
         service.InsertFriend(friendDetais);
     }
-    [WebMethod]
-    public void InsertFriend1()//הפעולה מאפשרת להוסיף מידע לתוך טבלת חברים
-    {
-        FriendDetails friendDetais = new FriendDetails();
-        friendDetais.phoneIDAccepting = "0547645029";
-        friendDetais.phoneIDAsking = "3";
-        friendDetais.dateOfFriendship = DateTime.Now;
-        friendDetais.status = false;
-        UserService service = new UserService();
-        service.InsertFriend(friendDetais);
-    }
+
     //[WebMethod]
     //public DataSet FindFriends(string PoneIDAccepting)//הפעולה מחזירה את כל מי ששלח למשתמש הרשום הצעת חברות
     //{

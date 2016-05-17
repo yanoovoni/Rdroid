@@ -255,7 +255,6 @@ public class UserService
         objParam = myCmd.Parameters.Add("@Emai", OleDbType.BSTR);
         objParam.Direction = ParameterDirection.Input;
         objParam.Value = contactDetais.email;
-
         objParam = myCmd.Parameters.Add("@Status", OleDbType.Boolean);
         objParam.Direction = ParameterDirection.Input;
         objParam.Value = contactDetais.status;
