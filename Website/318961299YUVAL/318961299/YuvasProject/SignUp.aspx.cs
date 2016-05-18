@@ -23,7 +23,7 @@ public partial class SignUp : System.Web.UI.Page
             user.email = TextBox4.Text;
 
 
-            UserService userService = new UserService();
+            WebService userService = new WebService();
             try
             {
                 userService.InsertUser(user);

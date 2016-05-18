@@ -8,7 +8,7 @@ using System.Web;
 /// </summary>
 public class Connect
 {
-    const string FILE_NAME = "WebSiteDataB.mdb";
+    const string FILE_NAME = "WebSiteDataBase.mdb";
     public static string getConnectionString()
     {
         string location = HttpContext.Current.Server.MapPath("~/App_Data/" + FILE_NAME);

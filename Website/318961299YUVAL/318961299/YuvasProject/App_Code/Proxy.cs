@@ -129,6 +129,8 @@ public sealed class Proxy
         DataSet dataset = new DataSet();
         OleDbParameter objParam;
 
+        UserDetails x = new UserDetails();
+
         objParam = myCmd.Parameters.Add("@Email", OleDbType.BSTR);
         objParam.Direction = ParameterDirection.Input;
         objParam.Value = userDetails.email;
@@ -144,7 +146,10 @@ public sealed class Proxy
 
             while (reader.Read())
             {
-                userDetails.firstName = reader["FirstName"].ToString();
+                x.phoneNumber = reader["PhoneNumber"].ToString();
+                x.firstName = reader["FirstName"].ToString();
+                x.lastName = reader["LastName"].ToString();
+                x.email = reader["Email"].ToString();
             }
         }
         catch (Exception ex)
@@ -155,7 +160,7 @@ public sealed class Proxy
         {
             myConnection.Close();
         }
-        if (userDetails.firstName == null)
+        if (x == null)
         {
             return false;
         }

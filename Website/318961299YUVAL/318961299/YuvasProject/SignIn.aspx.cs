@@ -16,10 +16,11 @@ public partial class SignIn : System.Web.UI.Page
     {
         localhostWebService.UserDetails ud = new localhostWebService.UserDetails();
         localhostWebService.WebService service = new localhostWebService.WebService();
-        UserService userService = new UserService();
+        WebService userService = new WebService();
         UserDetails userDetails = new UserDetails();
         ud.email = TextBox1.Text;
         ud.password = TextBox2.Text;
+
         localhostWebService.UserDetails user = service.EnterToSite(ud);
         if (user != null)
         {

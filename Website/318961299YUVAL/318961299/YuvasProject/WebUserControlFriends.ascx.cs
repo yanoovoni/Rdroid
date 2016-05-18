@@ -30,7 +30,7 @@ public partial class WebUserControlFriends : System.Web.UI.UserControl
     }
     private void Load_Friends_And_Contacts()
     {
-        UserService userService = new UserService();
+        WebService userService = new WebService();
         DataSet dataSet = new DataSet();
         dataSet = userService.GetFriendsAndContacts(user);
         Session["DataSet"] = dataSet;

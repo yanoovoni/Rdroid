@@ -62,7 +62,7 @@ public partial class AddFriend : System.Web.UI.Page
         localhostWebService.WebService service = new localhostWebService.WebService();
         localhostWebService.FriendDetails friend = new localhostWebService.FriendDetails();
         DataSet dataset=(DataSet)Session["DataSetFriends"];
-        UserService userService = new UserService();
+        WebService userService = new WebService();
         if (e.CommandName == "chck")
         {
             friend.phoneIDAsking = user.phoneNumber;
