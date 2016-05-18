@@ -2,13 +2,13 @@ package com.yanoonigmail.rdroid.service;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Base64OutputStream;
 import android.util.Log;
 import android.content.res.Resources;
 
 import com.yanoonigmail.rdroid.ApplicationContext;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataOutputStream;
@@ -24,10 +24,6 @@ import java.net.InetSocketAddress;
 import java.lang.Thread;
 import 	java.util.concurrent.locks.ReentrantLock;
 import android.util.Base64;
-import android.util.Xml;
-
-import javax.crypto.Cipher;
-import javax.crypto.CipherOutputStream;
 
 import static com.yanoonigmail.rdroid.R.string.server_address;
 import static com.yanoonigmail.rdroid.R.string.user_data;
@@ -302,32 +298,31 @@ public class Server {
         }
     }
 
-    public void streamSend(InputStream stream, long streamLength, byte[] preStreamData) {
+    public void streamSend(InputStream stream, long streamLength, String preStreamData) {
         try {
-            DataOutputStream dos = new DataOutputStream(mServerSocket.getOutputStream());
+            BufferedOutputStream bos = new BufferedOutputStream(new DataOutputStream(mServerSocket.getOutputStream()));
             BufferedInputStream bis = new BufferedInputStream(stream);
-            long totalStreamLength = streamLength + preStreamData.length; // pure.
+            long totalStreamLength = streamLength + preStreamData.length(); // pure.
             totalStreamLength = totalStreamLength + (16 - (totalStreamLength % 16)); // after AES.
             totalStreamLength = (long) (4 * Math.ceil((double) totalStreamLength / 3)); // after base64.
             String headerString = String.valueOf(totalStreamLength) + ":" +
-                    mEncryptor.encryptPart(new String(preStreamData));
-            dos.write(headerString.getBytes());
-            dos.flush();
+                    mEncryptor.encryptPart(preStreamData);
+            bos.write(headerString.getBytes(), 0, headerString.getBytes().length);
+            bos.flush();
             boolean again = true;
             while (again) {
                 byte[] buffer = new byte[8192];
                 int readLen = bis.read(buffer);
-                int writeLen = readLen + (16 - (readLen % 16));
-                writeLen = (int) (4 * Math.ceil((double) writeLen / 3));
                 if (readLen != -1) {
+                    byte[] encryptedBuffer;
                     if (readLen == buffer.length) {
-                        dos.write(mEncryptor.encryptPart(new String(buffer)).getBytes(), 0, writeLen);
-                    }
-                    if (readLen != buffer.length) {
-                        dos.write(mEncryptor.encryptFinal(new String(buffer)).getBytes(), 0, writeLen);
+                        encryptedBuffer = mEncryptor.encryptPart(new String(buffer)).getBytes();
+                    } else {
+                        encryptedBuffer = mEncryptor.encryptFinal(new String(buffer, 0, readLen)).getBytes();
                         again = false;
                     }
-                    dos.flush();
+                    bos.write(encryptedBuffer);
+                    bos.flush();
                 } else {
                     again = false;
                 }

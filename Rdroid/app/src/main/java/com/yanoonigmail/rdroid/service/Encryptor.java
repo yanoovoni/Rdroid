@@ -3,6 +3,7 @@ package com.yanoonigmail.rdroid.service;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import android.util.Base64;
@@ -10,6 +11,7 @@ import android.util.Log;
 
 import java.io.OutputStream;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 /**
  * Created by Yaniv Sharon on 17/02/2016.
@@ -23,7 +25,7 @@ public class Encryptor {
     }
 
     public String encryptPart(String plainText) throws Exception {
-        Cipher cipher = getCipher(Cipher.ENCRYPT_MODE);
+        Cipher cipher = getCipher(Cipher.ENCRYPT_MODE, "AES/CBC/NoPadding");
         byte[] encryptedBytes = cipher.update(plainText.getBytes());
         return Base64.encodeToString(encryptedBytes, Base64.NO_PADDING);
     }
@@ -45,12 +47,15 @@ public class Encryptor {
         return this.encryptionKey;
     }
 
-    public Cipher getCipher(int cipherMode) throws Exception {
-        String encryptionAlgorithm = "AES";
+    public Cipher getCipher(int cipherMode, String encryptionAlgorithm) throws Exception {
         SecretKeySpec keySpecification = new SecretKeySpec(
                 encryptionKey, encryptionAlgorithm);
         Cipher cipher = Cipher.getInstance(encryptionAlgorithm);
-        cipher.init(cipherMode, keySpecification);
+        cipher.init(cipherMode, keySpecification, new IvParameterSpec("SIXTEEN BYTE KEY".getBytes()));
         return cipher;
+    }
+
+    public Cipher getCipher(int cipherMode) throws Exception {
+        return this.getCipher(cipherMode, "AES/CBC/PKCS5Padding");
     }
 }
