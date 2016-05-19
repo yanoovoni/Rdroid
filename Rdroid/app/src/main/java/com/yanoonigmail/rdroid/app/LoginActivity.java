@@ -43,7 +43,6 @@ public class LoginActivity extends ActionBarActivity {
     private ProgressBar mProgressBar1;
     private ProgressBar mProgressBar2;
     private ProgressBar mProgressBar3;
-    private Thread mTryLoginThread;
     private MyService mMyService = MyService.getInstance();
     private Context mApplicationContext = ApplicationContext.getContext();
     private LoginActivity mLoginActivity = this;

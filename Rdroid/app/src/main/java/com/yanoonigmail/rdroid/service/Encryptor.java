@@ -24,13 +24,7 @@ public class Encryptor {
         this.encryptionKey = encryptionKey;
     }
 
-    public String encryptPart(String plainText) throws Exception {
-        Cipher cipher = getCipher(Cipher.ENCRYPT_MODE, "AES/CBC/NoPadding");
-        byte[] encryptedBytes = cipher.update(plainText.getBytes());
-        return Base64.encodeToString(encryptedBytes, Base64.NO_PADDING);
-    }
-
-    public String encryptFinal(String plainText) throws Exception {
+    public String encrypt(String plainText) throws Exception {
         Cipher cipher = getCipher(Cipher.ENCRYPT_MODE);
         byte[] encryptedBytes = cipher.doFinal(plainText.getBytes());
         return Base64.encodeToString(encryptedBytes, Base64.DEFAULT);
@@ -47,15 +41,11 @@ public class Encryptor {
         return this.encryptionKey;
     }
 
-    public Cipher getCipher(int cipherMode, String encryptionAlgorithm) throws Exception {
-        SecretKeySpec keySpecification = new SecretKeySpec(
-                encryptionKey, encryptionAlgorithm);
-        Cipher cipher = Cipher.getInstance(encryptionAlgorithm);
-        cipher.init(cipherMode, keySpecification, new IvParameterSpec("SIXTEEN BYTE KEY".getBytes()));
-        return cipher;
-    }
-
     public Cipher getCipher(int cipherMode) throws Exception {
-        return this.getCipher(cipherMode, "AES/CBC/PKCS5Padding");
+        SecretKeySpec keySpecification = new SecretKeySpec(
+                encryptionKey, "AES");
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(cipherMode, keySpecification);
+        return cipher;
     }
 }

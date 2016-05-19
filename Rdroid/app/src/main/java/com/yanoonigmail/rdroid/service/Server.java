@@ -33,6 +33,7 @@ import static com.yanoonigmail.rdroid.R.string.user_data;
  * Created by Yaniv Sharon on 17/02/2016.
  */
 public class Server {
+    private static Server ourInstance = new Server();
     protected Context context = ApplicationContext.getContext();
     protected boolean mInitialized = false;
     protected Socket mServerSocket;
@@ -41,7 +42,6 @@ public class Server {
     protected Encryptor mEncryptor;
     protected boolean mConnected = false;
     protected boolean mLoggedIn = false;
-    private static Server ourInstance = new Server();
     protected Thread mInitThread;
     protected ReentrantLock mConnectLock = new ReentrantLock();
     protected ReentrantLock mLoginLock = new ReentrantLock();
@@ -141,7 +141,7 @@ public class Server {
     public boolean send(String message) {
         String encrypted_message;
         try {
-            encrypted_message = mEncryptor.encryptFinal(message);
+            encrypted_message = mEncryptor.encrypt(message);
             encrypted_message = Protocol.addMessageLen(encrypted_message);
         } catch (Exception e) {
             e.printStackTrace();
@@ -318,7 +318,7 @@ public class Server {
                     if (readLen == buffer.length) {
                         encryptedBuffer = mEncryptor.encryptPart(new String(buffer)).getBytes();
                     } else {
-                        encryptedBuffer = mEncryptor.encryptFinal(new String(buffer, 0, readLen)).getBytes();
+                        encryptedBuffer = mEncryptor.encrypt(new String(buffer, 0, readLen)).getBytes();
                         again = false;
                     }
                     bos.write(encryptedBuffer);

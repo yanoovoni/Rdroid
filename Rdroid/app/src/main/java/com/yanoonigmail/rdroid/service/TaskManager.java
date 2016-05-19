@@ -37,7 +37,6 @@ public class TaskManager extends android.app.Service {
     // Binder given to clients
     private final LocalBinder mBinder = new LocalBinder();
     // Random number generator
-    private final Random mGenerator = new Random();
     private int mId = 9000;
 
     @Override
@@ -69,7 +68,7 @@ public class TaskManager extends android.app.Service {
     }
 
     public class LocalBinder extends Binder {
-        TaskManager getService() {
+        public TaskManager getService() {
             // Return this instance of the service so clients can call public methods.
             return TaskManager.this;
         }
@@ -140,32 +139,6 @@ public class TaskManager extends android.app.Service {
             });
             mManageTasksThread.start();
         }
-    }
-
-    private void notifyUser() {
-        Notification mNotification =
-                new Notification.Builder(ApplicationContext.getContext())
-                        .setContentTitle("RDroid is running")
-                        .setContentText("The RDroid service is running.")
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
-                        .build();
-        // Creates an explicit intent for an Activity in your app
-        Intent resultIntent = new Intent(this, LoadingActivity.class);
-
-        // The stack builder object will contain an artificial back stack for the
-        // started Activity.
-        // This ensures that navigating backward from the Activity leads out of
-        // your application to the Home screen.
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        // Adds the back stack for the Intent (but not the Intent itself)
-        stackBuilder.addParentStack(LoadingActivity.class);
-        // Adds the Intent that starts the Activity to the top of the stack
-        stackBuilder.addNextIntent(resultIntent);
-        NotificationManager mNotificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        // mId allows you to update the notification later on.
-        mNotificationManager.notify(mId, mNotification);
     }
 
     private void setForeground() {

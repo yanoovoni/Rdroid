@@ -27,21 +27,6 @@ import java.util.Arrays;
  */
 public class OSInterface {
 
-    public static String readFile(File file) {
-        FileInputStream fis = null;
-        try
-        {
-            byte[] fileData = new byte[(int) file.length()];
-            DataInputStream dis = new DataInputStream(new FileInputStream(file));
-            dis.readFully(fileData);
-            dis.close();
-            return new String(fileData, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "";
-        }
-    }
-
     public static void saveFile(File file, String fileData) {
         String[] data = fileData.split(System.getProperty("line.separator"));
         FileOutputStream fos = null;
