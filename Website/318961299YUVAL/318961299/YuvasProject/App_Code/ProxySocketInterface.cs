@@ -172,7 +172,7 @@ public sealed class ProxySocketInterface
         }
     }
 
-    public String Recv()
+    public string Recv()
     {
         while (true)
         {

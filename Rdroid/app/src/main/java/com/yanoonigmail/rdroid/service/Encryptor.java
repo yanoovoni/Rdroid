@@ -42,9 +42,10 @@ public class Encryptor {
     }
 
     public Cipher getCipher(int cipherMode) throws Exception {
+        String encryptionAlgorithm = "AES";
         SecretKeySpec keySpecification = new SecretKeySpec(
-                encryptionKey, "AES");
-        Cipher cipher = Cipher.getInstance("AES");
+                encryptionKey, encryptionAlgorithm);
+        Cipher cipher = Cipher.getInstance(encryptionAlgorithm);
         cipher.init(cipherMode, keySpecification);
         return cipher;
     }

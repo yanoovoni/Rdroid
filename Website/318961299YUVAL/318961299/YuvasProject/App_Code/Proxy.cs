@@ -17,7 +17,7 @@ public sealed class Proxy
     private Dictionary<string, Phone> Phone_By_Id_Dict;
     private Dictionary<string, Phone> Phone_By_Email_Dict;
     private Queue<string> Input_Queue;
-    protected OleDbConnection myConnection;
+    private OleDbConnection myConnection;
     private Thread Proxy_Manager_Thread;
 
     public static Proxy Get_Instance()

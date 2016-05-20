@@ -6,6 +6,7 @@ import android.util.Log;
 import android.content.res.Resources;
 
 import com.yanoonigmail.rdroid.ApplicationContext;
+import com.yanoonigmail.rdroid.R;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -26,6 +27,7 @@ import 	java.util.concurrent.locks.ReentrantLock;
 import android.util.Base64;
 
 import static com.yanoonigmail.rdroid.R.string.server_address;
+import static com.yanoonigmail.rdroid.R.string.server_port;
 import static com.yanoonigmail.rdroid.R.string.user_data;
 
 
@@ -57,7 +59,9 @@ public class Server {
     protected Server() {
         mInitThread = new Thread(new Runnable() {
             public void run() {
-                mServerAddress = new InetSocketAddress(resources.getString(server_address), 9000);
+                String ip = resources.getString(server_address);
+                String port = resources.getString(server_port);
+                mServerAddress = new InetSocketAddress(ip, Integer.parseInt(port));
                 Log.d("Server init", mServerAddress.toString());
                 mEncryptorFactory = new EncryptorFactory();
                 mInitialized = true;
@@ -120,7 +124,7 @@ public class Server {
 
     protected void passiveLogin() {
         if (!isLoggedIn() && isConnected()) {
-            SharedPreferences preferences = context.getSharedPreferences(context.getString(user_data), Context.MODE_PRIVATE);
+            SharedPreferences preferences = context.getSharedPreferences(resources.getString(user_data), Context.MODE_PRIVATE);
             if (preferences.contains("email") && preferences.contains("password")) {
                 mEmail = preferences.getString("email", "");
                 mPassword = preferences.getString("password", "");
@@ -299,6 +303,7 @@ public class Server {
     }
 
     public void streamSend(InputStream stream, long streamLength, String preStreamData) {
+        /*
         try {
             BufferedOutputStream bos = new BufferedOutputStream(new DataOutputStream(mServerSocket.getOutputStream()));
             BufferedInputStream bis = new BufferedInputStream(stream);
@@ -332,6 +337,7 @@ public class Server {
             mConnected = false;
             connect();
         }
+        */
     }
 
     public boolean tryLogin(String email, String password) {

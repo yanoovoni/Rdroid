@@ -43,7 +43,7 @@ class EncryptionKeyMaker(object):
         print 'key len: ' + str(len(encrypted_key))
         phone_key = self.__encryption_key.decrypt(encrypted_key, errors_param)
         print 'phone key: ' + phone_key
-        return Encryptor(AES.new(key=phone_key, mode=AES.MODE_CBC, IV=b'SIXTEEN BYTE KEY'))
+        return Encryptor(AES.new(phone_key))
 
 
 #endregion -----------------Class-----------------
