@@ -97,9 +97,11 @@ class Phone(object):
 
     def recv(self):
         # Receives a message from the phone and decrypts it.
-        encryptor = self.getEncryptor()
         message = self.raw_recv()
-        message = encryptor.decrypt(message)
+        if message is not None:
+            if not message.startswith('Rdroid CLIENT'):
+                encryptor = self.getEncryptor()
+                message = encryptor.decrypt(message)
         return message
 
     def establishConnection(self):
