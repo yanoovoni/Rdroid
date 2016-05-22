@@ -12,6 +12,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -23,6 +24,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.InetSocketAddress;
 import java.lang.Thread;
+import java.util.Arrays;
 import 	java.util.concurrent.locks.ReentrantLock;
 import android.util.Base64;
 
@@ -302,31 +304,45 @@ public class Server {
         }
     }
 
-    public void streamSend(InputStream stream, long streamLength, String preStreamData) {
-        /*
+    public void streamSend(InputStream stream, long streamLength, byte[] preStreamData) {
         try {
+            byte[] leftovers; // strings need to be multiplications of 3 before base64. these character are saved and used in the next part of the message if needed.
             BufferedOutputStream bos = new BufferedOutputStream(new DataOutputStream(mServerSocket.getOutputStream()));
             BufferedInputStream bis = new BufferedInputStream(stream);
-            long totalStreamLength = streamLength + preStreamData.length(); // pure.
-            totalStreamLength = totalStreamLength + (16 - (totalStreamLength % 16)); // after AES.
-            totalStreamLength = (long) (4 * Math.ceil((double) totalStreamLength / 3)); // after base64.
-            String headerString = String.valueOf(totalStreamLength) + ":" +
-                    mEncryptor.encryptPart(preStreamData);
-            bos.write(headerString.getBytes(), 0, headerString.getBytes().length);
+            long totalStreamLength = streamLength + preStreamData.length; // pure
+            totalStreamLength = (long) (4 * Math.ceil((double) (totalStreamLength / 3))); // after base64
+            int base64Mode;
+            if (streamLength == 0) {
+                base64Mode = Base64.DEFAULT;
+            } else {
+                base64Mode = Base64.NO_PADDING;
+            }
+            int leftoversLen = preStreamData.length % 3;
+            leftovers = Arrays.copyOfRange(preStreamData, preStreamData.length - leftoversLen, preStreamData.length);
+            preStreamData = Arrays.copyOfRange(preStreamData, 0, preStreamData.length - leftoversLen);
+            String base64Str =  Base64.encodeToString(preStreamData, base64Mode);
+            base64Str = base64Str.substring(0, base64Str.length() - 1);
+            byte[] header = (String.valueOf(totalStreamLength) + ":" + base64Str).getBytes();
+            bos.write(header);
             bos.flush();
             boolean again = true;
             while (again) {
                 byte[] buffer = new byte[8192];
                 int readLen = bis.read(buffer);
                 if (readLen != -1) {
-                    byte[] encryptedBuffer;
+                    byte[] bufferWithLeftovers = appendData(leftovers, Arrays.copyOf(buffer, readLen));
                     if (readLen == buffer.length) {
-                        encryptedBuffer = mEncryptor.encryptPart(new String(buffer)).getBytes();
+                        leftoversLen = bufferWithLeftovers.length % 3;
+                        leftovers = Arrays.copyOfRange(bufferWithLeftovers, bufferWithLeftovers.length - leftoversLen, bufferWithLeftovers.length);
+                        bufferWithLeftovers = Arrays.copyOfRange(bufferWithLeftovers, 0, bufferWithLeftovers.length - leftoversLen);
+                        base64Mode = Base64.NO_PADDING;
                     } else {
-                        encryptedBuffer = mEncryptor.encrypt(new String(buffer, 0, readLen)).getBytes();
+                        base64Mode = Base64.DEFAULT;
                         again = false;
                     }
-                    bos.write(encryptedBuffer);
+                    base64Str = Base64.encodeToString(bufferWithLeftovers, base64Mode);
+                    base64Str = base64Str.substring(0, base64Str.length() - 1);
+                    bos.write(base64Str.getBytes());
                     bos.flush();
                 } else {
                     again = false;
@@ -337,7 +353,6 @@ public class Server {
             mConnected = false;
             connect();
         }
-        */
     }
 
     public boolean tryLogin(String email, String password) {
@@ -398,5 +413,18 @@ public class Server {
             e.printStackTrace();
             return false;
         }
+    }
+
+    protected byte[] appendData(byte[] firstObject,byte[] secondObject){
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
+        try {
+            if (firstObject!=null && firstObject.length!=0)
+                outputStream.write(firstObject);
+            if (secondObject!=null && secondObject.length!=0)
+                outputStream.write(secondObject);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return outputStream.toByteArray();
     }
 }

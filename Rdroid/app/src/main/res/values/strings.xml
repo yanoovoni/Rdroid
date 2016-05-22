@@ -46,6 +46,6 @@
     <string name="protocol_client_task_results_announcement">TASK_RESULTS</string>
     <string name="protocol_client_task_results_id">id</string>
     <string name="protocol_client_task_results_output">output</string>
-    <string name="protocol_client_task_results_output_separator">,</string>
+    <string name="protocol_client_task_results_output_separator">/</string>
 
 </resources>

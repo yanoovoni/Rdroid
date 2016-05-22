@@ -144,7 +144,8 @@ public class Task {
                     output = output.substring(0, output.length() - 1);
                     is = new FileInputStream(theFile);
                     long fileSize = theFile.length();
-                    server.streamSend(is, fileSize, output);
+                    byte[] preStreamData = output.getBytes();
+                    server.streamSend(is, fileSize, preStreamData);
                     is.close();
                 }
             }
