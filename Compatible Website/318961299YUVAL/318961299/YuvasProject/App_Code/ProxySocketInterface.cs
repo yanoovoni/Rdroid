@@ -84,7 +84,7 @@ public sealed class ProxySocketInterface
                 while (!MessageLenString.EndsWith(":"))
                 {
                     clientsocket.Receive(OneLetterBuffer);
-                    MessageLenString += Encoding.ASCII.GetString(OneLetterBuffer, 0, OneLetterBuffer.Length).TrimEnd('\0');
+                    MessageLenString += Encoding.UTF8.GetString(OneLetterBuffer, 0, OneLetterBuffer.Length).TrimEnd('\0');
                 }
                 char[] MessageLenFlippedCharArray = MessageLenString.Trim(':').Reverse().ToArray();
                 for (int i = 0; i < MessageLenFlippedCharArray.Length; i++)
@@ -110,7 +110,7 @@ public sealed class ProxySocketInterface
                     }
                     byte[] Buffer = new byte[NextBufferSize];
                     clientsocket.Receive(Buffer);
-                    RecievedMessage += Encoding.ASCII.GetString(Buffer, 0, Buffer.Length).TrimEnd('\0');
+                    RecievedMessage += Encoding.UTF8.GetString(Buffer, 0, Buffer.Length).TrimEnd('\0');
                 }
                 this.input_queue.Enqueue(Base64Decode(RecievedMessage.TrimEnd('\n'))); // Returns the string.
             }

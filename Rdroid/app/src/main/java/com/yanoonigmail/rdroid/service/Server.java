@@ -2,6 +2,7 @@ package com.yanoonigmail.rdroid.service;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Base64OutputStream;
 import android.util.Log;
 import android.content.res.Resources;
 
@@ -306,6 +307,7 @@ public class Server {
 
     public void streamSend(InputStream stream, long streamLength, byte[] preStreamData) {
         try {
+            /**
             byte[] leftovers; // strings need to be multiplications of 3 before base64. these character are saved and used in the next part of the message if needed.
             BufferedOutputStream bos = new BufferedOutputStream(new DataOutputStream(mServerSocket.getOutputStream()));
             BufferedInputStream bis = new BufferedInputStream(stream);
@@ -348,6 +350,28 @@ public class Server {
                     again = false;
                 }
             }
+         **/
+            BufferedOutputStream bos = new BufferedOutputStream(new DataOutputStream(mServerSocket.getOutputStream()));
+            Base64OutputStream b64os = new Base64OutputStream(new DataOutputStream(mServerSocket.getOutputStream()), Base64.NO_CLOSE | Base64.NO_WRAP);
+            BufferedInputStream bis = new BufferedInputStream(stream);
+            long totalStreamLength = streamLength + preStreamData.length; // pure
+            totalStreamLength = (long) (4 * Math.ceil((double) (totalStreamLength / 3))); // after base64
+             bos.write((String.valueOf(totalStreamLength) + ":").getBytes("UTF-8"));
+            bos.flush();
+            b64os.write(preStreamData);
+            b64os.flush();
+            boolean again = true;
+            while (again) {
+                byte[] buffer = new byte[8192];
+                int readLen = bis.read(buffer);
+                if (readLen != -1) {
+                    b64os.write(buffer, 0, readLen);
+                    b64os.flush();
+                } else {
+                    again = false;
+                }
+            }
+            b64os.close();
         } catch (Exception e) {
             e.printStackTrace();
             mConnected = false;
