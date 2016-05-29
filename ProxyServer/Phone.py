@@ -82,9 +82,12 @@ class Phone(object):
         except (IndexError, ValueError) as e:
             print str(e)
             return None
-        if message[:-1] == '\n':
-            return base64.b64decode(message[:-1])
-        return base64.b64decode(message)
+        try:
+            if message[:-1] == '\n':
+                return base64.b64decode(message[:-1])
+            return base64.b64decode(message)
+        except TypeError:
+            print 'bad padding. message:' + message
 
     def send(self, message):
         # encrypts and then sends a message to the phone.

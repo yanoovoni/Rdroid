@@ -2,6 +2,7 @@ package com.yanoonigmail.rdroid.service;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Base64OutputStream;
 import android.util.Log;
 import android.content.res.Resources;
 
@@ -306,48 +307,27 @@ public class Server {
 
     public void streamSend(InputStream stream, long streamLength, byte[] preStreamData) {
         try {
-            byte[] leftovers; // strings need to be multiplications of 3 before base64. these character are saved and used in the next part of the message if needed.
             BufferedOutputStream bos = new BufferedOutputStream(new DataOutputStream(mServerSocket.getOutputStream()));
+            Base64OutputStream b64os = new Base64OutputStream(new DataOutputStream(mServerSocket.getOutputStream()), Base64.NO_CLOSE | Base64.NO_WRAP);
             BufferedInputStream bis = new BufferedInputStream(stream);
             long totalStreamLength = streamLength + preStreamData.length; // pure
             totalStreamLength = (long) (4 * Math.ceil((double) (totalStreamLength / 3))); // after base64
-            int base64Mode;
-            if (streamLength == 0) {
-                base64Mode = Base64.DEFAULT;
-            } else {
-                base64Mode = Base64.NO_PADDING;
-            }
-            int leftoversLen = preStreamData.length % 3;
-            leftovers = Arrays.copyOfRange(preStreamData, preStreamData.length - leftoversLen, preStreamData.length);
-            preStreamData = Arrays.copyOfRange(preStreamData, 0, preStreamData.length - leftoversLen);
-            String base64Str =  Base64.encodeToString(preStreamData, base64Mode);
-            base64Str = base64Str.substring(0, base64Str.length() - 1);
-            byte[] header = (String.valueOf(totalStreamLength) + ":" + base64Str).getBytes();
-            bos.write(header);
+             bos.write((String.valueOf(totalStreamLength) + ":").getBytes("UTF-8"));
             bos.flush();
+            b64os.write(preStreamData);
+            b64os.flush();
             boolean again = true;
             while (again) {
                 byte[] buffer = new byte[8192];
                 int readLen = bis.read(buffer);
                 if (readLen != -1) {
-                    byte[] bufferWithLeftovers = appendData(leftovers, Arrays.copyOf(buffer, readLen));
-                    if (readLen == buffer.length) {
-                        leftoversLen = bufferWithLeftovers.length % 3;
-                        leftovers = Arrays.copyOfRange(bufferWithLeftovers, bufferWithLeftovers.length - leftoversLen, bufferWithLeftovers.length);
-                        bufferWithLeftovers = Arrays.copyOfRange(bufferWithLeftovers, 0, bufferWithLeftovers.length - leftoversLen);
-                        base64Mode = Base64.NO_PADDING;
-                    } else {
-                        base64Mode = Base64.DEFAULT;
-                        again = false;
-                    }
-                    base64Str = Base64.encodeToString(bufferWithLeftovers, base64Mode);
-                    base64Str = base64Str.substring(0, base64Str.length() - 1);
-                    bos.write(base64Str.getBytes());
-                    bos.flush();
+                    b64os.write(buffer, 0, readLen);
+                    b64os.flush();
                 } else {
                     again = false;
                 }
             }
+            b64os.close();
         } catch (Exception e) {
             e.printStackTrace();
             mConnected = false;
