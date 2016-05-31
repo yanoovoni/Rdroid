@@ -11,7 +11,7 @@ public class Phone
     private string Id;
     private string User_Email = "";
     private int Task_Id_Generator_Number = 0;
-    private Dictionary<string, string> Recieved_Tasks_Dict = new Dictionary<string, string>();
+    private Dictionary<string, char[]> Recieved_Tasks_Dict = new Dictionary<string, char[]>();
 
     public Phone(string Id)
     {
@@ -49,14 +49,14 @@ public class Phone
         return Task_Id_Generator_Number.ToString();
     }
 
-    public void AddRecievedTask(string Task_Id, string Task_Output)
+    public void AddRecievedTask(string Task_Id, char[] Task_Output)
     {
         Recieved_Tasks_Dict.Add(Task_Id, Task_Output);
     }
 
-    public string GetRecievedTaskOutput(string Task_Id)
+    public char[] GetRecievedTaskOutput(string Task_Id)
     {
-        string Recieved_Task;
+        char[] Recieved_Task;
         if (Recieved_Tasks_Dict.TryGetValue(Task_Id, out Recieved_Task))
         {
             Recieved_Tasks_Dict.Remove(Task_Id);

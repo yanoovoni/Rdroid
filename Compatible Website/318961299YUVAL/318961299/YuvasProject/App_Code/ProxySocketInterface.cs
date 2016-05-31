@@ -15,7 +15,7 @@ public sealed class ProxySocketInterface
     private static readonly ProxySocketInterface our_instance = new ProxySocketInterface();
     private Socket clientsocket;
     private int BufferSize = 8192; // The amount of data
-    private Queue<string> input_queue = new Queue<string>();
+    private Queue<char[]> input_queue = new Queue<char[]>();
     private Queue<string> output_queue = new Queue<string>();
     private Thread Start_Thread;
     private Thread Recv_Thread;
@@ -150,7 +150,7 @@ public sealed class ProxySocketInterface
     {
         try
         {
-            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+            byte[] plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
             return System.Convert.ToBase64String(plainTextBytes);
         }
         catch (Exception e)
@@ -159,20 +159,25 @@ public sealed class ProxySocketInterface
         }
     }
 
-    private static string Base64Decode(string base64EncodedData)
+    private static char[] Base64Decode(string base64EncodedData)
     {
         try
         {
-            var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
-            return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
+            byte[] data = Convert.FromBase64String(base64EncodedData);
+            char[] CharData = new char[data.Length];
+            for (int i = 0; i < data.Length; i++)
+            {
+                CharData[i] = (char)data[i];
+            }
+            return CharData;
         }
         catch (Exception e)
         {
-            return base64EncodedData;
+            return base64EncodedData.ToCharArray();
         }
     }
 
-    public String Recv()
+    public char[] Recv()
     {
         while (true)
         {

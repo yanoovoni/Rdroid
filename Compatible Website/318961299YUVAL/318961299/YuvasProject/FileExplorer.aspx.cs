@@ -75,16 +75,20 @@ public partial class FileExplorer : System.Web.UI.Page
             }
             else
             {
-                string Data;
+                char[] Data;
                 bool GotFile = Task.GetFile("yuval5898@walla.co.il", this.Folder + "/" + FileName, out Data);
                 if (GotFile)
                 {
-                    byte[] ByteData = Encoding.UTF8.GetBytes(Data);
-                    DownloadFile(FileName, ByteData);
+                    byte[] Byte_Data = new byte[Data.Length];
+                    for (int i = 0; i < Data.Length; i++)
+                    {
+                        Byte_Data[i] = (byte)Data[i];
+                    }
+                    DownloadFile(FileName, Byte_Data);
                 }
                 else
                 {
-                    Label1.Text = Data;
+                    Label1.Text = Data.ToString();
                 }
             }
         }
