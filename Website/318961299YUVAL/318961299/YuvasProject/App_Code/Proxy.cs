@@ -42,7 +42,8 @@ public sealed class Proxy
     {
         while (true)
         {
-            string Message = Proxy_Socket.Recv();
+            char[] Char_Message = Proxy_Socket.Recv();
+            string Message = new string(Char_Message);
             if (Protocol.Is_Proxy_Message(Message))
             {
                 string Purpose = Protocol.Get_Message_Purpose(Message);
@@ -105,9 +106,30 @@ public sealed class Proxy
                             Dictionary<string, string> Task_Parameters_Dict = Protocol.Get_Message_Parameters(Message);
                             string Task_Id;
                             string Task_Output;
+                            char[] Char_Task_Output;
                             if (Task_Parameters_Dict.TryGetValue("id", out Task_Id) && Task_Parameters_Dict.TryGetValue("output", out Task_Output))
                             {
-                                GetPhoneById(Phone_Id).AddRecievedTask(Task_Id, Task_Output);
+                                if (Task_Output.StartsWith("success/"))
+                                {
+                                    int Start_Index = 0;
+                                    for (int i = 0; i < Message.Length; i++)
+                                    {
+                                        if (Message.Substring(i).StartsWith("success/"))
+                                        {
+                                            Start_Index = i;
+                                        }
+                                    }
+                                    Char_Task_Output = new char[Task_Output.Length - "success/".Length];
+                                    for (int i = 0; i < Char_Task_Output.Length; i++)
+                                    {
+                                        Char_Task_Output[i] = Char_Message[i + Start_Index];
+                                    }
+                                }
+                                else
+                                {
+                                    Char_Task_Output = Task_Output.ToCharArray();
+                                }
+                                GetPhoneById(Phone_Id).AddRecievedTask(Task_Id, Char_Task_Output);
                             }
                         }
                     }
@@ -216,7 +238,7 @@ public sealed class Proxy
         return null;
     }
 
-    public string HandleTask(string Email, string Type, string[] Parameters)
+    public char[] HandleTask(string Email, string Type, string[] Parameters)
     {
         try
         {
@@ -225,7 +247,7 @@ public sealed class Proxy
             string Task_Id = Tasked_Phone.GenerateTaskId();
             string Task_Message = Protocol.Create_Task_Message(Phone_Id, Task_Id, Type, Parameters);
             Proxy_Socket.Send(Task_Message);
-            string Task_Output = null;
+            char[] Task_Output = null;
             bool Got_Output = false;
             while (!Got_Output)
             {
@@ -243,7 +265,7 @@ public sealed class Proxy
         }
         catch
         {
-            return "";
+            return "".ToCharArray();
         }
     }
 }

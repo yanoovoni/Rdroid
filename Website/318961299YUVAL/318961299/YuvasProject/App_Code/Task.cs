@@ -18,26 +18,30 @@ public static class Task
     {
         string[] input = new string[1];
         input[0] = folder_location; 
-        string output = proxy.HandleTask(email, "GET_FILES_IN_FOLDER", input);
+        string output = new string(proxy.HandleTask(email, "GET_FILES_IN_FOLDER", input));
         return output.Split('/');
     }
 
-    public static bool GetFile(string email, string file_location, out string Data)
+    public static bool GetFile(string email, string file_location, out char[] Data)
     {
         Data = null;
         string[] input = new string[1];
         input[0] = file_location;
-        string output = proxy.HandleTask(email, "GET_FILE", input);
-        if (output.StartsWith("success/"))
+        char[] output = proxy.HandleTask(email, "GET_FILE", input);
+        if (new string(output).StartsWith("success/"))
         {
-            Data = output.Substring("success/".Length);
+            Data = new char[output.Length - "success/".Length];
+            for (int i = 0; i < Data.Length; i++)
+            {
+                Data[i] = output[i + "success/".Length];
+            }
             return true;
         }
         else
         {
-            if (output.StartsWith("failure/"))
+            if (new string(output).StartsWith("failure/"))
             {
-                Data = output.Substring("failure/".Length);
+                Data = new string(output).Substring("failure/".Length).ToCharArray();
                 return false;
             }
         }
@@ -50,7 +54,7 @@ public static class Task
         string[] input = new string[2];
         input[0] = location;
         input[1] = file_data;
-        string output = proxy.HandleTask(email, "SAVE_FILE", input);
+        string output = new string(proxy.HandleTask(email, "SAVE_FILE", input));
         if (output == "success")
         {
             return true;
@@ -66,7 +70,7 @@ public static class Task
     public static bool SaveContact(string email, string DisplayName, string MobileNumber, string emailID)
     {
         string[] input = new string[3] {DisplayName, MobileNumber, emailID};
-        string output = proxy.HandleTask(email, "SAVE_CONTACT", input);
+        string output = new string(proxy.HandleTask(email, "SAVE_CONTACT", input));
         if (output == "success")
         {
             return true;
