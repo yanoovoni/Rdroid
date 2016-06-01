@@ -311,8 +311,8 @@ public class Server {
             Base64OutputStream b64os = new Base64OutputStream(new DataOutputStream(mServerSocket.getOutputStream()), Base64.NO_CLOSE | Base64.NO_WRAP);
             BufferedInputStream bis = new BufferedInputStream(stream);
             long totalStreamLength = streamLength + preStreamData.length; // pure
-            totalStreamLength = (long) (4 * Math.ceil((double) (totalStreamLength / 3))); // after base64
-             bos.write((String.valueOf(totalStreamLength) + ":").getBytes("UTF-8"));
+            totalStreamLength = (long) (4 * Math.ceil(totalStreamLength / 3.0)); // after base64
+            bos.write((String.valueOf(totalStreamLength) + ":").getBytes("UTF-8"));
             bos.flush();
             b64os.write(preStreamData);
             b64os.flush();
