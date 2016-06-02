@@ -119,7 +119,7 @@ public sealed class Proxy
                                             Start_Index = i;
                                         }
                                     }
-                                    Char_Task_Output = new char[Task_Output.Length - "success/".Length];
+                                    Char_Task_Output = new char[Task_Output.Length];
                                     for (int i = 0; i < Char_Task_Output.Length; i++)
                                     {
                                         Char_Task_Output[i] = Char_Message[i + Start_Index];
